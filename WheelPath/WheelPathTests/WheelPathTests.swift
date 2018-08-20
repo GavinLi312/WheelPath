@@ -1,15 +1,15 @@
 //
-//  ProjectVersion1Tests.swift
-//  ProjectVersion1Tests
+//  WheelPathTests.swift
+//  WheelPathTests
 //
 //  Created by Salamender Li on 20/8/18.
 //  Copyright © 2018 Salamender Li. All rights reserved.
 //
 
 import XCTest
-@testable import ProjectVersion1
+@testable import WheelPath
 
-class ProjectVersion1Tests: XCTestCase {
+class WheelPathTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
