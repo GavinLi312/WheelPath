@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1241073936F87274E5DE2B36 /* Pods_WheelPathTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 265D61330A1351A917166D27 /* Pods_WheelPathTests.framework */; };
+		619B5BE1772D5361EDF551AF /* Pods_WheelPath.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5098A45F72028C5E53FC825 /* Pods_WheelPath.framework */; };
 		A3F09B66212A875D00224A7E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3F09B65212A875D00224A7E /* AppDelegate.swift */; };
 		A3F09B68212A875D00224A7E /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3F09B67212A875D00224A7E /* ViewController.swift */; };
 		A3F09B6B212A875D00224A7E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A3F09B69212A875D00224A7E /* Main.storyboard */; };
@@ -16,6 +18,7 @@
 		A3F09B7E212A875E00224A7E /* WheelPathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3F09B7D212A875E00224A7E /* WheelPathTests.swift */; };
 		A3F09B89212A875E00224A7E /* WheelPathUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3F09B88212A875E00224A7E /* WheelPathUITests.swift */; };
 		A3F09B97212A887900224A7E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A3F09B96212A887900224A7E /* GoogleService-Info.plist */; };
+		E7F86629E055A185C2A5271F /* Pods_WheelPathUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85FB052A6ABA677E73F48871 /* Pods_WheelPathUITests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +39,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1EDCC2288249259C0EACBA17 /* Pods-WheelPath.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WheelPath.release.xcconfig"; path = "Pods/Target Support Files/Pods-WheelPath/Pods-WheelPath.release.xcconfig"; sourceTree = "<group>"; };
+		265D61330A1351A917166D27 /* Pods_WheelPathTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_WheelPathTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7B5CD87E416599908295BDC7 /* Pods-WheelPathTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WheelPathTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-WheelPathTests/Pods-WheelPathTests.debug.xcconfig"; sourceTree = "<group>"; };
+		85FB052A6ABA677E73F48871 /* Pods_WheelPathUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_WheelPathUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A3F09B62212A875D00224A7E /* WheelPath.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WheelPath.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A3F09B65212A875D00224A7E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A3F09B67212A875D00224A7E /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -51,6 +58,11 @@
 		A3F09B88212A875E00224A7E /* WheelPathUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WheelPathUITests.swift; sourceTree = "<group>"; };
 		A3F09B8A212A875E00224A7E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A3F09B96212A887900224A7E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		B1FB983A6B4BADFE6B35A29E /* Pods-WheelPathTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WheelPathTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-WheelPathTests/Pods-WheelPathTests.release.xcconfig"; sourceTree = "<group>"; };
+		B424C057A6316018D8E31CF1 /* Pods-WheelPathUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WheelPathUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-WheelPathUITests/Pods-WheelPathUITests.release.xcconfig"; sourceTree = "<group>"; };
+		C31C53D2042D35ADDC49A3A1 /* Pods-WheelPath.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WheelPath.debug.xcconfig"; path = "Pods/Target Support Files/Pods-WheelPath/Pods-WheelPath.debug.xcconfig"; sourceTree = "<group>"; };
+		D29231C5FB37A6D5B3CF57FF /* Pods-WheelPathUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WheelPathUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-WheelPathUITests/Pods-WheelPathUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		F5098A45F72028C5E53FC825 /* Pods_WheelPath.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_WheelPath.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +70,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				619B5BE1772D5361EDF551AF /* Pods_WheelPath.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +78,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1241073936F87274E5DE2B36 /* Pods_WheelPathTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -72,12 +86,36 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E7F86629E055A185C2A5271F /* Pods_WheelPathUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0F7AB495644260D32C30EB48 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F5098A45F72028C5E53FC825 /* Pods_WheelPath.framework */,
+				265D61330A1351A917166D27 /* Pods_WheelPathTests.framework */,
+				85FB052A6ABA677E73F48871 /* Pods_WheelPathUITests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		92C62692D07B7F9B890D2857 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				C31C53D2042D35ADDC49A3A1 /* Pods-WheelPath.debug.xcconfig */,
+				1EDCC2288249259C0EACBA17 /* Pods-WheelPath.release.xcconfig */,
+				7B5CD87E416599908295BDC7 /* Pods-WheelPathTests.debug.xcconfig */,
+				B1FB983A6B4BADFE6B35A29E /* Pods-WheelPathTests.release.xcconfig */,
+				D29231C5FB37A6D5B3CF57FF /* Pods-WheelPathUITests.debug.xcconfig */,
+				B424C057A6316018D8E31CF1 /* Pods-WheelPathUITests.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		A3F09B59212A875D00224A7E = {
 			isa = PBXGroup;
 			children = (
@@ -85,6 +123,8 @@
 				A3F09B7C212A875E00224A7E /* WheelPathTests */,
 				A3F09B87212A875E00224A7E /* WheelPathUITests */,
 				A3F09B63212A875D00224A7E /* Products */,
+				92C62692D07B7F9B890D2857 /* Pods */,
+				0F7AB495644260D32C30EB48 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -138,9 +178,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A3F09B8D212A875E00224A7E /* Build configuration list for PBXNativeTarget "WheelPath" */;
 			buildPhases = (
+				4356C571A39D5F8E9CB92FED /* [CP] Check Pods Manifest.lock */,
 				A3F09B5E212A875D00224A7E /* Sources */,
 				A3F09B5F212A875D00224A7E /* Frameworks */,
 				A3F09B60212A875D00224A7E /* Resources */,
+				18A69F68E6647DE8729FC24B /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -155,6 +197,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A3F09B90212A875E00224A7E /* Build configuration list for PBXNativeTarget "WheelPathTests" */;
 			buildPhases = (
+				C3A271C07E6FD153CC2A09B3 /* [CP] Check Pods Manifest.lock */,
 				A3F09B75212A875E00224A7E /* Sources */,
 				A3F09B76212A875E00224A7E /* Frameworks */,
 				A3F09B77212A875E00224A7E /* Resources */,
@@ -173,6 +216,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A3F09B93212A875E00224A7E /* Build configuration list for PBXNativeTarget "WheelPathUITests" */;
 			buildPhases = (
+				1717DF4926CA64727C6808A8 /* [CP] Check Pods Manifest.lock */,
 				A3F09B80212A875E00224A7E /* Sources */,
 				A3F09B81212A875E00224A7E /* Frameworks */,
 				A3F09B82212A875E00224A7E /* Resources */,
@@ -257,6 +301,87 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		1717DF4926CA64727C6808A8 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-WheelPathUITests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		18A69F68E6647DE8729FC24B /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-WheelPath/Pods-WheelPath-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
+				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
+				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
+				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-WheelPath/Pods-WheelPath-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		4356C571A39D5F8E9CB92FED /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-WheelPath-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C3A271C07E6FD153CC2A09B3 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-WheelPathTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A3F09B5E212A875D00224A7E /* Sources */ = {
@@ -436,16 +561,14 @@
 		};
 		A3F09B8E212A875E00224A7E /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C31C53D2042D35ADDC49A3A1 /* Pods-WheelPath.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = NRL9LH8W6N;
 				INFOPLIST_FILE = WheelPath/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = monash.WheelPath;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -456,16 +579,14 @@
 		};
 		A3F09B8F212A875E00224A7E /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1EDCC2288249259C0EACBA17 /* Pods-WheelPath.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = NRL9LH8W6N;
 				INFOPLIST_FILE = WheelPath/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = monash.WheelPath;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -476,17 +597,14 @@
 		};
 		A3F09B91212A875E00224A7E /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7B5CD87E416599908295BDC7 /* Pods-WheelPathTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = NRL9LH8W6N;
 				INFOPLIST_FILE = WheelPathTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = monash.WheelPathTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
@@ -497,17 +615,14 @@
 		};
 		A3F09B92212A875E00224A7E /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B1FB983A6B4BADFE6B35A29E /* Pods-WheelPathTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = NRL9LH8W6N;
 				INFOPLIST_FILE = WheelPathTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = monash.WheelPathTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
@@ -518,16 +633,13 @@
 		};
 		A3F09B94212A875E00224A7E /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D29231C5FB37A6D5B3CF57FF /* Pods-WheelPathUITests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = NRL9LH8W6N;
 				INFOPLIST_FILE = WheelPathUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = monash.WheelPathUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
@@ -538,16 +650,13 @@
 		};
 		A3F09B95212A875E00224A7E /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B424C057A6316018D8E31CF1 /* Pods-WheelPathUITests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = NRL9LH8W6N;
 				INFOPLIST_FILE = WheelPathUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = monash.WheelPathUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;

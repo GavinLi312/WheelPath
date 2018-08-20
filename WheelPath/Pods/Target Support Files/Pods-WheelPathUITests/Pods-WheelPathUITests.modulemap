@@ -1,0 +1,6 @@
+framework module Pods_WheelPathUITests {
+  umbrella header "Pods-WheelPathUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}
