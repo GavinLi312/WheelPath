@@ -98,6 +98,9 @@
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <segue destination="nPo-Ur-pVg" kind="showDetail" identifier="showMap" id="zyQ-ZO-YuW"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -150,4 +153,7 @@
     <resources>
         <image name="group logo 8-1024" width="1024" height="1024"/>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="zyQ-ZO-YuW"/>
+    </inferredMetricsTieBreakers>
 </document>

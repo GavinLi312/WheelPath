@@ -36,41 +36,43 @@ class WheelPathTests: XCTestCase {
     
     // test the PublicToiletList is not empty
     func testPublicToilets(){
+        let expectation = XCTestExpectation(description: "can get access to the firebase Toilets table")
         let databaseRef =  Database.database().reference().child("Public Toilets")
-        var publicToiletList : [(key: String, value: NSDictionary)] = []
 
-        databaseRef.observeSingleEvent(of: .value, with: {(snapshot) in
-            guard let value = snapshot.value as? NSDictionary else{
-                return
-            }
-            for item in value.allKeys{
-                publicToiletList.append((item as! String, value[item] as! NSDictionary))
-            }
-            XCTAssertNotNil(publicToiletList)
-            XCTAssertFalse(publicToiletList.count == 0)
-        })
+        let url = URL(string: "\(databaseRef)")!
+        
+        let dataTask = URLSession.shared.dataTask(with: url){ (data, _, _) in
             
+            XCTAssertNotNil(data, "No data was downloaded.")
+            
+            expectation.fulfill()
+            
+        }
+        dataTask.resume()
+        wait(for: [expectation], timeout: 10.0)
         }
     
     func testWaterFountains(){
+        let expectation = XCTestExpectation(description: "can get access to the firebase Water Fountains table")
         let databaseRef =  Database.database().reference().child("Water Fountains")
-        var waterFountains : [(key: String, value: NSDictionary)] = []
-        databaseRef.observeSingleEvent(of: .value, with: {(snapshot) in
-            guard let value = snapshot.value as? NSDictionary else{
-                return
-            }
-            for item in value.allKeys{
-                waterFountains.append((item as! String, value[item] as! NSDictionary))
-            }
-            XCTAssertNotNil(waterFountains)
-            XCTAssertFalse(waterFountains.count == 0)
-        })
+        
+        let url = URL(string: "\(databaseRef)")!
+        
+        let dataTask = URLSession.shared.dataTask(with: url){ (data, _, _) in
+            
+            XCTAssertNotNil(data, "No data was downloaded.")
+            
+            expectation.fulfill()
+            
+        }
+        dataTask.resume()
+        wait(for: [expectation], timeout: 10.0)
     }
     
     func testCache() {
-        let testclass = FunctionListController()
+        let testclass = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "functionLists") as! FunctionListController
         testclass.getPublicToiletsData()
-        testclass.getWaterFuntainData()
+        testclass.getWaterFountainData()
         XCTAssertFalse(functions.object(forKey: "water fountains")?.count == 0)
         XCTAssertFalse(functions.object(forKey: "public toilts")?.count == 0)
     }

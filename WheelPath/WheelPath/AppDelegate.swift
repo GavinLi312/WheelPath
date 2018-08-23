@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let masterNavigationController = splitView.viewControllers.first as! UINavigationController
         let mapView : MapViewController = splitView.viewControllers.last as! MapViewController
         let functionList:FunctionListController = masterNavigationController.viewControllers.first as! FunctionListController
-        functionList.mapViewController = mapView
+//        functionList.mapViewController = mapView
         FirebaseApp.configure()
         return true
     }

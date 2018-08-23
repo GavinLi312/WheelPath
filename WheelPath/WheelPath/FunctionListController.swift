@@ -10,25 +10,22 @@ import UIKit
 import Firebase
 
 var functions = NSCache<NSString, NSArray>()
+var functionList = ["Public Toilets","Water Fountains"]
 
 class FunctionListController: UITableViewController {
     
     
-    var mapViewController : MapViewController?
+//    var mapViewController : MapViewController?
     var databaseRef : DatabaseReference?
-    var publicToiletList : [(key: String, value: NSDictionary)] = []
-    var waterFountainList : [(key: String, value: NSDictionary)] = []
-    var functionList = ["Public Toilets","Water Fountains"]
+    var publicToiletList : [PublicToilet] = []
+    var waterFountainList : [WaterFountain] = []
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
         databaseRef = Database.database().reference()
         getPublicToiletsData()
         getWaterFountainData()
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-
     }
     
     override func didReceiveMemoryWarning() {
@@ -55,31 +52,57 @@ class FunctionListController: UITableViewController {
 
     //get the public toilets from firebase
     func getPublicToiletsData(){
-        let toiletsRef =  databaseRef?.child("Public Toilets")
+        let toiletsRef =  databaseRef?.child(functionList[0])
         toiletsRef?.observeSingleEvent(of: .value, with: {(snapshot) in
             guard let value = snapshot.value as? NSDictionary else{
                 return
             }
+            
             for item in value.allKeys{
-                self.publicToiletList.append((item as! String, value[item] as! NSDictionary))
+                let toiletInfo = value.object(forKey: item) as! NSDictionary
+                var publicToilet = PublicToilet()
+                publicToilet.id = item as! String
+                publicToilet.desc = toiletInfo.object(forKey: "Description") as! String
+                publicToilet.disableFlag = toiletInfo.object(forKey: "DisableFlag") as! String
+                publicToilet.latitude = toiletInfo.object(forKey: "Latitude") as! Double
+                publicToilet.longitude = toiletInfo.object(forKey: "Longitude") as! Double
+                self.publicToiletList.append(publicToilet)
             }
-            functions.setObject(self.publicToiletList as NSArray, forKey: "public toilets")
+            functions.setObject(self.publicToiletList as! NSArray , forKey: functionList[0] as NSString)
             
         })
     }
     
     //get the water Fountain Data from the firebase
     func getWaterFountainData(){
-        let toiletsRef =  databaseRef?.child("Water Fountains")
+        let toiletsRef =  databaseRef?.child(functionList[1])
         toiletsRef?.observeSingleEvent(of: .value, with: {(snapshot) in
             guard let value = snapshot.value as? NSDictionary else{
                 return
             }
             for item in value.allKeys{
-                self.waterFountainList.append((item as! String, value[item] as! NSDictionary))
+                let toiletInfo = value.object(forKey: item) as! NSDictionary
+                var waterFountain = WaterFountain()
+                waterFountain.id = item as! String
+                waterFountain.desc = toiletInfo.object(forKey: "Description") as! String
+                waterFountain.disableFlag = toiletInfo.object(forKey: "DisableFlag") as! String
+                waterFountain.latitude = toiletInfo.object(forKey: "Latitude") as! Double
+                waterFountain.longitude = toiletInfo.object(forKey: "Longitude") as! Double
+                self.waterFountainList.append(waterFountain)
+
             }
-            functions.setObject(self.waterFountainList as NSArray, forKey: "water fountains")
+            functions.setObject(self.waterFountainList as NSArray , forKey: functionList[1] as! NSString)
         })
     }
 
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "showMap" {
+            if let indexPath = tableView.indexPathForSelectedRow{
+                let option = functionList[indexPath.row]
+                let controller = segue.destination as! MapViewController
+                controller.Option = option
+            }
+        }
+    }
 }

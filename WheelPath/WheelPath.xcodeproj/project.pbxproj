@@ -12,6 +12,8 @@
 		A3AB0E91212D825200E2F366 /* FunctionListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AB0E90212D825200E2F366 /* FunctionListController.swift */; };
 		A3AB0E93212D82B600E2F366 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AB0E92212D82B600E2F366 /* MapViewController.swift */; };
 		A3ED1CE6212E6C8400C4A89F /* CustomPointAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3ED1CE5212E6C8400C4A89F /* CustomPointAnnotation.swift */; };
+		A3ED1CE8212E908300C4A89F /* PublicToilet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3ED1CE7212E908300C4A89F /* PublicToilet.swift */; };
+		A3ED1CEA212E935D00C4A89F /* WaterFountain.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3ED1CE9212E935D00C4A89F /* WaterFountain.swift */; };
 		A3F09B66212A875D00224A7E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3F09B65212A875D00224A7E /* AppDelegate.swift */; };
 		A3F09B6B212A875D00224A7E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A3F09B69212A875D00224A7E /* Main.storyboard */; };
 		A3F09B6E212A875D00224A7E /* WheelPath.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = A3F09B6C212A875D00224A7E /* WheelPath.xcdatamodeld */; };
@@ -48,6 +50,8 @@
 		A3AB0E90212D825200E2F366 /* FunctionListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionListController.swift; sourceTree = "<group>"; };
 		A3AB0E92212D82B600E2F366 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		A3ED1CE5212E6C8400C4A89F /* CustomPointAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPointAnnotation.swift; sourceTree = "<group>"; };
+		A3ED1CE7212E908300C4A89F /* PublicToilet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicToilet.swift; sourceTree = "<group>"; };
+		A3ED1CE9212E935D00C4A89F /* WaterFountain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaterFountain.swift; sourceTree = "<group>"; };
 		A3F09B62212A875D00224A7E /* WheelPath.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WheelPath.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A3F09B65212A875D00224A7E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A3F09B6A212A875D00224A7E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -155,6 +159,8 @@
 				A3F09B74212A875E00224A7E /* Info.plist */,
 				A3F09B6C212A875D00224A7E /* WheelPath.xcdatamodeld */,
 				A3ED1CE5212E6C8400C4A89F /* CustomPointAnnotation.swift */,
+				A3ED1CE7212E908300C4A89F /* PublicToilet.swift */,
+				A3ED1CE9212E935D00C4A89F /* WaterFountain.swift */,
 			);
 			path = WheelPath;
 			sourceTree = "<group>";
@@ -395,10 +401,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				A3AB0E91212D825200E2F366 /* FunctionListController.swift in Sources */,
+				A3ED1CEA212E935D00C4A89F /* WaterFountain.swift in Sources */,
 				A3ED1CE6212E6C8400C4A89F /* CustomPointAnnotation.swift in Sources */,
 				A3F09B6E212A875D00224A7E /* WheelPath.xcdatamodeld in Sources */,
 				A3F09B66212A875D00224A7E /* AppDelegate.swift in Sources */,
 				A3AB0E93212D82B600E2F366 /* MapViewController.swift in Sources */,
+				A3ED1CE8212E908300C4A89F /* PublicToilet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
