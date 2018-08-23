@@ -37,13 +37,10 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="U6x-ke-Bp7"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Map" id="Jqg-Aw-KJP">
-                        <barButtonItem key="rightBarButtonItem" title="About" id="gDq-NH-efn">
-                            <connections>
-                                <segue destination="Nwb-Wc-iqH" kind="show" id="Kgp-Ua-w3R"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" title="Map" id="Jqg-Aw-KJP"/>
+                    <connections>
+                        <outlet property="MapView" destination="8YV-iK-7Vs" id="djz-Rd-vlY"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="u2z-hN-66i" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -74,9 +71,9 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="OyE-Tz-84X" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4049" y="681"/>
+            <point key="canvasLocation" x="5095" y="-228"/>
         </scene>
-        <!--2-->
+        <!--Function List-->
         <scene sceneID="lDn-ws-Za3">
             <objects>
                 <tableViewController storyboardIdentifier="functionLists" clearsSelectionOnViewWillAppear="NO" id="TqF-YA-Gc5" customClass="FunctionListController" customModule="WheelPath" customModuleProvider="target" sceneMemberID="viewController">
@@ -108,7 +105,13 @@
                             <outlet property="delegate" destination="TqF-YA-Gc5" id="tWW-cf-QhQ"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="2" id="PSv-sc-eKX"/>
+                    <navigationItem key="navigationItem" title="Function List" id="PSv-sc-eKX">
+                        <barButtonItem key="rightBarButtonItem" title="About" id="Sap-xy-AD4">
+                            <connections>
+                                <segue destination="Nwb-Wc-iqH" kind="show" id="VG1-bm-q2T"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5Qy-dO-1b3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

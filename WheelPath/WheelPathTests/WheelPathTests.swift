@@ -67,4 +67,12 @@ class WheelPathTests: XCTestCase {
         })
     }
     
+    func testCache() {
+        let testclass = FunctionListController()
+        testclass.getPublicToiletsData()
+        testclass.getWaterFuntainData()
+        XCTAssertFalse(functions.object(forKey: "water fountains")?.count == 0)
+        XCTAssertFalse(functions.object(forKey: "public toilts")?.count == 0)
+    }
+    
 }

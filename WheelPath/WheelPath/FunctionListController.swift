@@ -9,6 +9,8 @@
 import UIKit
 import Firebase
 
+var functions = NSCache<NSString, NSArray>()
+
 class FunctionListController: UITableViewController {
     
     
@@ -22,7 +24,7 @@ class FunctionListController: UITableViewController {
         super.viewDidLoad()
         databaseRef = Database.database().reference()
         getPublicToiletsData()
-        getWaterFuntainData()
+        getWaterFountainData()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -51,6 +53,7 @@ class FunctionListController: UITableViewController {
         return cell
     }
 
+    //get the public toilets from firebase
     func getPublicToiletsData(){
         let toiletsRef =  databaseRef?.child("Public Toilets")
         toiletsRef?.observeSingleEvent(of: .value, with: {(snapshot) in
@@ -60,9 +63,13 @@ class FunctionListController: UITableViewController {
             for item in value.allKeys{
                 self.publicToiletList.append((item as! String, value[item] as! NSDictionary))
             }
+            functions.setObject(self.publicToiletList as NSArray, forKey: "public toilets")
+            
         })
     }
-    func getWaterFuntainData(){
+    
+    //get the water Fountain Data from the firebase
+    func getWaterFountainData(){
         let toiletsRef =  databaseRef?.child("Water Fountains")
         toiletsRef?.observeSingleEvent(of: .value, with: {(snapshot) in
             guard let value = snapshot.value as? NSDictionary else{
@@ -71,6 +78,7 @@ class FunctionListController: UITableViewController {
             for item in value.allKeys{
                 self.waterFountainList.append((item as! String, value[item] as! NSDictionary))
             }
+            functions.setObject(self.waterFountainList as NSArray, forKey: "water fountains")
         })
     }
 
