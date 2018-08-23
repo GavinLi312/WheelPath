@@ -94,6 +94,7 @@ class FunctionListController: UITableViewController {
             functions.setObject(self.waterFountainList as NSArray , forKey: functionList[1] as! NSString)
         })
     }
+    
 
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -101,7 +102,7 @@ class FunctionListController: UITableViewController {
             if let indexPath = tableView.indexPathForSelectedRow{
                 let option = functionList[indexPath.row]
                 let controller = segue.destination as! MapViewController
-                controller.Option = option
+                controller.option = option
             }
         }
     }
