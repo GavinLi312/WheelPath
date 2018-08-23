@@ -7,6 +7,7 @@
 //
 
 import XCTest
+@testable import WheelPath
 
 class WheelPathUITests: XCTestCase {
         
@@ -29,8 +30,9 @@ class WheelPathUITests: XCTestCase {
     }
     
     func testExample() {
-        // Use recording to get started writing UI tests.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+        print("hi")
     }
+    
+
     
 }

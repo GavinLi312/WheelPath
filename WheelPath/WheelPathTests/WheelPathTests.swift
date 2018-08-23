@@ -7,6 +7,7 @@
 //
 
 import XCTest
+import Firebase
 @testable import WheelPath
 
 class WheelPathTests: XCTestCase {
@@ -31,6 +32,24 @@ class WheelPathTests: XCTestCase {
         self.measure {
             // Put the code you want to measure the time of here.
         }
+    }
+    
+    // test the PublicToiletList is not empty
+    func testPublicToilets(){
+        let databaseRef =  Database.database().reference().child("Public Toilets")
+        var publicToiletList : [(key: String, value: NSDictionary)] = []
+        
+        databaseRef.observeSingleEvent(of: .value, with: {(snapshot) in
+            guard let value = snapshot.value as? NSDictionary else{
+                return
+            }
+            for item in value.allKeys{
+                publicToiletList.append((item as! String, value[item] as! NSDictionary))
+            }
+            XCTAssertNotNil(publicToiletList)
+            XCTAssertFalse(publicToiletList.count == 0)
+        })
+        
     }
     
 }

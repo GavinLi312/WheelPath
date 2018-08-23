@@ -17,7 +17,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+
+        let splitView : UISplitViewController = self.window!.rootViewController as! UISplitViewController
+        let masterNavigationController = splitView.viewControllers.first as! UINavigationController
+        let mapView : MapViewController = splitView.viewControllers.last as! MapViewController
+        let functionList:FunctionListController = masterNavigationController.viewControllers.first as! FunctionListController
+        functionList.mapViewController = mapView
         FirebaseApp.configure()
         return true
     }

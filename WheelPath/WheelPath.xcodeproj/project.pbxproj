@@ -9,8 +9,9 @@
 /* Begin PBXBuildFile section */
 		1241073936F87274E5DE2B36 /* Pods_WheelPathTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 265D61330A1351A917166D27 /* Pods_WheelPathTests.framework */; };
 		619B5BE1772D5361EDF551AF /* Pods_WheelPath.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5098A45F72028C5E53FC825 /* Pods_WheelPath.framework */; };
+		A3AB0E91212D825200E2F366 /* FunctionListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AB0E90212D825200E2F366 /* FunctionListController.swift */; };
+		A3AB0E93212D82B600E2F366 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AB0E92212D82B600E2F366 /* MapViewController.swift */; };
 		A3F09B66212A875D00224A7E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3F09B65212A875D00224A7E /* AppDelegate.swift */; };
-		A3F09B68212A875D00224A7E /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3F09B67212A875D00224A7E /* ViewController.swift */; };
 		A3F09B6B212A875D00224A7E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A3F09B69212A875D00224A7E /* Main.storyboard */; };
 		A3F09B6E212A875D00224A7E /* WheelPath.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = A3F09B6C212A875D00224A7E /* WheelPath.xcdatamodeld */; };
 		A3F09B70212A875E00224A7E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A3F09B6F212A875E00224A7E /* Assets.xcassets */; };
@@ -43,9 +44,10 @@
 		265D61330A1351A917166D27 /* Pods_WheelPathTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_WheelPathTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B5CD87E416599908295BDC7 /* Pods-WheelPathTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WheelPathTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-WheelPathTests/Pods-WheelPathTests.debug.xcconfig"; sourceTree = "<group>"; };
 		85FB052A6ABA677E73F48871 /* Pods_WheelPathUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_WheelPathUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A3AB0E90212D825200E2F366 /* FunctionListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionListController.swift; sourceTree = "<group>"; };
+		A3AB0E92212D82B600E2F366 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		A3F09B62212A875D00224A7E /* WheelPath.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WheelPath.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A3F09B65212A875D00224A7E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		A3F09B67212A875D00224A7E /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		A3F09B6A212A875D00224A7E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		A3F09B6D212A875D00224A7E /* WheelPath.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = WheelPath.xcdatamodel; sourceTree = "<group>"; };
 		A3F09B6F212A875E00224A7E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -142,8 +144,9 @@
 			isa = PBXGroup;
 			children = (
 				A3F09B65212A875D00224A7E /* AppDelegate.swift */,
-				A3F09B67212A875D00224A7E /* ViewController.swift */,
+				A3AB0E90212D825200E2F366 /* FunctionListController.swift */,
 				A3F09B69212A875D00224A7E /* Main.storyboard */,
+				A3AB0E92212D82B600E2F366 /* MapViewController.swift */,
 				A3F09B6F212A875E00224A7E /* Assets.xcassets */,
 				A3F09B96212A887900224A7E /* GoogleService-Info.plist */,
 				A3F09B71212A875E00224A7E /* LaunchScreen.storyboard */,
@@ -388,9 +391,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A3AB0E91212D825200E2F366 /* FunctionListController.swift in Sources */,
 				A3F09B6E212A875D00224A7E /* WheelPath.xcdatamodeld in Sources */,
-				A3F09B68212A875D00224A7E /* ViewController.swift in Sources */,
 				A3F09B66212A875D00224A7E /* AppDelegate.swift in Sources */,
+				A3AB0E93212D82B600E2F366 /* MapViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -568,7 +572,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = NRL9LH8W6N;
 				INFOPLIST_FILE = WheelPath/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = monash.WheelPath;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -586,7 +593,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = NRL9LH8W6N;
 				INFOPLIST_FILE = WheelPath/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = monash.WheelPath;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -604,7 +615,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = NRL9LH8W6N;
 				INFOPLIST_FILE = WheelPathTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = monash.WheelPathTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
@@ -622,7 +637,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = NRL9LH8W6N;
 				INFOPLIST_FILE = WheelPathTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = monash.WheelPathTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
@@ -639,7 +658,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = NRL9LH8W6N;
 				INFOPLIST_FILE = WheelPathUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = monash.WheelPathUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
@@ -656,7 +679,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = NRL9LH8W6N;
 				INFOPLIST_FILE = WheelPathUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = monash.WheelPathUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
