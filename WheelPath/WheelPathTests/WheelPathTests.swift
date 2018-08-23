@@ -38,7 +38,7 @@ class WheelPathTests: XCTestCase {
     func testPublicToilets(){
         let databaseRef =  Database.database().reference().child("Public Toilets")
         var publicToiletList : [(key: String, value: NSDictionary)] = []
-        
+
         databaseRef.observeSingleEvent(of: .value, with: {(snapshot) in
             guard let value = snapshot.value as? NSDictionary else{
                 return
@@ -49,7 +49,22 @@ class WheelPathTests: XCTestCase {
             XCTAssertNotNil(publicToiletList)
             XCTAssertFalse(publicToiletList.count == 0)
         })
-        
+            
+        }
+    
+    func testWaterFountains(){
+        let databaseRef =  Database.database().reference().child("Water Fountains")
+        var waterFountains : [(key: String, value: NSDictionary)] = []
+        databaseRef.observeSingleEvent(of: .value, with: {(snapshot) in
+            guard let value = snapshot.value as? NSDictionary else{
+                return
+            }
+            for item in value.allKeys{
+                waterFountains.append((item as! String, value[item] as! NSDictionary))
+            }
+            XCTAssertNotNil(waterFountains)
+            XCTAssertFalse(waterFountains.count == 0)
+        })
     }
     
 }
