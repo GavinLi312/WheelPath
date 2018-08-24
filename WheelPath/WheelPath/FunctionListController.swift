@@ -101,7 +101,7 @@ class FunctionListController: UITableViewController {
         if segue.identifier == "showMap" {
             if let indexPath = tableView.indexPathForSelectedRow{
                 let option = functionList[indexPath.row]
-                let controller = segue.destination as! MapViewController
+                let controller = segue.destination.childViewControllers.first as! MapViewController
                 controller.option = option
             }
         }
