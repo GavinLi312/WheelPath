@@ -95,8 +95,6 @@ class FunctionListController: UITableViewController {
         })
     }
     
-
-    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showMap" {
             if let indexPath = tableView.indexPathForSelectedRow{

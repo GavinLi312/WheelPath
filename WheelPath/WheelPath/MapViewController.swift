@@ -9,7 +9,7 @@
 import UIKit
 import MapKit
 import CoreLocation
-
+let colors = [UIColor.black,UIColor.blue,UIColor.brown,UIColor.green,UIColor.orange]
 class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDelegate {
 
     @IBOutlet weak var MapView: MKMapView!
@@ -18,6 +18,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     var annotationList : [CustomPointAnnotation] = []
     var userLocation : CLLocation = CLLocation()
     let defaultdistance = 0.5
+    var destination : CLLocation?
     
     // initialize the map
     override func viewDidLoad() {
@@ -76,6 +77,11 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         MapView.setRegion(region, animated: false)
     }
     
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        self.destination = CLLocation(latitude: (view.annotation?.coordinate.latitude)!, longitude: (view.annotation?.coordinate.longitude)!)
+        
+    }
+    
     //change all the toilets into annotations
     func putToiletsOnMap() {
         let publicToilets = functions.object(forKey: functionList[0] as! NSString) as! [PublicToilet]
@@ -92,6 +98,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             self.annotationList.append(annotation)
         }
         }
+    
     
     func putWaterFountainOnMap(){
 
@@ -123,6 +130,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         }
         return nearbyAnnotation
     }
+    
     // add anotation in the map
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         let btn = UIButton(type: .infoDark) as UIButton
@@ -145,6 +153,47 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
 
         return annotationView
     }
+
+    @IBAction func navigationButtonClicked(_ sender: Any) {
+        MapView.removeOverlays(MapView.overlays)
+        if self.destination == nil{
+            print(" i am nil")
+        }else{
+            let destinationPlacemark = MKPlacemark(coordinate: (self.destination?.coordinate)!)
+            let sourcePlacemark = MKPlacemark(coordinate: (self.userLocation.coordinate))
+            let sourceItem = MKMapItem(placemark: sourcePlacemark)
+            let destItem = MKMapItem(placemark: destinationPlacemark)
+            let directionRequest = MKDirectionsRequest()
+            directionRequest.source = sourceItem
+            directionRequest.destination = destItem
+            directionRequest.transportType = .any
+            directionRequest.requestsAlternateRoutes = true
+            
+            let directions = MKDirections(request: directionRequest)
+            directions.calculate(completionHandler: { (response, error) in
+                guard let response = response else{
+                    if let error = error{
+                        print("something went wrong")
+                    }
+                    return
+                }
+                print(response.routes.count)
+                let routes = response.routes
+                for item in routes{
+                    print(item.distance)
+                self.MapView.add(item.polyline, level:.aboveRoads )
+                let rekt = item.polyline.boundingMapRect
+                self.MapView.setRegion(MKCoordinateRegionForMapRect(rekt), animated: true)
+                }
+                })
+        }
+    }
     
+    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        let renderer = MKPolylineRenderer(overlay: overlay)
+        renderer.strokeColor = colors[Int(arc4random_uniform(UInt32(colors.count)))]
+        renderer.lineWidth = 5.0
+        return renderer
+    }
     }
 

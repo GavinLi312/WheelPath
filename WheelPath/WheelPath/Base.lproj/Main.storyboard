@@ -24,6 +24,13 @@
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="8YV-iK-7Vs">
                                 <rect key="frame" x="0.0" y="64" width="375" height="603"/>
                             </mapView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="W1Z-sa-ra9">
+                                <rect key="frame" x="286" y="80" width="73" height="30"/>
+                                <state key="normal" title="Navigation"/>
+                                <connections>
+                                    <action selector="navigationButtonClicked:" destination="nPo-Ur-pVg" eventType="touchUpInside" id="7V9-dP-ccS"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -31,6 +38,8 @@
                             <constraint firstAttribute="trailing" secondItem="8YV-iK-7Vs" secondAttribute="trailing" id="DiC-FC-ZM0"/>
                             <constraint firstItem="8YV-iK-7Vs" firstAttribute="trailing" secondItem="8Al-O9-TPC" secondAttribute="trailing" id="Eog-tg-7Ag"/>
                             <constraint firstItem="8YV-iK-7Vs" firstAttribute="leading" secondItem="ZFk-Tv-CQW" secondAttribute="leading" id="OYa-0c-qfH"/>
+                            <constraint firstItem="W1Z-sa-ra9" firstAttribute="top" secondItem="8Al-O9-TPC" secondAttribute="bottom" constant="16" id="TGG-W1-yEm"/>
+                            <constraint firstItem="U6x-ke-Bp7" firstAttribute="trailing" secondItem="W1Z-sa-ra9" secondAttribute="trailing" constant="16" id="lMq-yP-EtJ"/>
                             <constraint firstItem="8YV-iK-7Vs" firstAttribute="top" secondItem="8Al-O9-TPC" secondAttribute="bottom" id="m1Y-DC-hMy"/>
                             <constraint firstItem="8YV-iK-7Vs" firstAttribute="leading" secondItem="8Al-O9-TPC" secondAttribute="leading" id="rFt-3j-uFa"/>
                             <constraint firstItem="8YV-iK-7Vs" firstAttribute="top" secondItem="U6x-ke-Bp7" secondAttribute="top" id="znY-wt-yuy"/>
@@ -54,17 +63,18 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="group logo 8-1024" translatesAutoresizingMaskIntoConstraints="NO" id="JfG-3f-qYx">
-                                <rect key="frame" x="67" y="93" width="240" height="240"/>
-                                <edgeInsets key="layoutMargins" top="8" left="8" bottom="8" right="8"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" placeholderIntrinsicWidth="240" placeholderIntrinsicHeight="240" image="group logo 8-1024" adjustsImageSizeForAccessibilityContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JfG-3f-qYx">
+                                <rect key="frame" x="67" y="97" width="240" height="240"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="240" id="WRu-sj-voW"/>
+                                    <constraint firstAttribute="height" constant="240" id="iLN-rA-qLq"/>
+                                </constraints>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="JfG-3f-qYx" firstAttribute="top" secondItem="x39-5m-94y" secondAttribute="top" constant="29" id="HJi-oZ-eGQ"/>
-                            <constraint firstItem="JfG-3f-qYx" firstAttribute="leading" secondItem="x39-5m-94y" secondAttribute="leading" constant="67" id="K0b-xc-jTR"/>
-                            <constraint firstItem="JfG-3f-qYx" firstAttribute="centerX" secondItem="vZB-Bo-e8N" secondAttribute="centerX" id="TB1-oT-8La"/>
-                            <constraint firstItem="x39-5m-94y" firstAttribute="bottom" secondItem="JfG-3f-qYx" secondAttribute="bottom" constant="334" id="pGY-Im-WqG"/>
+                            <constraint firstItem="JfG-3f-qYx" firstAttribute="centerX" secondItem="vZB-Bo-e8N" secondAttribute="centerX" id="CfX-UX-3QX"/>
+                            <constraint firstItem="JfG-3f-qYx" firstAttribute="top" secondItem="x39-5m-94y" secondAttribute="top" constant="33" id="SXW-Kz-4Zu"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="x39-5m-94y"/>
                     </view>
@@ -111,7 +121,7 @@
                     <navigationItem key="navigationItem" title="Function List" id="PSv-sc-eKX">
                         <barButtonItem key="rightBarButtonItem" title="About" id="Sap-xy-AD4">
                             <connections>
-                                <segue destination="Nwb-Wc-iqH" kind="show" id="VG1-bm-q2T"/>
+                                <segue destination="Nwb-Wc-iqH" kind="showDetail" id="VG1-bm-q2T"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
