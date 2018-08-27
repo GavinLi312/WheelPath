@@ -108,9 +108,6 @@
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
-                                <connections>
-                                    <segue destination="5Kc-fw-ihI" kind="showDetail" identifier="showMap" id="zyQ-ZO-YuW"/>
-                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -125,6 +122,9 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <segue destination="5Kc-fw-ihI" kind="showDetail" identifier="showMap" id="5wy-ua-8G4"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5Qy-dO-1b3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -182,6 +182,6 @@
         <image name="group logo 8-1024" width="1024" height="1024"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="zyQ-ZO-YuW"/>
+        <segue reference="5wy-ua-8G4"/>
     </inferredMetricsTieBreakers>
 </document>

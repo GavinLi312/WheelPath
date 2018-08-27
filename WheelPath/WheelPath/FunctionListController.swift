@@ -12,6 +12,7 @@ import Firebase
 var functions = NSCache<NSString, NSArray>()
 var functionList = ["Public Toilets","Water Fountains"]
 
+
 class FunctionListController: UITableViewController {
     
     
@@ -19,13 +20,19 @@ class FunctionListController: UITableViewController {
     var databaseRef : DatabaseReference?
     var publicToiletList : [PublicToilet] = []
     var waterFountainList : [WaterFountain] = []
+    var reachability : Reachability?
 
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        databaseRef = Database.database().reference()
-        getPublicToiletsData()
-        getWaterFountainData()
+        self.reachability = Reachability.init()
+        if ((self.reachability!.connection) == .cellular || (self.reachability!.connection == .wifi)){
+            print(reachability!.connection)
+            databaseRef = Database.database().reference()
+            getPublicToiletsData()
+            getWaterFountainData()
+        }
+
     }
     
     override func didReceiveMemoryWarning() {
@@ -52,6 +59,7 @@ class FunctionListController: UITableViewController {
 
     //get the public toilets from firebase
     func getPublicToiletsData(){
+        if reachability?.connection != .none{
         let toiletsRef =  databaseRef?.child(functionList[0])
         toiletsRef?.observeSingleEvent(of: .value, with: {(snapshot) in
             guard let value = snapshot.value as? NSDictionary else{
@@ -71,8 +79,40 @@ class FunctionListController: UITableViewController {
             functions.setObject(self.publicToiletList as! NSArray , forKey: functionList[0] as NSString)
             
         })
+        }
+        else{
+            let alertView = UIAlertController(title: "No Internet Connection ", message: "No Permission about the Location Service, Want to change your setting?", preferredStyle: .alert)
+            var settingAction = UIAlertAction(title: "Yes", style: .default, handler: { action in
+                let settingUrl = NSURL(string: UIApplicationOpenSettingsURLString)
+                if let url = settingUrl{
+                    UIApplication.shared.openURL(url as URL)
+                }
+
+            })
+            alertView.addAction(settingAction)
+
+            alertView.addAction(UIAlertAction(title: "No", style: .cancel, handler: { action in
+                print(" no is clicked")
+
+            }))
+            self.present(alertView, animated: false, completion: nil)
+        }
     }
     
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if functions.object(forKey: functionList[0] as! NSString) == nil || functions.object(forKey: functionList[1] as! NSString) == nil{
+            let alertView = UIAlertController(title: "No Internet Connection ", message: "No Permission about the Location Service, Want to change your setting?", preferredStyle: .alert)
+
+            alertView.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: { action in
+                print(" no is clicked")
+
+            }))
+            self.present(alertView, animated: false, completion: nil)
+
+        }else{
+            performSegue(withIdentifier: "showMap", sender: self)
+        }
+    }
     //get the water Fountain Data from the firebase
     func getWaterFountainData(){
         let toiletsRef =  databaseRef?.child(functionList[1])
@@ -89,11 +129,11 @@ class FunctionListController: UITableViewController {
                 waterFountain.latitude = toiletInfo.object(forKey: "Latitude") as! Double
                 waterFountain.longitude = toiletInfo.object(forKey: "Longitude") as! Double
                 self.waterFountainList.append(waterFountain)
-
             }
             functions.setObject(self.waterFountainList as NSArray , forKey: functionList[1] as! NSString)
         })
     }
+    
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showMap" {
