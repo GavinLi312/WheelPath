@@ -55,8 +55,10 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             putToiletsOnMap()
         case functionList[1]:
             putWaterFountainOnMap()
+        case functionList[2]:
+            putAccessibleBuildingOnMap()
         default:
-            print("No Option is Selected")
+            print(functions.object(forKey: functionList[2] as! NSString)?.count)
         }
         MapView.removeAnnotations(MapView.annotations)
         MapView.addAnnotations(self.annotationList)
@@ -106,7 +108,22 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         self.destination = CLLocation(latitude: (view.annotation?.coordinate.latitude)!, longitude: (view.annotation?.coordinate.longitude)!)
+        let span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+        let region = MKCoordinateRegion(center: (self.destination?.coordinate)!, span: span)
+        mapView.setRegion(region, animated: true)
         
+    }
+    func putAccessibleBuildingOnMap(){
+        let accessibuildings = functions.object(forKey: functionList[2] as! NSString) as! [AccessibleBuildings]
+        for building in accessibuildings{
+            var annotation = CustomPointAnnotation()
+            annotation.title = building.id!
+            annotation.subtitle = building.desc!
+            annotation.coordinate = CLLocationCoordinate2DMake(building.latitude!, building.longitude!)
+            annotation.imageName = "access-20"
+            self.annotationList.append(annotation)
+        }
+     
     }
     
     //change all the toilets into annotations
@@ -149,6 +166,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         var nearbyAnnotation : [CustomPointAnnotation] = []
         putWaterFountainOnMap()
         putToiletsOnMap()
+        putAccessibleBuildingOnMap()
         for annotation in self.annotationList {
             let  target = CLLocation(latitude: annotation.coordinate.latitude, longitude: annotation.coordinate.longitude)
             let distance = (userLocation.distance(from: target)/1000)
@@ -161,7 +179,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     
     // add anotation in the map
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        let btn = UIButton(type: .infoDark) as UIButton
+//        let btn = UIButton(type: .infoDark) as UIButton
         
         if !(annotation is MKPointAnnotation){
             return nil
@@ -176,7 +194,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         }
         
         let image = annotation as! CustomPointAnnotation
-        annotationView?.rightCalloutAccessoryView = btn
+//        annotationView?.rightCalloutAccessoryView = btn
         annotationView!.image = UIImage(named: image.imageName)
 
         return annotationView

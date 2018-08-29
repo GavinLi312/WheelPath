@@ -10,7 +10,7 @@ import UIKit
 import Firebase
 
 var functions = NSCache<NSString, NSArray>()
-var functionList = ["Public Toilets","Water Fountains"]
+var functionList = ["Public Toilets","Water Fountains", "Accessible Building"]
 
 
 class FunctionListController: UITableViewController {
@@ -20,6 +20,7 @@ class FunctionListController: UITableViewController {
     var databaseRef : DatabaseReference?
     var publicToiletList : [PublicToilet] = []
     var waterFountainList : [WaterFountain] = []
+    var accessibleBuildingList : [AccessibleBuildings] = []
     var reachability : Reachability?
     var activityIndicator : UIActivityIndicatorView = UIActivityIndicatorView()
 
@@ -31,6 +32,7 @@ class FunctionListController: UITableViewController {
             databaseRef = Database.database().reference()
             getPublicToiletsData()
             getWaterFountainData()
+            getAccessibleBuildings()
         }
 
     }
@@ -59,7 +61,7 @@ class FunctionListController: UITableViewController {
 
     //get the public toilets from firebase
     func getPublicToiletsData(){
-        if reachability?.connection != .none{
+//        if reachability?.connection != .none{
         let toiletsRef =  databaseRef?.child(functionList[0])
         toiletsRef?.observeSingleEvent(of: .value, with: {(snapshot) in
             guard let value = snapshot.value as? NSDictionary else{
@@ -77,30 +79,12 @@ class FunctionListController: UITableViewController {
                 self.publicToiletList.append(publicToilet)
             }
             functions.setObject(self.publicToiletList as! NSArray , forKey: functionList[0] as NSString)
-            
         })
-        }
-        else{
-            let alertView = UIAlertController(title: "No Internet Connection ", message: "No Permission about the Location Service, Want to change your setting?", preferredStyle: .alert)
-            var settingAction = UIAlertAction(title: "Yes", style: .default, handler: { action in
-                let settingUrl = NSURL(string: UIApplicationOpenSettingsURLString)
-                if let url = settingUrl{
-                    UIApplication.shared.openURL(url as URL)
-                }
 
-            })
-            alertView.addAction(settingAction)
-
-            alertView.addAction(UIAlertAction(title: "No", style: .cancel, handler: { action in
-                print(" no is clicked")
-
-            }))
-            self.present(alertView, animated: false, completion: nil)
-        }
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if functions.object(forKey: functionList[0] as! NSString) == nil || functions.object(forKey: functionList[1] as! NSString) == nil{
+        if functions.object(forKey: functionList[0] as! NSString) == nil || functions.object(forKey: functionList[1] as! NSString) == nil || functions.object(forKey: functionList[1] as! NSString) == nil {
             let reachable = Reachability.init()
             if reachable?.connection != .cellular && reachable?.connection != .wifi{
             let alertView = UIAlertController(title: "No Internet Connection ", message: "Internet is not working, please turn it on.", preferredStyle: .alert)
@@ -130,27 +114,49 @@ class FunctionListController: UITableViewController {
             performSegue(withIdentifier: "showMap", sender: self)
         }
     }
+    
     //get the water Fountain Data from the firebase
     func getWaterFountainData(){
-        let toiletsRef =  databaseRef?.child(functionList[1])
-        toiletsRef?.observeSingleEvent(of: .value, with: {(snapshot) in
+        let waterRef =  databaseRef?.child(functionList[1])
+        waterRef?.observeSingleEvent(of: .value, with: {(snapshot) in
             guard let value = snapshot.value as? NSDictionary else{
                 return
             }
             for item in value.allKeys{
-                let toiletInfo = value.object(forKey: item) as! NSDictionary
+                let waterInfo = value.object(forKey: item) as! NSDictionary
                 var waterFountain = WaterFountain()
                 waterFountain.id = item as! String
-                waterFountain.desc = toiletInfo.object(forKey: "Description") as! String
-                waterFountain.disableFlag = toiletInfo.object(forKey: "DisableFlag") as! String
-                waterFountain.latitude = toiletInfo.object(forKey: "Latitude") as! Double
-                waterFountain.longitude = toiletInfo.object(forKey: "Longitude") as! Double
+                waterFountain.desc = waterInfo.object(forKey: "Description") as! String
+                waterFountain.disableFlag = waterInfo.object(forKey: "DisableFlag") as! String
+                waterFountain.latitude = waterInfo.object(forKey: "Latitude") as! Double
+                waterFountain.longitude = waterInfo.object(forKey: "Longitude") as! Double
                 self.waterFountainList.append(waterFountain)
             }
             functions.setObject(self.waterFountainList as NSArray , forKey: functionList[1] as! NSString)
         })
     }
     
+    func getAccessibleBuildings(){
+        let accessibleBuildingsRef = databaseRef?.child(functionList[2]).queryOrdered(byChild: "DisableFlag").queryEqual(toValue: "Yes")
+        accessibleBuildingsRef?.observeSingleEvent(of: .value, with: {(snapshot) in
+            guard let value = snapshot.value as? NSDictionary else{
+                return
+            }
+            for item in value.allKeys{
+                let buildingInfo = value.object(forKey: item) as! NSDictionary
+                var building = AccessibleBuildings()
+                building.id = item as! String
+                building.desc = buildingInfo.object(forKey: "Description") as! String
+                building.disableFlag = buildingInfo.object(forKey: "DisableFlag") as! String
+                building.latitude = buildingInfo.object(forKey: "Latitude") as! Double
+                building.longitude = buildingInfo.object(forKey: "Longitude") as! Double
+                self.accessibleBuildingList.append(building)
+                
+            }
+            functions.setObject(self.accessibleBuildingList as NSArray, forKey: functionList[2] as NSString)
+            print(functions.object(forKey: functionList[2] as NSString)?.count)
+        })
+    }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showMap" {

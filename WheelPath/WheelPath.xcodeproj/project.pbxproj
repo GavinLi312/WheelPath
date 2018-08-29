@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		1241073936F87274E5DE2B36 /* Pods_WheelPathTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 265D61330A1351A917166D27 /* Pods_WheelPathTests.framework */; };
 		619B5BE1772D5361EDF551AF /* Pods_WheelPath.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5098A45F72028C5E53FC825 /* Pods_WheelPath.framework */; };
+		A35118AB2136B27B00906D99 /* AccessibleBuildings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A35118AA2136B27B00906D99 /* AccessibleBuildings.swift */; };
+		A35118AD2136C62200906D99 /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A35118AC2136C62200906D99 /* AboutViewController.swift */; };
 		A3A3FE322133C19B004E684C /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3A3FE312133C19B004E684C /* Reachability.swift */; };
 		A3AB0E91212D825200E2F366 /* FunctionListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AB0E90212D825200E2F366 /* FunctionListController.swift */; };
 		A3AB0E93212D82B600E2F366 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AB0E92212D82B600E2F366 /* MapViewController.swift */; };
@@ -49,6 +51,8 @@
 		7B5CD87E416599908295BDC7 /* Pods-WheelPathTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WheelPathTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-WheelPathTests/Pods-WheelPathTests.debug.xcconfig"; sourceTree = "<group>"; };
 		85FB052A6ABA677E73F48871 /* Pods_WheelPathUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_WheelPathUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A35118A721365E2A00906D99 /* WheelPath.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WheelPath.entitlements; sourceTree = "<group>"; };
+		A35118AA2136B27B00906D99 /* AccessibleBuildings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibleBuildings.swift; sourceTree = "<group>"; };
+		A35118AC2136C62200906D99 /* AboutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
 		A3A3FE312133C19B004E684C /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		A3AB0E90212D825200E2F366 /* FunctionListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionListController.swift; sourceTree = "<group>"; };
 		A3AB0E92212D82B600E2F366 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
@@ -157,6 +161,7 @@
 				A3AB0E90212D825200E2F366 /* FunctionListController.swift */,
 				A3A3FE312133C19B004E684C /* Reachability.swift */,
 				A3F09B69212A875D00224A7E /* Main.storyboard */,
+				A35118AC2136C62200906D99 /* AboutViewController.swift */,
 				A3AB0E92212D82B600E2F366 /* MapViewController.swift */,
 				A3F09B6F212A875E00224A7E /* Assets.xcassets */,
 				A3F09B96212A887900224A7E /* GoogleService-Info.plist */,
@@ -166,6 +171,7 @@
 				A3ED1CE5212E6C8400C4A89F /* CustomPointAnnotation.swift */,
 				A3ED1CE7212E908300C4A89F /* PublicToilet.swift */,
 				A3ED1CE9212E935D00C4A89F /* WaterFountain.swift */,
+				A35118AA2136B27B00906D99 /* AccessibleBuildings.swift */,
 			);
 			path = WheelPath;
 			sourceTree = "<group>";
@@ -410,6 +416,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A35118AB2136B27B00906D99 /* AccessibleBuildings.swift in Sources */,
 				A3AB0E91212D825200E2F366 /* FunctionListController.swift in Sources */,
 				A3ED1CEA212E935D00C4A89F /* WaterFountain.swift in Sources */,
 				A3ED1CE6212E6C8400C4A89F /* CustomPointAnnotation.swift in Sources */,
@@ -417,6 +424,7 @@
 				A3F09B66212A875D00224A7E /* AppDelegate.swift in Sources */,
 				A3AB0E93212D82B600E2F366 /* MapViewController.swift in Sources */,
 				A3A3FE322133C19B004E684C /* Reachability.swift in Sources */,
+				A35118AD2136C62200906D99 /* AboutViewController.swift in Sources */,
 				A3ED1CE8212E908300C4A89F /* PublicToilet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
