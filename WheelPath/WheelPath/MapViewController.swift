@@ -9,6 +9,7 @@
 import UIKit
 import MapKit
 import CoreLocation
+
 let colors = [UIColor.black,UIColor.blue,UIColor.brown,UIColor.green,UIColor.orange]
 var zoomTag = 0
 class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDelegate {
@@ -93,7 +94,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         let myLocation:CLLocationCoordinate2D = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
         let span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
         let region = MKCoordinateRegion(center: CLLocationCoordinate2DMake(userLocation.coordinate.latitude, userLocation.coordinate.longitude), span: span)
-        if zoomTag == 0{
+        if zoomTag == 0 {
             MapView.setRegion(region, animated: true)
             zoomTag = 1
         }
@@ -218,18 +219,26 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                     }
                     return
                 }
-                print(response.routes.count)
+
                 let routes = response.routes
                 for item in routes{
                     print(item.distance)
+                    for step in item.steps{
+                        print(step.instructions)
+                    }
+                    
                 self.MapView.add(item.polyline, level:.aboveRoads )
                 let rekt = item.polyline.boundingMapRect
                 self.MapView.setRegion(MKCoordinateRegionForMapRect(rekt), animated: true)
                 }
+                
+                // if the distance recommend user not to walk
+                if  routes[0].distance > 1500{
+                    self.alert(title: "Unreachable Distance", message: "It might be too far for you, please don't walk")
+                }
                 })
         }
     }
-    
     
     
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
@@ -246,6 +255,15 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         }
         return MKOverlayRenderer()
     }
+    
+    func alert(title: String, message: String)  {
+        let alertController = UIAlertController(title:title , message: message, preferredStyle: .alert)
+        let alertAction = UIAlertAction(title: "Dismiss", style: .default, handler: nil)
+        alertController.addAction(alertAction)
+        self.present(alertController, animated: true, completion: nil )
     }
+    }
+
+
 
 
