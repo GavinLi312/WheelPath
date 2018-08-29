@@ -25,8 +25,8 @@
                                 <rect key="frame" x="0.0" y="64" width="375" height="603"/>
                             </mapView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="W1Z-sa-ra9">
-                                <rect key="frame" x="286" y="80" width="73" height="30"/>
-                                <state key="normal" title="Navigation"/>
+                                <rect key="frame" x="298" y="80" width="61" height="30"/>
+                                <state key="normal" title="Navigate"/>
                                 <connections>
                                     <action selector="navigationButtonClicked:" destination="nPo-Ur-pVg" eventType="touchUpInside" id="7V9-dP-ccS"/>
                                 </connections>

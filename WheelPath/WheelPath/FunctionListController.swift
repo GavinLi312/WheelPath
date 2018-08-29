@@ -21,7 +21,7 @@ class FunctionListController: UITableViewController {
     var publicToiletList : [PublicToilet] = []
     var waterFountainList : [WaterFountain] = []
     var reachability : Reachability?
-
+    var activityIndicator : UIActivityIndicatorView = UIActivityIndicatorView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -101,14 +101,31 @@ class FunctionListController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if functions.object(forKey: functionList[0] as! NSString) == nil || functions.object(forKey: functionList[1] as! NSString) == nil{
-            let alertView = UIAlertController(title: "No Internet Connection ", message: "No Permission about the Location Service, Want to change your setting?", preferredStyle: .alert)
+            let reachable = Reachability.init()
+            if reachable?.connection != .cellular && reachable?.connection != .wifi{
+            let alertView = UIAlertController(title: "No Internet Connection ", message: "Internet is not working, please turn it on.", preferredStyle: .alert)
 
             alertView.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: { action in
                 print(" no is clicked")
 
             }))
             self.present(alertView, animated: false, completion: nil)
-
+            }else{
+                activityIndicator.center = self.view.center
+                activityIndicator.hidesWhenStopped = true
+                activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
+                view.addSubview(activityIndicator)
+                
+                activityIndicator.startAnimating()
+                UIApplication.shared.beginIgnoringInteractionEvents()
+                getPublicToiletsData()
+                getWaterFountainData()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3){
+                    self.activityIndicator.stopAnimating()
+                    UIApplication.shared.endIgnoringInteractionEvents()
+                    self.performSegue(withIdentifier: "showMap", sender: self)
+                }
+            }
         }else{
             performSegue(withIdentifier: "showMap", sender: self)
         }

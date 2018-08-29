@@ -48,6 +48,7 @@
 		265D61330A1351A917166D27 /* Pods_WheelPathTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_WheelPathTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B5CD87E416599908295BDC7 /* Pods-WheelPathTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WheelPathTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-WheelPathTests/Pods-WheelPathTests.debug.xcconfig"; sourceTree = "<group>"; };
 		85FB052A6ABA677E73F48871 /* Pods_WheelPathUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_WheelPathUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A35118A721365E2A00906D99 /* WheelPath.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WheelPath.entitlements; sourceTree = "<group>"; };
 		A3A3FE312133C19B004E684C /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		A3AB0E90212D825200E2F366 /* FunctionListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionListController.swift; sourceTree = "<group>"; };
 		A3AB0E92212D82B600E2F366 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
@@ -151,6 +152,7 @@
 		A3F09B64212A875D00224A7E /* WheelPath */ = {
 			isa = PBXGroup;
 			children = (
+				A35118A721365E2A00906D99 /* WheelPath.entitlements */,
 				A3F09B65212A875D00224A7E /* AppDelegate.swift */,
 				A3AB0E90212D825200E2F366 /* FunctionListController.swift */,
 				A3A3FE312133C19B004E684C /* Reachability.swift */,
@@ -258,6 +260,11 @@
 				TargetAttributes = {
 					A3F09B61212A875D00224A7E = {
 						CreatedOnToolsVersion = 9.4.1;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 0;
+							};
+						};
 					};
 					A3F09B78212A875E00224A7E = {
 						CreatedOnToolsVersion = 9.4.1;

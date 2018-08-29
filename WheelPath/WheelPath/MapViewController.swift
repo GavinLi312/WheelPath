@@ -56,7 +56,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         case functionList[1]:
             putWaterFountainOnMap()
         default:
-            print("No Option is selected right now")
+            print("No Option is Selected")
         }
         MapView.removeAnnotations(MapView.annotations)
         MapView.addAnnotations(self.annotationList)
@@ -233,8 +233,8 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                 }
                 
                 // if the distance recommend user not to walk
-                if  routes[0].distance > 1500{
-                    self.alert(title: "Unreachable Distance", message: "It might be too far for you, please don't walk")
+                if  routes[0].distance > 2500{
+                    self.alert(title: "Distance Too Long", message: "It might be too far for you, please try other ways to commute")
                 }
                 })
         }
