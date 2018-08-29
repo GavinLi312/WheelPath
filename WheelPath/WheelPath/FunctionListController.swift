@@ -67,7 +67,7 @@ class FunctionListController: UITableViewController {
             guard let value = snapshot.value as? NSDictionary else{
                 return
             }
-            
+            self.publicToiletList.removeAll()
             for item in value.allKeys{
                 let toiletInfo = value.object(forKey: item) as! NSDictionary
                 var publicToilet = PublicToilet()
@@ -104,7 +104,8 @@ class FunctionListController: UITableViewController {
                 UIApplication.shared.beginIgnoringInteractionEvents()
                 getPublicToiletsData()
                 getWaterFountainData()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3){
+                getAccessibleBuildings()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5){
                     self.activityIndicator.stopAnimating()
                     UIApplication.shared.endIgnoringInteractionEvents()
                     self.performSegue(withIdentifier: "showMap", sender: self)
@@ -122,6 +123,7 @@ class FunctionListController: UITableViewController {
             guard let value = snapshot.value as? NSDictionary else{
                 return
             }
+            self.waterFountainList.removeAll()
             for item in value.allKeys{
                 let waterInfo = value.object(forKey: item) as! NSDictionary
                 var waterFountain = WaterFountain()
@@ -142,6 +144,7 @@ class FunctionListController: UITableViewController {
             guard let value = snapshot.value as? NSDictionary else{
                 return
             }
+            self.accessibleBuildingList.removeAll()
             for item in value.allKeys{
                 let buildingInfo = value.object(forKey: item) as! NSDictionary
                 var building = AccessibleBuildings()

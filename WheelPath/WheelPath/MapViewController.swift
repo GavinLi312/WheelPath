@@ -21,6 +21,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     var userLocation : CLLocation = CLLocation()
     let defaultdistance = 0.5
     var destination : CLLocation?
+//    var circle: MKCircle = MKCircle()
     
     // initialize the map
     override func viewDidLoad() {
@@ -93,6 +94,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let location = locations[0]
         userLocation = location
+//        MapView.remove(circle)
         let myLocation:CLLocationCoordinate2D = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
         let span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
         let region = MKCoordinateRegion(center: CLLocationCoordinate2DMake(userLocation.coordinate.latitude, userLocation.coordinate.longitude), span: span)
@@ -101,8 +103,10 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             zoomTag = 1
         }
         let rad = CLLocationDistance(500)
-        let circle = MKCircle(center: CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude), radius: rad)
-        MapView.add(circle)
+        let newCircle = MKCircle(center: CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude), radius: rad)
+
+//        circle = newCircle
+//        MapView.add(newCircle)
     }
     
     
