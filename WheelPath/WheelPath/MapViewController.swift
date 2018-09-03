@@ -9,21 +9,30 @@
 import UIKit
 import MapKit
 import CoreLocation
+import Firebase
 
 let colors = [UIColor.black,UIColor.blue,UIColor.brown,UIColor.green,UIColor.orange]
+
 var zoomTag = 0
+var displayTag = true
 class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDelegate {
 
     @IBOutlet weak var MapView: MKMapView!
-    let manager = CLLocationManager()
-    var option : String?
-    var annotationList : [CustomPointAnnotation] = []
-    var userLocation : CLLocation = CLLocation()
-    let defaultdistance = 0.5
-    var destination : CLLocation?
-//    var circle: MKCircle = MKCircle()
+
     
-    // initialize the map
+    let manager = CLLocationManager()
+    
+    var nearby = false
+    
+    var annotationList : [CustomPointAnnotation] = []
+    
+    var userLocation : CLLocation = CLLocation()
+    
+    let defaultdistance = 0.5
+    
+    var destination : CLLocation?
+
+    
     override func viewDidLoad() {
         zoomTag = 0
         super.viewDidLoad()
@@ -44,69 +53,62 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                 print("Access")
             }
         }
+     
         
         manager.requestAlwaysAuthorization()
         manager.startUpdatingLocation()
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        annotationList.removeAll()
-        switch option {
-        case functionList[0]:
-            putToiletsOnMap()
-        case functionList[1]:
-            putWaterFountainOnMap()
-        case functionList[2]:
-            putAccessibleBuildingOnMap()
-        default:
-            print(functions.object(forKey: functionList[2] as! NSString)?.count)
-        }
-        MapView.removeAnnotations(MapView.annotations)
-        MapView.addAnnotations(self.annotationList)
-    }
-    
     
     //https://www.hackingwithswift.com/example-code/system/how-to-run-code-after-a-delay-using-asyncafter-and-perform
-    
-    func mapViewDidFinishLoadingMap(_ mapView: MKMapView) {
-        if option == nil{
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                if functions.object(forKey: functionList[0] as! NSString) != nil{
-                    self.MapView.addAnnotations(self.getNearbyFacilities())
-                }
-            }
-        }
-        
+
+    func mapViewWillStartLoadingMap(_ mapView: MKMapView) {
+        MapView.removeAnnotations(MapView.annotations)
     }
+    func mapViewDidFinishLoadingMap(_ mapView: MKMapView) {
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+//                    self.MapView.addAnnotations(self.getNearbyFacilities())
+//        }
+        if nearby{
+            getNearbyFacilities()
+        }
+        if self.annotationList.count == 0 && displayTag == true{
+            displayErrorMessage(title: "Out of boundry", message: "Sorry, you are not in cbd, that is all we can help")
+            displayTag = false
+        }else{
+            MapView.addAnnotations(self.annotationList)
+        }
+    }
+    
     func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
     
-//        MapView.setRegion(region, animated: false)
+
         manager.stopUpdatingLocation()
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     
     // show user's location
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let location = locations[0]
+        for item in MapView.overlays{
+            if item.title == "location circle"{
+                MapView.remove(item)
+            }
+            
+        }
         userLocation = location
-//        MapView.remove(circle)
+
         let myLocation:CLLocationCoordinate2D = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
-        let span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
-        let region = MKCoordinateRegion(center: CLLocationCoordinate2DMake(userLocation.coordinate.latitude, userLocation.coordinate.longitude), span: span)
+
         if zoomTag == 0 {
-            MapView.setRegion(region, animated: true)
+           locateLocation(location: userLocation)
             zoomTag = 1
         }
+        
         let rad = CLLocationDistance(500)
         let newCircle = MKCircle(center: CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude), radius: rad)
-
-//        circle = newCircle
-//        MapView.add(newCircle)
+        newCircle.title = "location circle"
+        MapView.add(newCircle)
     }
     
     
@@ -117,73 +119,11 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         mapView.setRegion(region, animated: true)
         
     }
-    func putAccessibleBuildingOnMap(){
-        let accessibuildings = functions.object(forKey: functionList[2] as! NSString) as! [AccessibleBuildings]
-        for building in accessibuildings{
-            var annotation = CustomPointAnnotation()
-            annotation.title = building.id!
-            annotation.subtitle = building.desc!
-            annotation.coordinate = CLLocationCoordinate2DMake(building.latitude!, building.longitude!)
-            annotation.imageName = "access-20"
-            self.annotationList.append(annotation)
-        }
-     
-    }
     
-    //change all the toilets into annotations
-    func putToiletsOnMap() {
-        let publicToilets = functions.object(forKey: functionList[0] as! NSString) as! [PublicToilet]
-        for toilet in publicToilets{
-            var annotation = CustomPointAnnotation()
-            annotation.title = toilet.id!
-            annotation.subtitle = toilet.desc!
-            annotation.coordinate = CLLocationCoordinate2DMake(toilet.latitude!, toilet.longitude!)
-            if toilet.disableFlag == "Yes"{
-                annotation.imageName = "toilet-20"
-            }else{
-                annotation.imageName = "toilet-no-20"
-            }
-            self.annotationList.append(annotation)
-        }
-        }
-    
-    
-    func putWaterFountainOnMap(){
-
-        let waterFountains = functions.object(forKey: functionList[1] as! NSString) as! [WaterFountain]
-        for fountain in waterFountains{
-            var annotation = CustomPointAnnotation()
-            annotation.title = fountain.id!
-            annotation.subtitle = fountain.desc!
-            annotation.coordinate = CLLocationCoordinate2DMake(fountain.latitude!, fountain.longitude!)
-            if fountain.disableFlag == "Yes"{
-                annotation.imageName = "water-20"
-            }else{
-                annotation.imageName = "water-no-20"
-            }
-            self.annotationList.append(annotation)
-        }
-        
-    }
-    
-    func getNearbyFacilities() -> [CustomPointAnnotation]{
-        var nearbyAnnotation : [CustomPointAnnotation] = []
-        putWaterFountainOnMap()
-        putToiletsOnMap()
-        putAccessibleBuildingOnMap()
-        for annotation in self.annotationList {
-            let  target = CLLocation(latitude: annotation.coordinate.latitude, longitude: annotation.coordinate.longitude)
-            let distance = (userLocation.distance(from: target)/1000)
-            if distance < defaultdistance{
-                nearbyAnnotation.append(annotation)
-            }
-        }
-        return nearbyAnnotation
-    }
     
     // add anotation in the map
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-//        let btn = UIButton(type: .infoDark) as UIButton
+        let btn = UIButton(type: .infoDark) as UIButton
         
         if !(annotation is MKPointAnnotation){
             return nil
@@ -198,16 +138,17 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         }
         
         let image = annotation as! CustomPointAnnotation
-//        annotationView?.rightCalloutAccessoryView = btn
+        annotationView?.rightCalloutAccessoryView = btn
         annotationView!.image = UIImage(named: image.imageName)
 
         return annotationView
     }
+    
 
     @IBAction func navigationButtonClicked(_ sender: Any) {
         MapView.removeOverlays(MapView.overlays)
         if self.destination == nil{
-            print(" i am nil")
+            displayErrorMessage(title: "No destination", message: "Sorry please select a destination first")
         }else{
             let destinationPlacemark = MKPlacemark(coordinate: (self.destination?.coordinate)!)
             let sourcePlacemark = MKPlacemark(coordinate: (self.userLocation.coordinate))
@@ -278,12 +219,42 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         return MKOverlayRenderer()
     }
     
+    
     func alert(title: String, message: String)  {
         let alertController = UIAlertController(title:title , message: message, preferredStyle: .alert)
         let alertAction = UIAlertAction(title: "Dismiss", style: .default, handler: nil)
         alertController.addAction(alertAction)
         self.present(alertController, animated: true, completion: nil )
     }
+    
+    func locateLocation(location: CLLocation) {
+        let span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+        let region = MKCoordinateRegion(center: CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude), span: span)
+        MapView.setRegion(region, animated: true)
+    }
+    
+    @IBAction func locateMe(_ sender: Any) {
+        locateLocation(location: userLocation)
+    }
+    
+    func getNearbyFacilities(){
+        var nearbyAnnotation : [CustomPointAnnotation] = []
+        for annotation in self.annotationList {
+            let  target = CLLocation(latitude: annotation.coordinate.latitude, longitude: annotation.coordinate.longitude)
+            let distance = (userLocation.distance(from: target)/1000)
+            if distance < defaultdistance{
+                nearbyAnnotation.append(annotation)
+            }
+        }
+        self.annotationList = nearbyAnnotation
+    }
+    
+    func displayErrorMessage(title:String, message: String){
+        let alertview = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alertview.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))
+        self.present(alertview, animated: true, completion: nil)
+    }
+
     }
 
 

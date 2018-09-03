@@ -69,12 +69,6 @@ class WheelPathTests: XCTestCase {
         wait(for: [expectation], timeout: 10.0)
     }
     
-    func testCache() {
-        let testclass = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "functionLists") as! FunctionListController
-        testclass.getPublicToiletsData()
-        testclass.getWaterFountainData()
-        XCTAssertFalse(functions.object(forKey: "water fountains")?.count == 0)
-        XCTAssertFalse(functions.object(forKey: "public toilts")?.count == 0)
-    }
+
     
 }

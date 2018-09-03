@@ -18,12 +18,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
 
-        let splitView : UISplitViewController = self.window!.rootViewController as! UISplitViewController
-        let masterNavigationController = splitView.viewControllers.first as! UINavigationController
-        let detailNavigationController = splitView.viewControllers.last as! UINavigationController
-        let mapView : MapViewController = detailNavigationController.viewControllers.last as! MapViewController
-        let functionList:FunctionListController = masterNavigationController.viewControllers.first as! FunctionListController
-//        functionList.mapViewController = mapView
         FirebaseApp.configure()
         return true
     }
