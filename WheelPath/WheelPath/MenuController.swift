@@ -13,8 +13,11 @@ import Firebase
 
 var functionList = ["Public Toilets", "Water Fountains","Accessible Building","Nearby"]
 
-class menueController: UIViewController {
+class MenuController: UIViewController,UISearchBarDelegate {
     
+    var search = false
+    
+    var searchLocation: String?
     
     var nearby = false
     
@@ -29,6 +32,8 @@ class menueController: UIViewController {
     var reachability : Reachability?
     
     var annotationList : [CustomPointAnnotation] = []
+    
+    let activityIndicator = UIActivityIndicatorView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,10 +48,22 @@ class menueController: UIViewController {
         }
 
     }
-
+    
+    override func viewDidAppear(_ animated: Bool) {
+        if accessibleBuildingList.count == 0 {
+        UIApplication.shared.beginIgnoringInteractionEvents()
+        activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
+        activityIndicator.center = self.view.center
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.startAnimating()
+        self.view.addSubview(activityIndicator)
+        }
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
+    
     
     func getPublicToiletsData(){
         let toiletsRef =  databaseRef?.child(functionList[0])
@@ -88,6 +105,8 @@ class menueController: UIViewController {
                 self.accessibleBuildingList.append(building)
                 
             }
+            self.activityIndicator.stopAnimating()
+            UIApplication.shared.endIgnoringInteractionEvents()
             
         })
     }
@@ -168,6 +187,7 @@ class menueController: UIViewController {
         annotationList.removeAll()
         putToiletsOnMap()
         self.nearby = false
+        self.search = false
         performSegue(withIdentifier: "showMap", sender: self)
     }
     
@@ -176,6 +196,7 @@ class menueController: UIViewController {
         annotationList.removeAll()
         putWaterFountainOnMap()
         self.nearby = false
+        self.search = false
         performSegue(withIdentifier: "showMap", sender: self)
         
     }
@@ -184,6 +205,7 @@ class menueController: UIViewController {
         annotationList.removeAll()
         putAccessibleBuildingOnMap()
         self.nearby = false
+        self.search = false
         performSegue(withIdentifier: "showMap", sender: self)
         
     }
@@ -192,6 +214,7 @@ class menueController: UIViewController {
         annotationList.removeAll()
         getAllFacilities()
         self.nearby = true
+        self.search = false
         performSegue(withIdentifier: "showMap", sender: self)
         
     }
@@ -201,7 +224,28 @@ class menueController: UIViewController {
             let controller = segue.destination as! MapViewController
             controller.annotationList = self.annotationList
             controller.nearby = self.nearby
+            controller.searchLocation = self.searchLocation
+            controller.search = self.search
         }
     }
+    
+    @IBAction func searchClicked(_ sender: Any) {
+        let searchController = UISearchController(searchResultsController: nil)
+        searchController.searchBar.delegate = self
+        present(searchController, animated: true, completion: nil)
+    }
+    
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+        dismiss(animated: true, completion: nil)
+        let text = searchBar.text
+        self.search = true
+        self.nearby = true
+        self.searchLocation = text
+        getAllFacilities()
+        performSegue(withIdentifier: "showMap", sender: self)
+    }
+    
     
 }
