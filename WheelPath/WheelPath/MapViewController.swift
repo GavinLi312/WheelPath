@@ -37,10 +37,18 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     var searchLocation : String?
     
     var forsegmentControlStartItem: MKMapItem?
+    
+    @IBOutlet weak var drawRouteButton: UIButton!
+    
+    var start = true
+    
     var forsegmentControlDestinationItem : MKMapItem?
 //    var destinationAnnotation : CustomPointAnnotation?
     
     @IBOutlet weak var transportControl: UISegmentedControl!
+    
+    
+    @IBOutlet weak var startButton: UIButton!
     
     var startItem : MKMapItem?
     
@@ -59,6 +67,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         MapView.mapType = MKMapType.standard
         self.transportControl.setEnabled(false, forSegmentAt: 0)
         self.transportControl.setEnabled(false, forSegmentAt: 1)
+        self.startButton.isHidden = true
         manager.delegate = self
         manager.desiredAccuracy = kCLLocationAccuracyBest
         if CLLocationManager.locationServicesEnabled(){
@@ -77,9 +86,15 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     
     //https://www.hackingwithswift.com/example-code/system/how-to-run-code-after-a-delay-using-asyncafter-and-perform
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
-        MapView.camera.heading = newHeading.magneticHeading
-        MapView.setCamera(MapView.camera, animated: true)
+        let mapCamera = MKMapCamera()
+        mapCamera.centerCoordinate = userLocation.coordinate
+        mapCamera.pitch = 50
+        mapCamera.altitude = 500
+        mapCamera.heading = newHeading.magneticHeading
+        MapView.setCamera(mapCamera, animated: true)
     }
+    
+    
     
     func mapViewDidFinishLoadingMap(_ mapView: MKMapView) {
         
@@ -173,11 +188,12 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         self.transportControl.setEnabled(false, forSegmentAt: 0)
         self.transportControl.setEnabled(false, forSegmentAt: 1)
         manager.stopUpdatingHeading()
+        self.startButton.isHidden = true
+        self.drawRouteButton.isHidden = false
+        mapView.camera.pitch = 0
+        MapView.setCamera(mapView.camera, animated: true)
     }
-    
-    
-    
-    
+
     // add anotation in the map
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         let btn = UIButton(type: .infoDark) as UIButton
@@ -207,7 +223,6 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         if self.destination == nil{
             displayErrorMessage(title: "No destination", message: "Sorry please select a destination first")
         }else{
-            self.manager.startUpdatingHeading()
 
             let destinationPlacemark = MKPlacemark(coordinate: (self.destination?.coordinate)!)
             var sourcePlacemark = MKPlacemark(coordinate: (self.userLocation.coordinate))
@@ -220,6 +235,8 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     
     func drawRoute(startItem: MKMapItem, destinationItem:MKMapItem){
         MapView.removeOverlays(MapView.overlays)
+        self.drawRouteButton.isHidden = true
+        self.startButton.isHidden = false
         self.transportControl.setEnabled(true, forSegmentAt: 0)
         self.transportControl.setEnabled(true, forSegmentAt: 1)
         if self.transportControl.selectedSegmentIndex != 0 && self.transportControl.selectedSegmentIndex != 1{
@@ -371,6 +388,18 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         self.drawRoute(startItem: self.forsegmentControlStartItem!, destinationItem: self.forsegmentControlDestinationItem!)
     }
     
+    @IBAction func startIsClicked(_ sender: Any) {
+        if start == true{
+        self.manager.startUpdatingHeading()
+            start = false
+        }else{
+            start = true
+            self.manager.stopUpdatingHeading()
+            self.locateLocation(location: self.userLocation)
+        }
+    }
+    
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showInformation"{
             let controller = segue.destination as! InformationViewController
@@ -386,6 +415,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         let item : MKMapItem = MKMapItem(placemark: placemark)
         return item
     }
+    
     
 }
 

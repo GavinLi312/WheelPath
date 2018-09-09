@@ -87,7 +87,10 @@ class InformationViewController: UIViewController,UITableViewDelegate,UITableVie
                     self.startPoint.text = name
                     self.startingPointAddress.text = address
                 }else{
-                    self.destinationName.text = name + "\n" + self.hiddenMessage!
+                    self.destinationName.text = name
+                    if self.hiddenMessage != nil{
+                    self.destinationName.text?.append("\n" + self.hiddenMessage!)
+                    }
                     self.destinationAddress.text = address
                 }
                 
