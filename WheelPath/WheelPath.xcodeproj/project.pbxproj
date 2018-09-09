@@ -12,6 +12,7 @@
 		A35118AB2136B27B00906D99 /* AccessibleBuildings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A35118AA2136B27B00906D99 /* AccessibleBuildings.swift */; };
 		A35118AD2136C62200906D99 /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A35118AC2136C62200906D99 /* AboutViewController.swift */; };
 		A367DECA214013A400A0F459 /* InformationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A367DEC9214013A400A0F459 /* InformationViewController.swift */; };
+		A38A14232142759F00F776F4 /* searchPageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38A14222142759F00F776F4 /* searchPageController.swift */; };
 		A3A3FE322133C19B004E684C /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3A3FE312133C19B004E684C /* Reachability.swift */; };
 		A3AB0E93212D82B600E2F366 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AB0E92212D82B600E2F366 /* MapViewController.swift */; };
 		A3B0F5F7213CCFCB00268178 /* Assets 12-10-32-200.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A3B0F5F6213CCFCA00268178 /* Assets 12-10-32-200.xcassets */; };
@@ -55,6 +56,7 @@
 		A35118AA2136B27B00906D99 /* AccessibleBuildings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibleBuildings.swift; sourceTree = "<group>"; };
 		A35118AC2136C62200906D99 /* AboutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
 		A367DEC9214013A400A0F459 /* InformationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InformationViewController.swift; sourceTree = "<group>"; };
+		A38A14222142759F00F776F4 /* searchPageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = searchPageController.swift; sourceTree = "<group>"; };
 		A3A3FE312133C19B004E684C /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		A3AB0E92212D82B600E2F366 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		A3B0F5F6213CCFCA00268178 /* Assets 12-10-32-200.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Assets 12-10-32-200.xcassets"; sourceTree = "<group>"; };
@@ -162,6 +164,7 @@
 				A3F09B65212A875D00224A7E /* AppDelegate.swift */,
 				A3A3FE312133C19B004E684C /* Reachability.swift */,
 				A3F09B69212A875D00224A7E /* Main.storyboard */,
+				A38A14222142759F00F776F4 /* searchPageController.swift */,
 				A35118AC2136C62200906D99 /* AboutViewController.swift */,
 				A3AB0E92212D82B600E2F366 /* MapViewController.swift */,
 				A3B0F5F6213CCFCA00268178 /* Assets 12-10-32-200.xcassets */,
@@ -271,6 +274,12 @@
 						CreatedOnToolsVersion = 9.4.1;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
+								enabled = 0;
+							};
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+							com.apple.Maps.iOS = {
 								enabled = 0;
 							};
 						};
@@ -423,6 +432,7 @@
 				A367DECA214013A400A0F459 /* InformationViewController.swift in Sources */,
 				A3ED1CEA212E935D00C4A89F /* WaterFountain.swift in Sources */,
 				A3ED1CE6212E6C8400C4A89F /* CustomPointAnnotation.swift in Sources */,
+				A38A14232142759F00F776F4 /* searchPageController.swift in Sources */,
 				A3F09B6E212A875D00224A7E /* WheelPath.xcdatamodeld in Sources */,
 				A3F09B66212A875D00224A7E /* AppDelegate.swift in Sources */,
 				A3B0F5F9213CE63F00268178 /* MenuController.swift in Sources */,

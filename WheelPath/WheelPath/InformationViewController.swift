@@ -7,12 +7,41 @@
 //
 
 import UIKit
+import MapKit
 
-class InformationViewController: UIViewController {
-
+class InformationViewController: UIViewController,UITableViewDelegate,UITableViewDataSource {
+    
+    var userLocation: CLLocation?
+    
+    var destination: CLLocation?
+    
+    var hiddenMessage: String?
+    
+    @IBOutlet weak var destinationName: UILabel!
+    
+    @IBOutlet weak var destinationAddress: UILabel!
+    
+    @IBOutlet weak var directionList: UITableView!
+    
+    @IBOutlet weak var startPoint: UILabel!
+    
+    @IBOutlet weak var startingPointAddress: UILabel!
+    
+    @IBOutlet weak var transportControl: UISegmentedControl!
+    
+    @IBOutlet weak var distanceLabel: UILabel!
+    
+    let optionList = ["StartPoint", "Destination"]
+    
+    var directionSteps : [MKRouteStep] = []
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        directionList.delegate = self
+        directionList.dataSource = self
+        changeCoordinatoToAddress(animalLocation: userLocation!, option: optionList[0])
+        changeCoordinatoToAddress(animalLocation: destination!, option: optionList[1])
+        findNavigateSteps(startPoint: self.userLocation, destination: self.destination)
         // Do any additional setup after loading the view.
     }
 
@@ -21,15 +50,114 @@ class InformationViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return directionSteps.count
     }
-    */
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = directionList.dequeueReusableCell(withIdentifier: "directionCell")
+        cell?.textLabel?.text = "\(directionSteps[indexPath.row].distance)"
+        cell?.detailTextLabel?.text = "\(directionSteps[indexPath.row].instructions)"
+        return cell!
+    }
+    
+    
+    func changeCoordinatoToAddress(animalLocation: CLLocation, option: String)  {
+        let gecoder = CLGeocoder()
+        var name = ""
+        var address = ""
+        gecoder.reverseGeocodeLocation(animalLocation, completionHandler: {(placemarks,error) in
+            if error == nil{
+                let placemark = placemarks![0]
+                name = placemark.name!
+                address.append(placemark.name! + ", ")
+                if placemark.locality != nil{
+                address.append(placemark.locality! + ", ")
+                }
+                if placemark.postalCode != nil{
+                address.append(placemark.postalCode! + ", ")
+                }
+                if placemark.subLocality != nil{
+                address.append(placemark.subLocality! + ", ")
+                }
+                address.append(placemark.country!)
+                if option == self.optionList[0] {
+                    self.startPoint.text = name
+                    self.startingPointAddress.text = address
+                }else{
+                    self.destinationName.text = name + "\n" + self.hiddenMessage!
+                    self.destinationAddress.text = address
+                }
+                
+            }else{
+                self.displayErrorMessage(title: "Error", message: "No internet Connection, please check the internet.")
+            }
+            
+        })
+    }
+    
+    func displayErrorMessage(title:String , message: String){
+        let alertview = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alertview.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: { action in
+            self.navigationController?.popViewController(animated: true)
+        }))
+        self.present(alertview, animated: true, completion: nil)
+        
+    }
+    
+    func findNavigateSteps(startPoint:CLLocation?, destination:CLLocation?) {
+        if startPoint == nil || destination == nil {
+            displayErrorMessage(title: "Error", message: "Can't detect your currection location or destination")
+        }else{
+            let destinationPlacemark = MKPlacemark(coordinate: (self.destination?.coordinate)!)
+            let sourcePlacemark = MKPlacemark(coordinate: (self.userLocation?.coordinate)!)
+            let sourceItem = MKMapItem(placemark: sourcePlacemark)
+            let destItem = MKMapItem(placemark: destinationPlacemark)
+            let directionRequest = MKDirectionsRequest()
+            directionRequest.source = sourceItem
+            directionRequest.destination = destItem
+            if transportControl.selectedSegmentIndex == 0{
+                directionRequest.transportType = .walking
+            }else{
+                directionRequest.transportType = .automobile
+            }
+            directionRequest.requestsAlternateRoutes = false
+            let directions = MKDirections(request: directionRequest)
+            directions.calculate(completionHandler: {(response, error) in
+                guard let response = response else{
+                    if let error = error{
+                        print(error)
+                        //https://stackoverflow.com/questions/28152526/how-do-i-open-phone-settings-when-a-button-is-clicked
+                        let alertView = UIAlertController(title: "No Permission ", message: "No Permission about the Location Service or Internet Connection, Want to change your setting?", preferredStyle: .alert)
+                        var settingAction = UIAlertAction(title: "Yes", style: .default, handler: { action in
+                            let settingUrl = NSURL(string: UIApplicationOpenSettingsURLString)
+                            if let url = settingUrl{
+                                UIApplication.shared.openURL(url as URL)
+                            }
+                        })
+                        alertView.addAction(settingAction)
+                        
+                        alertView.addAction(UIAlertAction(title: "No", style: .cancel, handler: { action in
+                            print(" no is clicked")
+                            
+                        }))
+                        self.present(alertView, animated: false, completion: nil)
+                    }
+                    return
+                }
+                
+                let route = response.routes[0]
+                self.distanceLabel.text = "\(route.distance)m"
+                self.directionSteps = route.steps
+                self.directionList.reloadData()
+            })
 
+        }
+    }
+    
+    @IBAction func transportFunctionChanged(_ sender: Any) {
+        self.findNavigateSteps(startPoint: self.userLocation, destination: self.destination)
+    }
 }

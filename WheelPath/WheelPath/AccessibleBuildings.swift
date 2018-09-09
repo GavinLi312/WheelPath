@@ -11,6 +11,8 @@ import UIKit
 class AccessibleBuildings: NSObject {
 
     var id : String?
+    var category : String?
+    var details: String?
     var desc: String?
     var disableFlag: String?
     var latitude: Double?

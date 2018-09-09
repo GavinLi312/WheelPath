@@ -12,6 +12,8 @@ class PublicToilet: NSObject {
 
     var id : String?
     var desc: String?
+    var detail: String?
+    var category: String?
     var disableFlag: String?
     var latitude: Double?
     var longitude: Double?

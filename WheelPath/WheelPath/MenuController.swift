@@ -15,9 +15,6 @@ var functionList = ["Public Toilets", "Water Fountains","Accessible Building","N
 
 class MenuController: UIViewController,UISearchBarDelegate {
     
-    var search = false
-    
-    var searchLocation: String?
     
     var nearby = false
     
@@ -35,9 +32,15 @@ class MenuController: UIViewController,UISearchBarDelegate {
     
     let activityIndicator = UIActivityIndicatorView()
 
+//    @IBOutlet weak var searchView: UIView!
+    
+
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+//        searchView.isHidden = true
+//        searchView.layer.borderWidth = 1
+//        searchView.layer.borderColor = #colorLiteral(red: 0.6666666865, green: 0.6666666865, blue: 0.6666666865, alpha: 1)
         self.reachability = Reachability.init()
         if ((self.reachability!.connection) == .cellular || (self.reachability!.connection == .wifi)){
             print(reachability!.connection)
@@ -60,6 +63,10 @@ class MenuController: UIViewController,UISearchBarDelegate {
         }
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+//        self.searchView.isHidden = true
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -76,6 +83,8 @@ class MenuController: UIViewController,UISearchBarDelegate {
                 let toiletInfo = value.object(forKey: item) as! NSDictionary
                 var publicToilet = PublicToilet()
                 publicToilet.id = item as! String
+                publicToilet.category = toiletInfo.object(forKey: "Category") as! String
+                publicToilet.detail = toiletInfo.object(forKey: "Details") as! String
                 publicToilet.desc = toiletInfo.object(forKey: "Description") as! String
                 publicToilet.disableFlag = toiletInfo.object(forKey: "DisableFlag") as! String
                 publicToilet.latitude = toiletInfo.object(forKey: "Latitude") as! Double
@@ -98,6 +107,8 @@ class MenuController: UIViewController,UISearchBarDelegate {
                 let buildingInfo = value.object(forKey: item) as! NSDictionary
                 var building = AccessibleBuildings()
                 building.id = item as! String
+                building.category = buildingInfo.object(forKey: "Category") as! String
+                building.details = buildingInfo.object(forKey: "Details") as! String
                 building.desc = buildingInfo.object(forKey: "Description") as! String
                 building.disableFlag = buildingInfo.object(forKey: "DisableFlag") as! String
                 building.latitude = buildingInfo.object(forKey: "Latitude") as! Double
@@ -123,6 +134,8 @@ class MenuController: UIViewController,UISearchBarDelegate {
                 var waterFountain = WaterFountain()
                 waterFountain.id = item as! String
                 waterFountain.desc = waterInfo.object(forKey: "Description") as! String
+                waterFountain.detail = waterInfo.object(forKey: "Details") as! String
+                waterFountain.category = waterInfo.object(forKey: "Category") as! String
                 waterFountain.disableFlag = waterInfo.object(forKey: "DisableFlag") as! String
                 waterFountain.latitude = waterInfo.object(forKey: "Latitude") as! Double
                 waterFountain.longitude = waterInfo.object(forKey: "Longitude") as! Double
@@ -136,7 +149,8 @@ class MenuController: UIViewController,UISearchBarDelegate {
 
         for fountain in self.waterFountainList{
             var annotation = CustomPointAnnotation()
-            annotation.title = fountain.id!
+            annotation.title = fountain.category!
+            annotation.hiddenMessage = fountain.detail! 
             annotation.subtitle = fountain.desc!
             annotation.coordinate = CLLocationCoordinate2DMake(fountain.latitude!, fountain.longitude!)
             if fountain.disableFlag == "Yes"{
@@ -152,8 +166,9 @@ class MenuController: UIViewController,UISearchBarDelegate {
     func putToiletsOnMap() {
         for toilet in self.publicToiletList{
             var annotation = CustomPointAnnotation()
-            annotation.title = toilet.id!
+            annotation.title = toilet.category!
             annotation.subtitle = toilet.desc!
+            annotation.hiddenMessage = toilet.detail
             annotation.coordinate = CLLocationCoordinate2DMake(toilet.latitude!, toilet.longitude!)
             if toilet.disableFlag == "Yes"{
                 annotation.imageName = "toilet-20"
@@ -168,9 +183,10 @@ class MenuController: UIViewController,UISearchBarDelegate {
 
         for building in self.accessibleBuildingList{
             var annotation = CustomPointAnnotation()
-            annotation.title = building.id!
-            annotation.subtitle = building.desc!
+            annotation.title = building.category!
+            annotation.subtitle = building.desc! + building.details!
             annotation.coordinate = CLLocationCoordinate2DMake(building.latitude!, building.longitude!)
+            annotation.hiddenMessage = building.details
             annotation.imageName = "access-20"
             self.annotationList.append(annotation)
         }
@@ -187,7 +203,6 @@ class MenuController: UIViewController,UISearchBarDelegate {
         annotationList.removeAll()
         putToiletsOnMap()
         self.nearby = false
-        self.search = false
         performSegue(withIdentifier: "showMap", sender: self)
     }
     
@@ -196,7 +211,6 @@ class MenuController: UIViewController,UISearchBarDelegate {
         annotationList.removeAll()
         putWaterFountainOnMap()
         self.nearby = false
-        self.search = false
         performSegue(withIdentifier: "showMap", sender: self)
         
     }
@@ -205,7 +219,6 @@ class MenuController: UIViewController,UISearchBarDelegate {
         annotationList.removeAll()
         putAccessibleBuildingOnMap()
         self.nearby = false
-        self.search = false
         performSegue(withIdentifier: "showMap", sender: self)
         
     }
@@ -214,7 +227,6 @@ class MenuController: UIViewController,UISearchBarDelegate {
         annotationList.removeAll()
         getAllFacilities()
         self.nearby = true
-        self.search = false
         performSegue(withIdentifier: "showMap", sender: self)
         
     }
@@ -224,28 +236,19 @@ class MenuController: UIViewController,UISearchBarDelegate {
             let controller = segue.destination as! MapViewController
             controller.annotationList = self.annotationList
             controller.nearby = self.nearby
-            controller.searchLocation = self.searchLocation
-            controller.search = self.search
+        }else if segue.identifier == "startSearch"{
+            let controller = segue.destination as! searchPageController
+            controller.annotationList = self.annotationList
         }
     }
     
     @IBAction func searchClicked(_ sender: Any) {
-        let searchController = UISearchController(searchResultsController: nil)
-        searchController.searchBar.delegate = self
-        present(searchController, animated: true, completion: nil)
+        annotationList.removeAll()
+        self.getAllFacilities()
+        self.nearby = false
+        self.performSegue(withIdentifier: "startSearch", sender: self)
     }
     
-    
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.resignFirstResponder()
-        dismiss(animated: true, completion: nil)
-        let text = searchBar.text
-        self.search = true
-        self.nearby = true
-        self.searchLocation = text
-        getAllFacilities()
-        performSegue(withIdentifier: "showMap", sender: self)
-    }
     
     
 }
