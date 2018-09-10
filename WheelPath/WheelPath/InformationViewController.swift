@@ -58,7 +58,7 @@ class InformationViewController: UIViewController,UITableViewDelegate,UITableVie
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = directionList.dequeueReusableCell(withIdentifier: "directionCell")
-        cell?.textLabel?.text = "\(directionSteps[indexPath.row].distance)"
+        cell?.textLabel?.text = "\(directionSteps[indexPath.row].distance)m"
         cell?.detailTextLabel?.text = "\(directionSteps[indexPath.row].instructions)"
         return cell!
     }
@@ -152,7 +152,7 @@ class InformationViewController: UIViewController,UITableViewDelegate,UITableVie
                 }
                 
                 let route = response.routes[0]
-                self.distanceLabel.text = "\(route.distance)m"
+                self.distanceLabel.text = "\(route.distance)m away"
                 self.directionSteps = route.steps
                 self.directionList.reloadData()
             })

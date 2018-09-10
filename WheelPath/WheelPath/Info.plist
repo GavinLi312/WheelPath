@@ -17,9 +17,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.3.5</string>
+	<string>2.1.10</string>
 	<key>CFBundleVersion</key>
 	<string>37</string>
+	<key>LSApplicationCategoryType</key>
+	<string></string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
@@ -28,8 +30,6 @@
 	<string>Please help us to locate you</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Please help us to locate you</string>
-	<key>LSApplicationCategoryType</key>
-	<string></string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>
@@ -44,11 +44,7 @@
 		<string>armv7</string>
 	</array>
 	<key>UISupportedInterfaceOrientations</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
+	<array/>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

@@ -13,6 +13,8 @@ import Firebase
 
 var functionList = ["Public Toilets", "Water Fountains","Accessible Building","Nearby"]
 
+var toiletsAndWaterFountainList : [CustomPointAnnotation] = []
+
 class MenuController: UIViewController,UISearchBarDelegate {
     
     
@@ -145,8 +147,8 @@ class MenuController: UIViewController,UISearchBarDelegate {
         })
     }
     
-    func putWaterFountainOnMap(){
-
+    func putWaterFountainOnMap() -> [CustomPointAnnotation]{
+        var waterfountainAnnotationList : [CustomPointAnnotation] = []
         for fountain in self.waterFountainList{
             var annotation = CustomPointAnnotation()
             annotation.title = fountain.category!
@@ -158,12 +160,15 @@ class MenuController: UIViewController,UISearchBarDelegate {
             }else{
                 annotation.imageName = "water-no-20"
             }
-            self.annotationList.append(annotation)
+            waterfountainAnnotationList.append(annotation)
+ 
         }
+        return waterfountainAnnotationList
 
     }
     
-    func putToiletsOnMap() {
+    func putToiletsOnMap() -> [CustomPointAnnotation]{
+        var toiletAnnotationList: [CustomPointAnnotation] = []
         for toilet in self.publicToiletList{
             var annotation = CustomPointAnnotation()
             annotation.title = toilet.category!
@@ -175,12 +180,14 @@ class MenuController: UIViewController,UISearchBarDelegate {
             }else{
                 annotation.imageName = "toilet-no-20"
             }
-            self.annotationList.append(annotation)
+            toiletAnnotationList.append(annotation)
         }
+        return toiletAnnotationList
         }
 
-    func putAccessibleBuildingOnMap(){
-
+    
+    func putAccessibleBuildingOnMap() -> [CustomPointAnnotation]{
+        var accessibleBuildingsAnnotationList: [CustomPointAnnotation] = []
         for building in self.accessibleBuildingList{
             var annotation = CustomPointAnnotation()
             annotation.title = building.category!
@@ -188,20 +195,28 @@ class MenuController: UIViewController,UISearchBarDelegate {
             annotation.coordinate = CLLocationCoordinate2DMake(building.latitude!, building.longitude!)
             annotation.hiddenMessage = building.details
             annotation.imageName = "access-20"
-            self.annotationList.append(annotation)
+            accessibleBuildingsAnnotationList.append(annotation)
         }
+        return accessibleBuildingsAnnotationList
 
     }
     
     func getAllFacilities(){
-        putWaterFountainOnMap()
-        putToiletsOnMap()
-        putAccessibleBuildingOnMap()
+        self.annotationList.append(contentsOf: putWaterFountainOnMap())
+        self.annotationList.append(contentsOf: putToiletsOnMap())
+        self.annotationList.append(contentsOf: putAccessibleBuildingOnMap())
+    }
+    
+    func alongWithTheRoute(){
+        
+        self.putToiletsOnMap()
+        self.putWaterFountainOnMap()
+        
     }
 
     @IBAction func publicToiletsClicked(_ sender: Any) {
         annotationList.removeAll()
-        putToiletsOnMap()
+        self.annotationList.append(contentsOf: putToiletsOnMap())
         self.nearby = false
         performSegue(withIdentifier: "showMap", sender: self)
     }
@@ -209,7 +224,8 @@ class MenuController: UIViewController,UISearchBarDelegate {
 
     @IBAction func waterFountainsClicked(_ sender: Any) {
         annotationList.removeAll()
-        putWaterFountainOnMap()
+        self.annotationList.append(contentsOf: putWaterFountainOnMap())
+        
         self.nearby = false
         performSegue(withIdentifier: "showMap", sender: self)
         
@@ -217,7 +233,7 @@ class MenuController: UIViewController,UISearchBarDelegate {
     
     @IBAction func accessibleBuildings(_ sender: Any) {
         annotationList.removeAll()
-        putAccessibleBuildingOnMap()
+        self.annotationList.append(contentsOf: putAccessibleBuildingOnMap())
         self.nearby = false
         performSegue(withIdentifier: "showMap", sender: self)
         
@@ -232,19 +248,24 @@ class MenuController: UIViewController,UISearchBarDelegate {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if toiletsAndWaterFountainList.count == 0 {
+            toiletsAndWaterFountainList.append(contentsOf: putWaterFountainOnMap())
+            toiletsAndWaterFountainList.append(contentsOf: putToiletsOnMap())
+        }
         if segue.identifier == "showMap"{
             let controller = segue.destination as! MapViewController
             controller.annotationList = self.annotationList
             controller.nearby = self.nearby
         }else if segue.identifier == "startSearch"{
             let controller = segue.destination as! searchPageController
-            controller.annotationList = self.annotationList
+            controller.annotationList = self.annotationList 
         }
     }
     
     @IBAction func searchClicked(_ sender: Any) {
         annotationList.removeAll()
-        self.getAllFacilities()
+        annotationList.append(contentsOf: putWaterFountainOnMap())
+        annotationList.append(contentsOf: putToiletsOnMap())
         self.nearby = false
         self.performSegue(withIdentifier: "startSearch", sender: self)
     }

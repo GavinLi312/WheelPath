@@ -15,11 +15,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
+    var restrictRotation:UIInterfaceOrientationMask = .portrait
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-
+        
         FirebaseApp.configure()
         return true
+    }
+    
+    func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask
+    {
+        return self.restrictRotation
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
