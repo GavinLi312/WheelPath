@@ -17,15 +17,19 @@ class InformationViewController: UIViewController,UITableViewDelegate,UITableVie
     
     var hiddenMessage: String?
     
+    var destAdress : String = ""
+    
+    var destName : String = ""
+    
+    var startAddress : String = ""
+    
+    var startName : String = ""
+    
     @IBOutlet weak var destinationName: UILabel!
     
     @IBOutlet weak var destinationAddress: UILabel!
     
     @IBOutlet weak var directionList: UITableView!
-    
-    @IBOutlet weak var startPoint: UILabel!
-    
-    @IBOutlet weak var startingPointAddress: UILabel!
     
     @IBOutlet weak var transportControl: UISegmentedControl!
     
@@ -50,17 +54,41 @@ class InformationViewController: UIViewController,UITableViewDelegate,UITableVie
         // Dispose of any resources that can be recreated.
     }
     
-    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 3
+    }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return directionSteps.count
+        if section == 0 {
+            return 1
+        }else if section == 1{
+            
+            return directionSteps.count
+        }else{
+            return 1
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = directionList.dequeueReusableCell(withIdentifier: "directionCell")
-        cell?.textLabel?.text = "\(directionSteps[indexPath.row].distance)m"
-        cell?.detailTextLabel?.text = "\(directionSteps[indexPath.row].instructions)"
-        return cell!
+        var cell = UITableViewCell()
+        if indexPath.section == 0 {
+            var startcell = directionList.dequeueReusableCell(withIdentifier: "startPointCell") as! startPointCell
+            startcell.startLocation.text = "Start Point"
+            startcell.startLocationAddress.text = self.startAddress
+            cell = startcell
+        }else if indexPath.section == 1{
+            let directioncell = directionList.dequeueReusableCell(withIdentifier: "directionCell")
+            directioncell?.textLabel?.text = "\(directionSteps[indexPath.row].distance)m"
+            directioncell?.detailTextLabel?.text = "\(directionSteps[indexPath.row].instructions)"
+            cell = directioncell!
+        }else{
+            var destCell = directionList.dequeueReusableCell(withIdentifier: "DestinationCell") as! DestinationCell
+            destCell.destName.text = "Destination"
+            destCell.destAddress.text = self.destAdress
+            cell = destCell
+        }
+
+        return cell
     }
     
     
@@ -84,16 +112,21 @@ class InformationViewController: UIViewController,UITableViewDelegate,UITableVie
                 }
                 address.append(placemark.country!)
                 if option == self.optionList[0] {
-                    self.startPoint.text = name
-                    self.startingPointAddress.text = address
+                    self.startName = name
+                    self.startAddress = address
                 }else{
+                    
                     self.destinationName.text = name
+                    self.destName = name
                     if self.hiddenMessage != nil{
                     self.destinationName.text?.append("\n" + self.hiddenMessage!)
+                        self.destName.append("\n" + self.hiddenMessage!)
                     }
                     self.destinationAddress.text = address
+                    self.destAdress = address
+                    
                 }
-                
+                self.directionList.reloadData()
             }else{
                 self.displayErrorMessage(title: "Error", message: "No internet Connection, please check the internet.")
             }

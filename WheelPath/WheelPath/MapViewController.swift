@@ -497,7 +497,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     let APIToken = "&$$app_token=L91hFMhjcf0tTl6cVMT0jOoqD"
     
     func APIQuery(coordinate: CLLocationCoordinate2D)->String{
-        return "$where=within_circle(the_geom,\(coordinate.latitude),\(coordinate.longitude),500)"
+        return "$where=within_circle(the_geom,\(coordinate.latitude),\(coordinate.longitude),80)"
     }
 
     struct Steepnessmultipolgon : Decodable {
