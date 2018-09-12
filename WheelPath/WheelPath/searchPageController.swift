@@ -95,7 +95,6 @@ class searchPageController: UIViewController, UISearchBarDelegate, UITableViewDe
             activityIndicator.stopAnimating()
 
             if response == nil{
-                print("ERROR")
             }else{
                 //Remove annotations
                 if option == self.optionList[1]{
@@ -215,6 +214,12 @@ class searchPageController: UIViewController, UISearchBarDelegate, UITableViewDe
         }
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        self.startPointSearchBar.text = ""
+        self.startItem = nil
+        self.destinationSearchBar.text = ""
+        self.destinationItem = nil
+    }
     func displayErrorMessage(title:String, message: String){
         let alertview = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alertview.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler:nil))

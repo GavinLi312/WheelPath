@@ -12,7 +12,7 @@ import CoreLocation
 import Firebase
 
 let colors = [UIColor.black,UIColor.blue,UIColor.brown,UIColor.green,UIColor.orange]
-
+var customerPologonFormap : [custommkPolygon] = []
 var zoomTag = 0
 var displaySourceTag = true
 
@@ -20,6 +20,8 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
 
     @IBOutlet weak var MapView: MKMapView!
 
+    var LoadSteepness = true
+    
     let manager = CLLocationManager()
     
     var nearby = false
@@ -62,6 +64,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     override func viewDidLoad() {
         zoomTag = 0
         super.viewDidLoad()
+        
         MapView.delegate = self
         MapView.showsScale = true
         MapView.showsBuildings = true
@@ -74,7 +77,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         self.transportControl.layer.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
         self.startButton.isHidden = true
         manager.delegate = self
-        manager.desiredAccuracy = kCLLocationAccuracyBest
+        manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
         if CLLocationManager.locationServicesEnabled(){
             switch CLLocationManager.authorizationStatus() {
             case .notDetermined, .restricted, .denied:
@@ -83,11 +86,12 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                 print("Access")
             }
         }
+        manager.allowsBackgroundLocationUpdates = true
         manager.requestAlwaysAuthorization()
+        manager.requestWhenInUseAuthorization()
         manager.startUpdatingLocation()
 
     }
-
     
     //https://www.hackingwithswift.com/example-code/system/how-to-run-code-after-a-delay-using-asyncafter-and-perform
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
@@ -97,8 +101,10 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         mapCamera.altitude = 500
         mapCamera.heading = newHeading.magneticHeading
         MapView.setCamera(mapCamera, animated: true)
+        let userPlaceMark = MKPlacemark(coordinate: (self.userLocation?.coordinate)!)
+        let userItem = MKMapItem(placemark: userPlaceMark)
+        getSteepNess(item: userItem)
     }
-    
     
     
     func mapViewDidFinishLoadingMap(_ mapView: MKMapView) {
@@ -108,16 +114,17 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         
         if self.startItem != nil && self.destinationItem != nil{
             if calculateRoute == true{
-                addSearchItem(mapItem: self.destinationItem!)
-                addSearchItem(mapItem: self.startItem!)
+                addSearchItem(mapItem: self.destinationItem!, imageName: "pin-40")
+                addSearchItem(mapItem: self.startItem!,imageName: "pin-start-40")
 
                 self.destination = CLLocation(latitude: (destinationItem?.placemark.coordinate.latitude)!, longitude: (destinationItem?.placemark.coordinate.longitude)!)
                 drawRoute(startItem: self.startItem!, destinationItem: self.destinationItem!)
                 calculateRoute = false
+
             }
         }else if self.startItem == nil && self.destinationItem != nil{
             if calculateRoute == true{
-                let destinationAnnotation = self.addSearchItem(mapItem: self.destinationItem!)
+                let destinationAnnotation = self.addSearchItem(mapItem: self.destinationItem!, imageName: "pin-40")
                 self.MapView.selectAnnotation(destinationAnnotation, animated: true)
                 self.destination = CLLocation(latitude: (destinationItem?.placemark.coordinate.latitude)!, longitude: (destinationItem?.placemark.coordinate.longitude)!)
 //                self.MapView.addAnnotations(self.getTargetNearbyFacilities(annotation: destinationAnnotation, range: self.defaultdistance))
@@ -174,7 +181,11 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         self.transportControl.setEnabled(false, forSegmentAt: 0)
         self.transportControl.setEnabled(false, forSegmentAt: 1)
         self.transportControl.isHidden = true
-        self.MapView.removeOverlays(self.MapView.overlays)
+        for overlay in self.MapView.overlays{
+            if overlay is MKPolyline{
+                self.MapView.remove(overlay)
+            }
+        }
         if self.startButton.isHidden == false{
             self.startButton.isHidden = true
             self.drawRouteButton.isHidden = false
@@ -183,7 +194,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
 
         let span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
         let region = MKCoordinateRegion(center: (self.destination?.coordinate)!, span: span)
-        mapView.setRegion(region, animated: true)
+        mapView.setRegion(region, animated: false)
 
     }
     
@@ -247,9 +258,15 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     }
     }
     
+    let activityIndicator = UIActivityIndicatorView()
     
     func drawRoute(startItem: MKMapItem, destinationItem:MKMapItem){
-        MapView.removeOverlays(MapView.overlays)
+
+        for overlay in self.MapView.overlays{
+            if overlay is MKPolyline{
+                self.MapView.remove(overlay)
+            }
+        }
         self.transportControl.isHidden = false
         self.transportControl.setEnabled(true, forSegmentAt: 0)
         self.transportControl.setEnabled(true, forSegmentAt: 1)
@@ -291,8 +308,10 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                 return
             }
             if self.userLocation != nil{
-            self.drawRouteButton.isHidden = true
-            self.startButton.isHidden = false
+                self.drawRouteButton.isHidden = true
+                if self.startItem == nil{
+                self.startButton.isHidden = false
+                }
             }
             let routes = response.routes
             for item in routes{
@@ -324,11 +343,15 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                 self.MapView.addAnnotations(self.alongWithTheRoute)
                 self.MapView.add(item.polyline, level:.aboveRoads )
                 let rekt = item.polyline.boundingMapRect
-                self.MapView.setRegion(MKCoordinateRegionForMapRect(rekt), animated: true)
+                self.MapView.setRegion(MKCoordinateRegionForMapRect(rekt), animated: false)
             }
             
             // if the distance recommend user not to walk
-            self.getSteepNess()
+            if directionRequest.transportType == .walking{
+
+                self.getSteepNess(item: self.forsegmentControlStartItem!)
+               
+            }
             if  routes[0].distance > 2500 && directionRequest.transportType == .walking{
                 self.alert(title: "Distance Too Long", message: "It might be too far for you, please try other ways to commute")
             }
@@ -338,17 +361,27 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         if overlay is MKPolyline{
         let renderer = MKPolylineRenderer(overlay: overlay)
-        renderer.strokeColor = colors[Int(arc4random_uniform(UInt32(colors.count)))]
+        renderer.strokeColor = #colorLiteral(red: 0.01680417731, green: 0.1983509958, blue: 1, alpha: 1)
         renderer.lineWidth = 5.0
         return renderer
         }else if overlay is MKCircle{
             let circleView = MKCircleRenderer(overlay: overlay)
             circleView.strokeColor = UIColor.clear
-            circleView.fillColor = #colorLiteral(red: 0.6703221798, green: 0.9303917289, blue: 0.7332935929, alpha: 0.3481645976)
+            circleView.fillColor = #colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 0.2004762414)
             return circleView
         }else if overlay is MKPolygon{
+            let polygon = overlay as! custommkPolygon
             let polygonView = MKPolygonRenderer(overlay: overlay)
-            polygonView.fillColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
+            switch polygon.colorLevel{
+            case 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 :
+                polygonView.fillColor = #colorLiteral(red: 0.3748460412, green: 0.6896326542, blue: 0.1897849143, alpha: 0.5)
+            case  11, 12,13,14, 15, 16, 17:
+                polygonView.fillColor = #colorLiteral(red: 0.9372549057, green: 0.3490196168, blue: 0.1921568662, alpha: 0.5)
+            case 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,28:
+                polygonView.fillColor = #colorLiteral(red: 0.5326765776, green: 0, blue: 0.6681495309, alpha: 0.5)
+            default:
+                polygonView.fillColor = #colorLiteral(red: 0.5326765776, green: 0, blue: 0.6681495309, alpha: 0.5)
+            }
             return polygonView
         }
         return MKOverlayRenderer()
@@ -414,15 +447,13 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         }else{
             locationServiceIsNotGivenErrorMessage()
         }
-        
-
     }
     
-    func addSearchItem(mapItem: MKMapItem) -> CustomPointAnnotation{
+    func addSearchItem(mapItem: MKMapItem,imageName: String) -> CustomPointAnnotation{
         let annotation = CustomPointAnnotation()
         annotation.title = mapItem.placemark.name
         annotation.subtitle = mapItem.placemark.title
-        annotation.imageName = "map-marker-2-40"
+        annotation.imageName = imageName
         annotation.coordinate = mapItem.placemark.coordinate
         self.MapView.addAnnotation(annotation)
         return annotation
@@ -460,9 +491,8 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             controller.destination = self.destination
             controller.hiddenMessage = (self.MapView.selectedAnnotations[0] as! CustomPointAnnotation).title!
             if (self.MapView.selectedAnnotations[0] as! CustomPointAnnotation).hiddenMessage != nil{
-                controller.hiddenMessage?.append((self.MapView.selectedAnnotations[0] as! CustomPointAnnotation).hiddenMessage)
+                controller.hiddenMessage?.append("\n" + (self.MapView.selectedAnnotations[0] as! CustomPointAnnotation).hiddenMessage)
             }
-            
         }
     }
     
@@ -497,9 +527,10 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     let APIToken = "&$$app_token=L91hFMhjcf0tTl6cVMT0jOoqD"
     
     func APIQuery(coordinate: CLLocationCoordinate2D)->String{
-        return "$where=within_circle(the_geom,\(coordinate.latitude),\(coordinate.longitude),80)"
+        return "$where=within_circle(the_geom,\(coordinate.latitude),\(coordinate.longitude),100)"
     }
 
+    
     struct Steepnessmultipolgon : Decodable {
         let address:String?
         let asset_type:String?
@@ -533,13 +564,14 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         }
     }
     
-    var nearbysteepStreet: [Steepnessmultipolgon] = []
     
-    func getSteepNess(){
+    
+    func getSteepNess(item: MKMapItem){
+
+        self.view.addSubview(activityIndicator)
 //        let testlocation = CLLocationCoordinate2DMake(-37.815398, 144.957177)
-        let testquery = self.APIQuery(coordinate: (self.userLocation?.coordinate)!)
+        let testquery = self.APIQuery(coordinate: (item.placemark.coordinate))
         let url = URL(string: self.APIaddress + testquery + self.APIToken)
-        print(url)
         let task = URLSession.shared.dataTask(with: url!){
             (data,response,error) in
             if error != nil{
@@ -548,10 +580,19 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             }else{
                 guard let data = data else{return}
                 do{
-                    self.nearbysteepStreet = try JSONDecoder().decode([Steepnessmultipolgon].self, from: data)
-                    for item in self.nearbysteepStreet{
-                    self.drawShap(coornidatesArray: self.changeArrayToCoornidates(points:  (item.the_geom?.coordinates.first?.first)!))
+                    var nearbysteepStreet: [Steepnessmultipolgon] = []
+                    
+                    nearbysteepStreet = try JSONDecoder().decode([Steepnessmultipolgon].self, from: data)
+                    if nearbysteepStreet.count != 0{
+                    let pologon = self.drawShap(coornidatesArray: self.changeArrayToCoornidates(points:  (nearbysteepStreet.first?.the_geom?.coordinates.first?.first)!), steepnessLevel: nearbysteepStreet.first?.deltaz)
+                        customerPologonFormap.append(pologon)
+                        self.MapView.add(pologon)
                     }
+                    
+                    print(customerPologonFormap.count)
+                    
+                        
+
                 }catch let jsonErr{
                     print("Error serializing json",jsonErr)
                 }
@@ -570,9 +611,17 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     }
     
     //https://stackoverflow.com/questions/45038869/swift-mapkit-create-a-polygon
-    func drawShap(coornidatesArray:[CLLocationCoordinate2D]){
-        let polygon = MKPolygon(coordinates: coornidatesArray, count: coornidatesArray.count)
-        self.MapView.add(polygon)
+    func drawShap(coornidatesArray:[CLLocationCoordinate2D],steepnessLevel: String?) -> custommkPolygon{
+        
+        let polygon = custommkPolygon(coordinates: coornidatesArray, count: coornidatesArray.count)
+        
+        if steepnessLevel != nil{
+            if steepnessLevel != ""{
+                polygon.colorLevel = Int(Double(steepnessLevel!)!)
+            }
+        }
+       return polygon
+
     }
 }
 

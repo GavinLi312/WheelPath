@@ -40,9 +40,7 @@ class MenuController: UIViewController,UISearchBarDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-//        searchView.isHidden = true
-//        searchView.layer.borderWidth = 1
-//        searchView.layer.borderColor = #colorLiteral(red: 0.6666666865, green: 0.6666666865, blue: 0.6666666865, alpha: 1)
+
         self.reachability = Reachability.init()
         if ((self.reachability!.connection) == .cellular || (self.reachability!.connection == .wifi)){
             print(reachability!.connection)
@@ -57,7 +55,7 @@ class MenuController: UIViewController,UISearchBarDelegate {
     override func viewDidAppear(_ animated: Bool) {
         if accessibleBuildingList.count == 0 {
         UIApplication.shared.beginIgnoringInteractionEvents()
-        activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
+        activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.whiteLarge
         activityIndicator.center = self.view.center
         activityIndicator.hidesWhenStopped = true
         activityIndicator.startAnimating()

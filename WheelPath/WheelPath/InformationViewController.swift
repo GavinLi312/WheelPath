@@ -43,6 +43,8 @@ class InformationViewController: UIViewController,UITableViewDelegate,UITableVie
         super.viewDidLoad()
         directionList.delegate = self
         directionList.dataSource = self
+        destinationName.layer.borderColor = #colorLiteral(red: 0.6666666865, green: 0.6666666865, blue: 0.6666666865, alpha: 1)
+        destinationName.layer.cornerRadius = 5
         changeCoordinatoToAddress(animalLocation: userLocation!, option: optionList[0])
         changeCoordinatoToAddress(animalLocation: destination!, option: optionList[1])
         findNavigateSteps(startPoint: self.userLocation, destination: self.destination)
@@ -119,7 +121,7 @@ class InformationViewController: UIViewController,UITableViewDelegate,UITableVie
                     self.destinationName.text = name
                     self.destName = name
                     if self.hiddenMessage != nil{
-                    self.destinationName.text?.append("\n" + self.hiddenMessage!)
+                         self.destinationName.text?.append("\n" + self.hiddenMessage!)
                         self.destName.append("\n" + self.hiddenMessage!)
                     }
                     self.destinationAddress.text = address
@@ -171,12 +173,13 @@ class InformationViewController: UIViewController,UITableViewDelegate,UITableVie
                             let settingUrl = NSURL(string: UIApplicationOpenSettingsURLString)
                             if let url = settingUrl{
                                 UIApplication.shared.openURL(url as URL)
+                                self.navigationController?.popViewController(animated: true)
                             }
                         })
                         alertView.addAction(settingAction)
                         
                         alertView.addAction(UIAlertAction(title: "No", style: .cancel, handler: { action in
-                            print(" no is clicked")
+                            self.navigationController?.popViewController(animated: true)
                             
                         }))
                         self.present(alertView, animated: false, completion: nil)
