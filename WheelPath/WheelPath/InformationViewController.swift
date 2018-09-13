@@ -80,8 +80,9 @@ class InformationViewController: UIViewController,UITableViewDelegate,UITableVie
             cell = startcell
         }else if indexPath.section == 1{
             let directioncell = directionList.dequeueReusableCell(withIdentifier: "directionCell")
-            directioncell?.textLabel?.text = "\(directionSteps[indexPath.row].distance)m"
+            directioncell?.textLabel?.text = "\(Int(directionSteps[indexPath.row].distance))m"
             directioncell?.detailTextLabel?.text = "\(directionSteps[indexPath.row].instructions)"
+//            print("\(directionSteps[indexPath.row].notice)")
             cell = directioncell!
         }else{
             var destCell = directionList.dequeueReusableCell(withIdentifier: "DestinationCell") as! DestinationCell
@@ -117,7 +118,6 @@ class InformationViewController: UIViewController,UITableViewDelegate,UITableVie
                     self.startName = name
                     self.startAddress = address
                 }else{
-                    
                     self.destinationName.text = name
                     self.destName = name
                     if self.hiddenMessage != nil{

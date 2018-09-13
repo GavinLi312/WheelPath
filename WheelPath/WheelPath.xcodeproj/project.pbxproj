@@ -15,6 +15,7 @@
 		A3844E9521480F6D0016CBA8 /* startPointCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3844E9421480F6D0016CBA8 /* startPointCell.swift */; };
 		A3844E9721480F880016CBA8 /* DestinationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3844E9621480F880016CBA8 /* DestinationCell.swift */; };
 		A38A14232142759F00F776F4 /* searchPageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38A14222142759F00F776F4 /* searchPageController.swift */; };
+		A3996FCE214A199F00DB5FF8 /* CustomCircleRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3996FCD214A199F00DB5FF8 /* CustomCircleRegion.swift */; };
 		A39C49B32148AFA400ED9E1C /* custommkPolygon.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39C49B22148AFA400ED9E1C /* custommkPolygon.swift */; };
 		A3A3FE322133C19B004E684C /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3A3FE312133C19B004E684C /* Reachability.swift */; };
 		A3AB0E93212D82B600E2F366 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AB0E92212D82B600E2F366 /* MapViewController.swift */; };
@@ -62,6 +63,7 @@
 		A3844E9421480F6D0016CBA8 /* startPointCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = startPointCell.swift; sourceTree = "<group>"; };
 		A3844E9621480F880016CBA8 /* DestinationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestinationCell.swift; sourceTree = "<group>"; };
 		A38A14222142759F00F776F4 /* searchPageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = searchPageController.swift; sourceTree = "<group>"; };
+		A3996FCD214A199F00DB5FF8 /* CustomCircleRegion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCircleRegion.swift; sourceTree = "<group>"; };
 		A39C49B22148AFA400ED9E1C /* custommkPolygon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = custommkPolygon.swift; sourceTree = "<group>"; };
 		A3A3FE312133C19B004E684C /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		A3AB0E92212D82B600E2F366 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
@@ -175,6 +177,7 @@
 				A38A14222142759F00F776F4 /* searchPageController.swift */,
 				A35118AC2136C62200906D99 /* AboutViewController.swift */,
 				A3AB0E92212D82B600E2F366 /* MapViewController.swift */,
+				A3996FCD214A199F00DB5FF8 /* CustomCircleRegion.swift */,
 				A3B0F5F6213CCFCA00268178 /* Assets 12-10-32-200.xcassets */,
 				A3F09B96212A887900224A7E /* GoogleService-Info.plist */,
 				A3F09B71212A875E00224A7E /* LaunchScreen.storyboard */,
@@ -283,7 +286,7 @@
 						CreatedOnToolsVersion = 9.4.1;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
-								enabled = 1;
+								enabled = 0;
 							};
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -441,6 +444,7 @@
 				A3844E9521480F6D0016CBA8 /* startPointCell.swift in Sources */,
 				A39C49B32148AFA400ED9E1C /* custommkPolygon.swift in Sources */,
 				A367DECA214013A400A0F459 /* InformationViewController.swift in Sources */,
+				A3996FCE214A199F00DB5FF8 /* CustomCircleRegion.swift in Sources */,
 				A3ED1CEA212E935D00C4A89F /* WaterFountain.swift in Sources */,
 				A3ED1CE6212E6C8400C4A89F /* CustomPointAnnotation.swift in Sources */,
 				A38A14232142759F00F776F4 /* searchPageController.swift in Sources */,
@@ -625,7 +629,6 @@
 			baseConfigurationReference = C31C53D2042D35ADDC49A3A1 /* Pods-WheelPath.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = WheelPath/WheelPath.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = NRL9LH8W6N;
@@ -647,7 +650,6 @@
 			baseConfigurationReference = 1EDCC2288249259C0EACBA17 /* Pods-WheelPath.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = WheelPath/WheelPath.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = NRL9LH8W6N;

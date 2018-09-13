@@ -10,6 +10,7 @@ import UIKit
 import MapKit
 import CoreLocation
 import Firebase
+import UserNotifications
 
 let colors = [UIColor.black,UIColor.blue,UIColor.brown,UIColor.green,UIColor.orange]
 var customerPologonFormap : [custommkPolygon] = []
@@ -46,6 +47,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     var forsegmentControlDestinationItem : MKMapItem?
 //    var destinationAnnotation : CustomPointAnnotation?
     
+    var coords: [CLLocationCoordinate2D] = []
     @IBOutlet weak var transportControl: UISegmentedControl!
     
     
@@ -61,7 +63,12 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     
     var alongWithTheRoute : [CustomPointAnnotation] = []
     
+    var routeSteps : [MKRouteStep] = []
+    
     override func viewDidLoad() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert,.sound,.badge], completionHandler: {
+            didAllow,error in
+        })
         zoomTag = 0
         super.viewDidLoad()
         
@@ -127,7 +134,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                 let destinationAnnotation = self.addSearchItem(mapItem: self.destinationItem!, imageName: "pin-40")
                 self.MapView.selectAnnotation(destinationAnnotation, animated: true)
                 self.destination = CLLocation(latitude: (destinationItem?.placemark.coordinate.latitude)!, longitude: (destinationItem?.placemark.coordinate.longitude)!)
-//                self.MapView.addAnnotations(self.getTargetNearbyFacilities(annotation: destinationAnnotation, range: self.defaultdistance))
+
                 MapView.addAnnotations(getNearbyFacilities())
                 if self.userLocation != nil{
                 
@@ -208,6 +215,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         self.drawRouteButton.isHidden = false
         mapView.camera.pitch = 0
         MapView.setCamera(mapView.camera, animated: false)
+
     }
 
     // add anotation in the map
@@ -267,6 +275,18 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                 self.MapView.remove(overlay)
             }
         }
+        
+        // remove notification
+        UNUserNotificationCenter.current().getPendingNotificationRequests{(notificationRequests) in
+            var identifiers : [String] = []
+            for notification in notificationRequests{
+                identifiers.append(notification.identifier)
+            }
+            if identifiers.count > 0{
+                UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiers)
+            }
+        }
+        
         self.transportControl.isHidden = false
         self.transportControl.setEnabled(true, forSegmentAt: 0)
         self.transportControl.setEnabled(true, forSegmentAt: 1)
@@ -314,20 +334,22 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                 }
             }
             let routes = response.routes
-            for item in routes{
+            
+            let item = routes.first!
+            self.routeSteps = item.steps
                 item.polyline.title = startItem.name! + " to " + destinationItem.name!
                 item.polyline.subtitle = "\(item.distance)"
                 var coordsPointer = UnsafeMutablePointer<CLLocationCoordinate2D>.allocate(capacity: item.polyline.pointCount)
                 item.polyline.getCoordinates(coordsPointer, range: NSMakeRange(0, item.polyline.pointCount))
-                var coords: [CLLocationCoordinate2D] = []
+//                self.coords: [CLLocationCoordinate2D] = []
                 for i in 0..<item.polyline.pointCount {
-                    coords.append(coordsPointer[i])
+                    self.coords.append(coordsPointer[i])
                 }
                 
                 self.MapView.removeAnnotations(self.alongWithTheRoute)
                 self.alongWithTheRoute.removeAll()
                 var annotationList : [CustomPointAnnotation] = []
-                for item in coords{
+                for item in self.coords{
                     let temp = CustomPointAnnotation()
                     temp.coordinate.latitude = item.latitude
                     temp.coordinate.longitude = item.longitude
@@ -344,7 +366,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                 self.MapView.add(item.polyline, level:.aboveRoads )
                 let rekt = item.polyline.boundingMapRect
                 self.MapView.setRegion(MKCoordinateRegionForMapRect(rekt), animated: false)
-            }
+            
             
             // if the distance recommend user not to walk
             if directionRequest.transportType == .walking{
@@ -470,11 +492,27 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             self.manager.startUpdatingHeading()
             start = false
             self.startButton.setImage(UIImage(named: "stop copy-76"), for: .normal)
+            for step in self.routeSteps{
+            self.addnotificationToStep(step: step)
+            }
         }else{
             start = true
             self.startButton.setImage(UIImage(named: "start-76"), for: .normal)
             self.manager.stopUpdatingHeading()
             self.locateLocation(location: self.userLocation!)
+            UNUserNotificationCenter.current().getPendingNotificationRequests{(notificationRequests) in
+            var identifiers : [String] = []
+            for notification in notificationRequests{
+                identifiers.append(notification.identifier)
+            }
+            print(identifiers.count)
+                if identifiers.count > 0{
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiers)
+                }
+            }
+            for item in self.manager.monitoredRegions{
+            self.manager.stopMonitoring(for: item)
+            }
         }
     }
     
@@ -522,6 +560,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         alertView.addAction(noAction)
         self.present(alertView, animated: true, completion: nil)
     }
+    
     
     let APIaddress = "https://data.melbourne.vic.gov.au/resource/qdfd-3qcq.json?"
     let APIToken = "&$$app_token=L91hFMhjcf0tTl6cVMT0jOoqD"
@@ -589,7 +628,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                         self.MapView.add(pologon)
                     }
                     
-                    print(customerPologonFormap.count)
+//                    print(customerPologonFormap.count)
                     
                         
 
@@ -622,6 +661,72 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         }
        return polygon
 
+    }
+    
+    func addnotificationToStep(step: MKRouteStep){
+        var coordsPointer = UnsafeMutablePointer<CLLocationCoordinate2D>.allocate(capacity: step.polyline.pointCount)
+        step.polyline.getCoordinates(coordsPointer, range: NSMakeRange(0, step.polyline.pointCount))
+        var stepCount : [CLLocationCoordinate2D] = []
+        for i in 0 ..< step.polyline.pointCount{
+            stepCount.append(coordsPointer[i])
+        }
+        print(stepCount.count)
+        if stepCount.count == 1 {
+            print(stepCount.first)
+                let notificationRegion = CLCircularRegion(center: stepCount.first!, radius: 10, identifier: "First Step")
+            
+                notificationRegion.notifyOnEntry = true
+                notificationRegion.notifyOnExit = false
+                self.manager.startMonitoring(for: notificationRegion)
+                let content = UNMutableNotificationContent()
+                content.title = "First Step1"
+                content.subtitle = "\(step.distance)"
+                content.body = "First Step2"
+                content.badge = 1
+                let trigger = UNLocationNotificationTrigger(region: notificationRegion, repeats: true)
+                let request = UNNotificationRequest(identifier: "First Step", content: content, trigger: trigger)
+                UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
+
+            
+        }
+            else{
+                let notificationRegionFIrst = CLCircularRegion(center: stepCount.first!, radius: 10, identifier: step.instructions)
+            
+                notificationRegionFIrst.notifyOnEntry = true
+                notificationRegionFIrst.notifyOnExit = false
+                self.manager.startMonitoring(for: notificationRegionFIrst)
+                let content = UNMutableNotificationContent()
+                content.title = step.instructions
+                content.subtitle = "\(step.distance)"
+                content.body = step.instructions
+                content.badge = 1
+                let trigger = UNLocationNotificationTrigger(region: notificationRegionFIrst, repeats: true)
+                let request = UNNotificationRequest(identifier: step.instructions, content: content, trigger: trigger)
+                UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
+            }
+ 
+        
+    }
+
+
+    func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
+        
+        let alertView = UIAlertController(title: region.identifier, message: "\(findstepByRegion(identifier: region.identifier).distance)", preferredStyle: .alert )
+
+        let alertaction = UIAlertAction(title: "dismiss", style: .cancel, handler: nil)
+        alertView.addAction(alertaction)
+        self.present(alertView, animated: true, completion: nil)
+    }
+    
+    func findstepByRegion(identifier:String) -> MKRouteStep {
+        var step = self.routeSteps.first
+        for item in self.routeSteps{
+            if item.instructions == identifier{
+                step = item
+                break
+            }
+        }
+        return step!
     }
 }
 

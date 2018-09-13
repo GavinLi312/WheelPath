@@ -72,10 +72,6 @@ class searchPageController: UIViewController, UISearchBarDelegate, UITableViewDe
 
     
     func searchForLocation(location: String, option:String){
-        //ignoring User
-
-        
-        //Activity Indicator
         
         let activityIndicator = UIActivityIndicatorView()
         activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
@@ -220,6 +216,7 @@ class searchPageController: UIViewController, UISearchBarDelegate, UITableViewDe
         self.destinationSearchBar.text = ""
         self.destinationItem = nil
     }
+    
     func displayErrorMessage(title:String, message: String){
         let alertview = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alertview.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler:nil))
