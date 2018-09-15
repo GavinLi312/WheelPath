@@ -55,6 +55,12 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     
     @IBOutlet weak var startButton: UIButton!
     
+    @IBOutlet weak var DistanceLabel: UILabel!
+    
+    @IBOutlet weak var InstructionLabel: UILabel!
+    
+    @IBOutlet weak var navigationView: UIView!
+    
     var startItem : MKMapItem?
     
     var destinationItem : MKMapItem?
@@ -71,12 +77,14 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         })
         zoomTag = 0
         super.viewDidLoad()
-        
+        self.navigationView.isHidden = true
+        self.navigationView.tintColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0)
+        self.navigationView.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0.7018407534)
         MapView.delegate = self
         MapView.showsScale = true
-        MapView.showsBuildings = true
+        MapView.showsBuildings = false
         MapView.showsUserLocation = true
-        MapView.showsPointsOfInterest = true
+        MapView.showsPointsOfInterest = false
         MapView.mapType = MKMapType.standard
         self.transportControl.setEnabled(false, forSegmentAt: 0)
         self.transportControl.setEnabled(false, forSegmentAt: 1)
@@ -84,7 +92,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         self.transportControl.layer.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
         self.startButton.isHidden = true
         manager.delegate = self
-        manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+        manager.desiredAccuracy = kCLLocationAccuracyBest
         if CLLocationManager.locationServicesEnabled(){
             switch CLLocationManager.authorizationStatus() {
             case .notDetermined, .restricted, .denied:
@@ -95,9 +103,16 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         }
         manager.allowsBackgroundLocationUpdates = true
         manager.requestAlwaysAuthorization()
-        manager.requestWhenInUseAuthorization()
+//        manager.requestWhenInUseAuthorization()
         manager.startUpdatingLocation()
 
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        if self.start == false{
+            self.startIsClicked(self)
+        }
+        
     }
     
     //https://www.hackingwithswift.com/example-code/system/how-to-run-code-after-a-delay-using-asyncafter-and-perform
@@ -114,6 +129,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     }
     
     
+    
     func mapViewDidFinishLoadingMap(_ mapView: MKMapView) {
         if self.userLocation == nil{
             self.locateMe.isHidden = true
@@ -121,9 +137,8 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         
         if self.startItem != nil && self.destinationItem != nil{
             if calculateRoute == true{
-                addSearchItem(mapItem: self.destinationItem!, imageName: "pin-40")
-                addSearchItem(mapItem: self.startItem!,imageName: "pin-start-40")
-
+                addSearchItem(mapItem: self.destinationItem!, imageName: "pin-start 3-40")
+                addSearchItem(mapItem: self.startItem!,imageName: "pin-end 3-40")
                 self.destination = CLLocation(latitude: (destinationItem?.placemark.coordinate.latitude)!, longitude: (destinationItem?.placemark.coordinate.longitude)!)
                 drawRoute(startItem: self.startItem!, destinationItem: self.destinationItem!)
                 calculateRoute = false
@@ -131,7 +146,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             }
         }else if self.startItem == nil && self.destinationItem != nil{
             if calculateRoute == true{
-                let destinationAnnotation = self.addSearchItem(mapItem: self.destinationItem!, imageName: "pin-40")
+                let destinationAnnotation = self.addSearchItem(mapItem: self.destinationItem!, imageName: "pin-end 3-40")
                 self.MapView.selectAnnotation(destinationAnnotation, animated: true)
                 self.destination = CLLocation(latitude: (destinationItem?.placemark.coordinate.latitude)!, longitude: (destinationItem?.placemark.coordinate.longitude)!)
 
@@ -185,9 +200,11 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        removeNotification()
         self.transportControl.setEnabled(false, forSegmentAt: 0)
         self.transportControl.setEnabled(false, forSegmentAt: 1)
         self.transportControl.isHidden = true
+        manager.stopUpdatingHeading()
         for overlay in self.MapView.overlays{
             if overlay is MKPolyline{
                 self.MapView.remove(overlay)
@@ -198,25 +215,23 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             self.drawRouteButton.isHidden = false
         }
         self.destination = CLLocation(latitude: (view.annotation?.coordinate.latitude)!, longitude: (view.annotation?.coordinate.longitude)!)
-
         let span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
         let region = MKCoordinateRegion(center: (self.destination?.coordinate)!, span: span)
         mapView.setRegion(region, animated: false)
-
     }
     
-    func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
-        self.transportControl.setEnabled(false, forSegmentAt: 0)
-        self.transportControl.setEnabled(false, forSegmentAt: 1)
-        self.transportControl.isHidden = true
-        manager.stopUpdatingHeading()
-        self.startButton.isHidden = true
-        self.startButton.setImage(UIImage(named: "start-76"), for: .normal)
-        self.drawRouteButton.isHidden = false
-        mapView.camera.pitch = 0
-        MapView.setCamera(mapView.camera, animated: false)
-
-    }
+    
+//    func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
+////        self.transportControl.setEnabled(false, forSegmentAt: 0)
+////        self.transportControl.setEnabled(false, forSegmentAt: 1)
+////        self.transportControl.isHidden = true
+////        self.startButton.isHidden = true
+////        self.startButton.setImage(UIImage(named: "start-76"), for: .normal)
+////        self.drawRouteButton.isHidden = false
+////        mapView.camera.pitch = 0
+////        MapView.setCamera(mapView.camera, animated: false)
+//
+//    }
 
     // add anotation in the map
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
@@ -236,8 +251,9 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         
         let image = annotation as! CustomPointAnnotation
         annotationView?.rightCalloutAccessoryView = btn
-        annotationView!.image = UIImage(named: image.imageName)
 
+        
+        annotationView!.image = UIImage(named: image.imageName)
         return annotationView
     }
     
@@ -277,15 +293,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         }
         
         // remove notification
-        UNUserNotificationCenter.current().getPendingNotificationRequests{(notificationRequests) in
-            var identifiers : [String] = []
-            for notification in notificationRequests{
-                identifiers.append(notification.identifier)
-            }
-            if identifiers.count > 0{
-                UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiers)
-            }
-        }
+        removeNotification()
         
         self.transportControl.isHidden = false
         self.transportControl.setEnabled(true, forSegmentAt: 0)
@@ -365,7 +373,10 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                 self.MapView.addAnnotations(self.alongWithTheRoute)
                 self.MapView.add(item.polyline, level:.aboveRoads )
                 let rekt = item.polyline.boundingMapRect
-                self.MapView.setRegion(MKCoordinateRegionForMapRect(rekt), animated: false)
+
+            let  newSize = MKMapSize(width: (rekt.size.width * 1.1), height: (rekt.size.height ))
+            let newReke = MKMapRect(origin: rekt.origin , size: newSize)
+                self.MapView.setRegion(MKCoordinateRegionForMapRect(newReke), animated: false)
             
             
             // if the distance recommend user not to walk
@@ -389,7 +400,11 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         }else if overlay is MKCircle{
             let circleView = MKCircleRenderer(overlay: overlay)
             circleView.strokeColor = UIColor.clear
+            if overlay.title == "location circle"{
             circleView.fillColor = #colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 0.2004762414)
+            }else{
+                circleView.fillColor = #colorLiteral(red: 0.9764705896, green: 0.850980401, blue: 0.5490196347, alpha: 0.2958315497)
+            }
             return circleView
         }else if overlay is MKPolygon{
             let polygon = overlay as! custommkPolygon
@@ -483,6 +498,9 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     
     
     @IBAction func functionIsChanged(_ sender: Any) {
+        if self.start == false{
+            self.startIsClicked(self)
+        }
         self.drawRoute(startItem: self.forsegmentControlStartItem!, destinationItem: self.forsegmentControlDestinationItem!)
     }
     
@@ -490,32 +508,52 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     @IBAction func startIsClicked(_ sender: Any) {
         if start == true{
             self.manager.startUpdatingHeading()
+            self.navigationView.isHidden = false
+            self.DistanceLabel.text = "\((self.routeSteps.first?.distance)!) m "
+            
+            if self.routeSteps.first?.instructions == ""{
+                self.InstructionLabel.text = "Move Forward"
+            }else{
+                self.InstructionLabel.text = "\(Int((self.routeSteps.first?.instructions)!)!)"
+            }
             start = false
             self.startButton.setImage(UIImage(named: "stop copy-76"), for: .normal)
             for step in self.routeSteps{
             self.addnotificationToStep(step: step)
             }
         }else{
+            self.navigationView.isHidden = true
             start = true
             self.startButton.setImage(UIImage(named: "start-76"), for: .normal)
             self.manager.stopUpdatingHeading()
             self.locateLocation(location: self.userLocation!)
-            UNUserNotificationCenter.current().getPendingNotificationRequests{(notificationRequests) in
+            removeNotification()
+        }
+    }
+    
+    func removeNotification() {
+        UNUserNotificationCenter.current().getPendingNotificationRequests{(notificationRequests) in
             var identifiers : [String] = []
             for notification in notificationRequests{
                 identifiers.append(notification.identifier)
             }
             print(identifiers.count)
-                if identifiers.count > 0{
-            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiers)
-                }
+            if identifiers.count > 0{
+                UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiers)
             }
-            for item in self.manager.monitoredRegions{
+        }
+        for item in self.manager.monitoredRegions{
             self.manager.stopMonitoring(for: item)
+        }
+        
+        for item in MapView.overlays{
+            if item is MKCircle{
+                if item.title != "location circle"{
+                    self.MapView.remove(item)
+                }
             }
         }
     }
-    
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showInformation"{
@@ -559,6 +597,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         alertView.addAction(yesAction)
         alertView.addAction(noAction)
         self.present(alertView, animated: true, completion: nil)
+        
     }
     
     
@@ -671,12 +710,13 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             stepCount.append(coordsPointer[i])
         }
         print(stepCount.count)
+        let circle = MKCircle(center: stepCount.first!, radius: 50)
+        self.MapView.add(circle)
         if stepCount.count == 1 {
             print(stepCount.first)
-                let notificationRegion = CLCircularRegion(center: stepCount.first!, radius: 10, identifier: "First Step")
-            
+                let notificationRegion = CLCircularRegion(center: stepCount.first!, radius: 50, identifier: "First Step")
                 notificationRegion.notifyOnEntry = true
-                notificationRegion.notifyOnExit = false
+                notificationRegion.notifyOnExit = true
                 self.manager.startMonitoring(for: notificationRegion)
                 let content = UNMutableNotificationContent()
                 content.title = "First Step1"
@@ -686,14 +726,13 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                 let trigger = UNLocationNotificationTrigger(region: notificationRegion, repeats: true)
                 let request = UNNotificationRequest(identifier: "First Step", content: content, trigger: trigger)
                 UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
-
             
         }
             else{
-                let notificationRegionFIrst = CLCircularRegion(center: stepCount.first!, radius: 10, identifier: step.instructions)
+                let notificationRegionFIrst = CLCircularRegion(center: stepCount.first!, radius: 50, identifier: step.instructions)
             
                 notificationRegionFIrst.notifyOnEntry = true
-                notificationRegionFIrst.notifyOnExit = false
+                notificationRegionFIrst.notifyOnExit = true
                 self.manager.startMonitoring(for: notificationRegionFIrst)
                 let content = UNMutableNotificationContent()
                 content.title = step.instructions
@@ -704,18 +743,17 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                 let request = UNNotificationRequest(identifier: step.instructions, content: content, trigger: trigger)
                 UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
             }
- 
-        
     }
 
 
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
-        
-        let alertView = UIAlertController(title: region.identifier, message: "\(findstepByRegion(identifier: region.identifier).distance)", preferredStyle: .alert )
-
-        let alertaction = UIAlertAction(title: "dismiss", style: .cancel, handler: nil)
-        alertView.addAction(alertaction)
-        self.present(alertView, animated: true, completion: nil)
+        var distance = Int(findstepByRegion(identifier: region.identifier).distance)
+        if distance > 1000 {
+            self.DistanceLabel.text = "\(distance/1000) km"
+        }else{
+            self.DistanceLabel.text = "\(distance) m"
+        }
+        self.InstructionLabel.text = region.identifier
     }
     
     func findstepByRegion(identifier:String) -> MKRouteStep {

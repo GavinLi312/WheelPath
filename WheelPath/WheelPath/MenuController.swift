@@ -63,9 +63,6 @@ class MenuController: UIViewController,UISearchBarDelegate {
         }
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-//        self.searchView.isHidden = true
-    }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -174,9 +171,9 @@ class MenuController: UIViewController,UISearchBarDelegate {
             annotation.hiddenMessage = toilet.detail
             annotation.coordinate = CLLocationCoordinate2DMake(toilet.latitude!, toilet.longitude!)
             if toilet.disableFlag == "Yes"{
-                annotation.imageName = "toilet-20"
+                annotation.imageName = "toliet-20"
             }else{
-                annotation.imageName = "toilet-no-20"
+                annotation.imageName = "toliet-no-20"
             }
             toiletAnnotationList.append(annotation)
         }
@@ -192,7 +189,7 @@ class MenuController: UIViewController,UISearchBarDelegate {
             annotation.subtitle = building.desc! + building.details!
             annotation.coordinate = CLLocationCoordinate2DMake(building.latitude!, building.longitude!)
             annotation.hiddenMessage = building.details
-            annotation.imageName = "access-20"
+            annotation.imageName = "building-20"
             accessibleBuildingsAnnotationList.append(annotation)
         }
         return accessibleBuildingsAnnotationList
@@ -267,7 +264,5 @@ class MenuController: UIViewController,UISearchBarDelegate {
         self.nearby = false
         self.performSegue(withIdentifier: "startSearch", sender: self)
     }
-    
-    
     
 }

@@ -27,7 +27,7 @@ class InformationViewController: UIViewController,UITableViewDelegate,UITableVie
     
     @IBOutlet weak var destinationName: UILabel!
     
-    @IBOutlet weak var destinationAddress: UILabel!
+
     
     @IBOutlet weak var directionList: UITableView!
     
@@ -80,7 +80,14 @@ class InformationViewController: UIViewController,UITableViewDelegate,UITableVie
             cell = startcell
         }else if indexPath.section == 1{
             let directioncell = directionList.dequeueReusableCell(withIdentifier: "directionCell")
-            directioncell?.textLabel?.text = "\(Int(directionSteps[indexPath.row].distance))m"
+            var distance = Int(directionSteps[indexPath.row].distance)
+            if distance > 1000 {
+                directioncell?.textLabel?.text = "\(distance/1000) km"
+                
+            }else{
+                directioncell?.textLabel?.text = "\(distance) m"
+            }
+            
             directioncell?.detailTextLabel?.text = "\(directionSteps[indexPath.row].instructions)"
 //            print("\(directionSteps[indexPath.row].notice)")
             cell = directioncell!
@@ -124,11 +131,11 @@ class InformationViewController: UIViewController,UITableViewDelegate,UITableVie
                          self.destinationName.text?.append("\n" + self.hiddenMessage!)
                         self.destName.append("\n" + self.hiddenMessage!)
                     }
-                    self.destinationAddress.text = address
                     self.destAdress = address
                     
                 }
                 self.directionList.reloadData()
+                
             }else{
                 self.displayErrorMessage(title: "Error", message: "No internet Connection, please check the internet.")
             }
@@ -188,7 +195,13 @@ class InformationViewController: UIViewController,UITableViewDelegate,UITableVie
                 }
                 
                 let route = response.routes[0]
-                self.distanceLabel.text = "\(route.distance)m away"
+                let distance = Int(route.distance)
+                if distance > 1000{
+                    self.distanceLabel.text = "\(distance/1000) km away"
+                }else{
+                    self.distanceLabel.text = "\(distance) m away"
+                }
+                
                 self.directionSteps = route.steps
                 self.directionList.reloadData()
             })
