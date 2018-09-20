@@ -13,7 +13,7 @@ import Firebase
 import UserNotifications
 
 let colors = [UIColor.black,UIColor.blue,UIColor.brown,UIColor.green,UIColor.orange]
-var customerPologonFormap : [custommkPolygon] = []
+//var customerPologonFormap : [custommkPolygon] = []
 var zoomTag = 0
 var displaySourceTag = true
 
@@ -125,7 +125,6 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         MapView.setCamera(mapCamera, animated: true)
         let userPlaceMark = MKPlacemark(coordinate: (self.userLocation?.coordinate)!)
         let userItem = MKMapItem(placemark: userPlaceMark)
-        getSteepNess(item: userItem)
     }
     
     
@@ -137,8 +136,8 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         
         if self.startItem != nil && self.destinationItem != nil{
             if calculateRoute == true{
-                addSearchItem(mapItem: self.destinationItem!, imageName: "pin-start 3-40")
-                addSearchItem(mapItem: self.startItem!,imageName: "pin-end 3-40")
+                addSearchItem(mapItem: self.destinationItem!, imageName: "pin-end 3-40")
+                addSearchItem(mapItem: self.startItem!,imageName: "pin-start 3-40")
                 self.destination = CLLocation(latitude: (destinationItem?.placemark.coordinate.latitude)!, longitude: (destinationItem?.placemark.coordinate.longitude)!)
                 drawRoute(startItem: self.startItem!, destinationItem: self.destinationItem!)
                 calculateRoute = false
@@ -201,6 +200,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         removeNotification()
+        
         self.transportControl.setEnabled(false, forSegmentAt: 0)
         self.transportControl.setEnabled(false, forSegmentAt: 1)
         self.transportControl.isHidden = true
@@ -210,8 +210,17 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                 self.MapView.remove(overlay)
             }
         }
+        if  self.start == false{
+            self.startIsClicked(self)
+            self.startButton.isHidden = true
+            self.drawRouteButton.isHidden = false
+        }
+        
         if self.startButton.isHidden == false{
             self.startButton.isHidden = true
+            
+        }
+        if self.drawRouteButton.isHidden == true{
             self.drawRouteButton.isHidden = false
         }
         self.destination = CLLocation(latitude: (view.annotation?.coordinate.latitude)!, longitude: (view.annotation?.coordinate.longitude)!)
@@ -349,13 +358,20 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                 item.polyline.subtitle = "\(item.distance)"
                 var coordsPointer = UnsafeMutablePointer<CLLocationCoordinate2D>.allocate(capacity: item.polyline.pointCount)
                 item.polyline.getCoordinates(coordsPointer, range: NSMakeRange(0, item.polyline.pointCount))
-//                self.coords: [CLLocationCoordinate2D] = []
                 for i in 0..<item.polyline.pointCount {
                     self.coords.append(coordsPointer[i])
                 }
-                
+
+            
+
+//            for annotation in self.MapView.annotations{
+//                for item in self.alongWithTheRoute{
+//                    if annotation.coordinate.latitude == item.coordinate.latitude && annotation.coordinate.longitude == item.coordinate.longitude{
+//                        self.MapView.removeAnnotation(annotation)
+//                    }
+//                }
+//            }
                 self.MapView.removeAnnotations(self.alongWithTheRoute)
-                self.alongWithTheRoute.removeAll()
                 var annotationList : [CustomPointAnnotation] = []
                 for item in self.coords{
                     let temp = CustomPointAnnotation()
@@ -369,6 +385,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                         }
                     }
                 }
+                self.alongWithTheRoute.removeAll()
                 self.alongWithTheRoute.append(contentsOf: annotationList)
                 self.MapView.addAnnotations(self.alongWithTheRoute)
                 self.MapView.add(item.polyline, level:.aboveRoads )
@@ -662,13 +679,11 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                     
                     nearbysteepStreet = try JSONDecoder().decode([Steepnessmultipolgon].self, from: data)
                     if nearbysteepStreet.count != 0{
-                    let pologon = self.drawShap(coornidatesArray: self.changeArrayToCoornidates(points:  (nearbysteepStreet.first?.the_geom?.coordinates.first?.first)!), steepnessLevel: nearbysteepStreet.first?.deltaz)
-                        customerPologonFormap.append(pologon)
-                        self.MapView.add(pologon)
+                        let pologon = self.drawShap(coornidatesArray: self.changeArrayToCoornidates(points:  (nearbysteepStreet.first?.the_geom?.coordinates.first?.first)!), steepnessLevel: nearbysteepStreet.first?.deltaz)
+                            self.MapView.add(pologon)
+                  
+
                     }
-                    
-//                    print(customerPologonFormap.count)
-                    
                         
 
                 }catch let jsonErr{

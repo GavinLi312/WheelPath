@@ -143,7 +143,8 @@ class searchPageController: UIViewController, UISearchBarDelegate, UITableViewDe
             
             if indexPath.section == 0{
                 cell = self.startPointTableView.dequeueReusableCell(withIdentifier: "currentLocationCell")!
-                cell.textLabel?.text = "current Location"
+                cell.textLabel?.text = "Current Location"
+                cell.textLabel?.textColor = #colorLiteral(red: 0.01680417731, green: 0.1983509958, blue: 1, alpha: 1)
             }else{
                 cell = self.startPointTableView.dequeueReusableCell(withIdentifier: "startPointCell")!
                 cell.textLabel?.font = cell.textLabel?.font.withSize(14)
@@ -188,10 +189,14 @@ class searchPageController: UIViewController, UISearchBarDelegate, UITableViewDe
         if self.destinationItem == nil{
             displayErrorMessage(title: "Error", message: "No Destination Detected")
             
-        } else if self.startPointSearchBar.text?.trimmingCharacters(in: .whitespacesAndNewlines) == ""{
-            displayErrorMessage(title: "Error", message: "No start point Detected")
-
-        }else{
+        } else if self.startItem == nil{
+            if self.startPointSearchBar.text?.trimmingCharacters(in: .whitespacesAndNewlines) == "Current Location"{
+                self.performSegue(withIdentifier: "searchRoute", sender: self)
+            }else{
+                displayErrorMessage(title: "Error", message: "No start point Detected")
+            }
+        }
+        else{
             self.performSegue(withIdentifier: "searchRoute", sender: self)
         }
     }

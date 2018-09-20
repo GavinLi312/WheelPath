@@ -48,6 +48,7 @@ class MenuController: UIViewController,UISearchBarDelegate {
             getPublicToiletsData()
             getWaterFountainData()
             getAccessibleBuildings()
+            getSteepnessData()
         }
 
     }
@@ -142,6 +143,22 @@ class MenuController: UIViewController,UISearchBarDelegate {
         })
     }
     
+    func getSteepnessData(){
+        let steepnessRef = databaseRef?.child("SteepNess")
+        steepnessRef?.observeSingleEvent(of: .value, with: {(snapshot) in
+            guard let value = snapshot.value as? NSDictionary else{
+                return
+            }
+            for item in value.allKeys{
+                let steepInfo = value.object(forKey: item) as! NSDictionary
+                let coordinates = (steepInfo.object(forKey: "coordinates")!)
+                let array = NSArray()
+                print(array)
+            }
+            
+        })
+        
+        }
     func putWaterFountainOnMap() -> [CustomPointAnnotation]{
         var waterfountainAnnotationList : [CustomPointAnnotation] = []
         for fountain in self.waterFountainList{
@@ -264,5 +281,7 @@ class MenuController: UIViewController,UISearchBarDelegate {
         self.nearby = false
         self.performSegue(withIdentifier: "startSearch", sender: self)
     }
+    
+    
     
 }
