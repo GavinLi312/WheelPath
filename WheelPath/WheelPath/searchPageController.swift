@@ -8,12 +8,14 @@
 
 import UIKit
 import MapKit
+
+
 class searchPageController: UIViewController, UISearchBarDelegate, UITableViewDelegate,UITableViewDataSource {
 
     var optionList = ["start", "destination"]
     
-    var annotationList : [CustomPointAnnotation] = []
     
+    var searchProtocol: searchForDestination?
     var startItem : MKMapItem?
     
     var destinationItem : MKMapItem?
@@ -191,29 +193,31 @@ class searchPageController: UIViewController, UISearchBarDelegate, UITableViewDe
             
         } else if self.startItem == nil{
             if self.startPointSearchBar.text?.trimmingCharacters(in: .whitespacesAndNewlines) == "Current Location"{
-                self.performSegue(withIdentifier: "searchRoute", sender: self)
+                self.searchProtocol?.searchforDestination(destination: self.destinationItem!, startPoint: nil)
+                self.navigationController?.popViewController(animated: true)
             }else{
                 displayErrorMessage(title: "Error", message: "No start point Detected")
             }
         }
         else{
-            self.performSegue(withIdentifier: "searchRoute", sender: self)
+            
+            self.searchProtocol?.searchforDestination(destination: self.destinationItem!, startPoint: self.startItem)
+            self.navigationController?.popViewController(animated: true)
         }
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "searchRoute"{
-            let controller = segue.destination as! MapViewController
-            controller.annotationList = self.annotationList
-            controller.destinationItem = self.destinationItem
-            if startItem == nil{
-                controller.nearby = true
-            }else{
-                controller.nearby = false
-                controller.startItem = self.startItem
-            }
-        }
-    }
+//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+//        if segue.identifier == "searchRoute"{
+//            let controller = segue.destination as! MapViewController
+//            controller.destinationItem = self.destinationItem
+//            if startItem == nil{
+//                controller.nearby = true
+//            }else{
+//                controller.nearby = false
+//                controller.startItem = self.startItem
+//            }
+//        }
+//    }
     
     override func viewDidDisappear(_ animated: Bool) {
         self.startPointSearchBar.text = ""

@@ -12,22 +12,24 @@ import CoreLocation
 import Firebase
 import UserNotifications
 
-let colors = [UIColor.black,UIColor.blue,UIColor.brown,UIColor.green,UIColor.orange]
-//var customerPologonFormap : [custommkPolygon] = []
-var zoomTag = 0
-var displaySourceTag = true
 
-class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDelegate {
+var zoomTag = 0
+var firstLaunch = true
+
+protocol searchForDestination {
+    func searchforDestination(destination:MKMapItem, startPoint:MKMapItem?)
+}
+
+class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDelegate, searchForDestination {
+
 
     @IBOutlet weak var MapView: MKMapView!
 
-    var LoadSteepness = true
     
     let manager = CLLocationManager()
     
-    var nearby = false
     
-    var annotationList : [CustomPointAnnotation] = []
+    var annotationList : [AccessibleFacilities] = []
     
     var userLocation : CLLocation?
     
@@ -45,11 +47,13 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     var start = true
     
     var forsegmentControlDestinationItem : MKMapItem?
-//    var destinationAnnotation : CustomPointAnnotation?
     
     var coords: [CLLocationCoordinate2D] = []
-    @IBOutlet weak var transportControl: UISegmentedControl!
     
+    //list just to store toilets and water fountains
+//    var toiletsAndWaterFountainList : [CustomPointAnnotation] = []
+    
+    @IBOutlet weak var transportControl: UISegmentedControl!
     
     @IBOutlet weak var locateMe: UIButton!
     
@@ -63,18 +67,58 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     
     var startItem : MKMapItem?
     
+    var startAnnotation : CustomPointAnnotation?
+    
     var destinationItem : MKMapItem?
+    
+    var destinationAnnotation: CustomPointAnnotation?
+    
     
     var calculateRoute = true
     
-    var alongWithTheRoute : [CustomPointAnnotation] = []
+    var alongWithTheRoute : [AccessibleFacilities] = []
     
     var routeSteps : [MKRouteStep] = []
+    
+    //to check internet connection
+    var reachability : Reachability?
+    
+    //database
+    var databaseRef : DatabaseReference?
+    
+    var publicToiletList : [AccessibleFacilities] = []
+    
+    var waterFountainList : [AccessibleFacilities] = []
+    
+    var accessibleBuildingList : [AccessibleFacilities] = []
+    
+    var publicToiltToiletAnnotationList: [AccessibleFacilities] = []
+    
+    var parkingspots: [AccessibleFacilities] = []
+    
+    let activityIndicator = UIActivityIndicatorView()
+    
+    var steepnessList:[Steepness] = []
+    
+    @IBOutlet weak var buttonControl: UIButton!
+    
+    var buttonControlSelected = false
+    
+    @IBOutlet weak var nearbyButton: UIButton!
+    
+    @IBOutlet weak var accessibleBuildingButton: UIButton!
+    
+    @IBOutlet weak var toiletButton: UIButton!
+    
+    @IBOutlet weak var waterButton: UIButton!
+    
+    @IBOutlet weak var functionView: UIView!
     
     override func viewDidLoad() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert,.sound,.badge], completionHandler: {
             didAllow,error in
         })
+        self.reachability = Reachability.init()
         zoomTag = 0
         super.viewDidLoad()
         self.navigationView.isHidden = true
@@ -101,18 +145,43 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                 print("Access")
             }
         }
+        
+        functionView.isHidden = true
+
         manager.allowsBackgroundLocationUpdates = true
         manager.requestAlwaysAuthorization()
-//        manager.requestWhenInUseAuthorization()
         manager.startUpdatingLocation()
-
+        registerAnnotationViewClasses()
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        if accessibleBuildingList.count == 0 {
+        if ((self.reachability!.connection) == .cellular || (self.reachability!.connection == .wifi)){
+            
+            UIApplication.shared.beginIgnoringInteractionEvents()
+            activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.whiteLarge
+            activityIndicator.center = self.view.center
+            activityIndicator.hidesWhenStopped = true
+            activityIndicator.startAnimating()
+            self.view.addSubview(activityIndicator)
+
+            databaseRef = Database.database().reference()
+            getPublicToiletsData()
+            getWaterFountainData()
+            getAccessibleBuildings()
+            getSteepnessData()
+        }else{
+            displayErrorMessage(title: "Error", message: "Not internet Connection")
+            }
+        }
+    }
+    
     
     override func viewDidDisappear(_ animated: Bool) {
         if self.start == false{
             self.startIsClicked(self)
         }
-        
+
     }
     
     //https://www.hackingwithswift.com/example-code/system/how-to-run-code-after-a-delay-using-asyncafter-and-perform
@@ -127,52 +196,151 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         let userItem = MKMapItem(placemark: userPlaceMark)
     }
     
-    
-    
-    func mapViewDidFinishLoadingMap(_ mapView: MKMapView) {
-        if self.userLocation == nil{
-            self.locateMe.isHidden = true
-        }
-        
-        if self.startItem != nil && self.destinationItem != nil{
-            if calculateRoute == true{
-                addSearchItem(mapItem: self.destinationItem!, imageName: "pin-end 3-40")
-                addSearchItem(mapItem: self.startItem!,imageName: "pin-start 3-40")
-                self.destination = CLLocation(latitude: (destinationItem?.placemark.coordinate.latitude)!, longitude: (destinationItem?.placemark.coordinate.longitude)!)
-                drawRoute(startItem: self.startItem!, destinationItem: self.destinationItem!)
-                calculateRoute = false
-
+    //get public Toilets Data from firebase
+    func getPublicToiletsData(){
+        let toiletsRef =  databaseRef?.child(functionList[0])
+        toiletsRef?.observeSingleEvent(of: .value, with: {(snapshot) in
+            guard let value = snapshot.value as? NSDictionary else{
+                return
             }
-        }else if self.startItem == nil && self.destinationItem != nil{
-            if calculateRoute == true{
-                let destinationAnnotation = self.addSearchItem(mapItem: self.destinationItem!, imageName: "pin-end 3-40")
-                self.MapView.selectAnnotation(destinationAnnotation, animated: true)
-                self.destination = CLLocation(latitude: (destinationItem?.placemark.coordinate.latitude)!, longitude: (destinationItem?.placemark.coordinate.longitude)!)
-
-                MapView.addAnnotations(getNearbyFacilities())
-                if self.userLocation != nil{
-                
-                drawRoute(startItem: self.changeLocationToMapItem(location: self.userLocation!), destinationItem: self.destinationItem!)
-                }
-                calculateRoute = false
-            }
-        }else{
-            if nearby {
-                let nearbyAnnotationList = getNearbyFacilities()
-                if nearbyAnnotationList.count == 0{
-                    if displaySourceTag == true{
-                    displayErrorMessage(title: "Out of boundry", message: "Sorry, you are not in cbd, that is all we can help")
-                    displaySourceTag = false
-                    }
+            for item in value.allKeys{
+                let toiletInfo = value.object(forKey: item) as! NSDictionary
+                var publicToilet = AccessibleFacilities()
+                publicToilet.id = (item as! String)
+                publicToilet.category = toiletInfo.object(forKey: "Category") as! String
+                publicToilet.detail = toiletInfo.object(forKey: "Details") as! String
+                publicToilet.desc = toiletInfo.object(forKey: "Description") as! String
+                publicToilet.disableFlag = toiletInfo.object(forKey: "DisableFlag") as! String
+                if publicToilet.disableFlag == "Yes"{
+                    publicToilet.type = AccessibleFacilityType.accessiblePublicToilet
                 }else{
-                    MapView.addAnnotations(nearbyAnnotationList)
+                    publicToilet.type = AccessibleFacilityType.inaccessiblePublicToilet
                 }
-            }else{
-                mapView.addAnnotations(self.annotationList)
-            }
-        }
-    }
+                publicToilet.latitude = toiletInfo.object(forKey: "Latitude") as! Double
+                publicToilet.longitude = toiletInfo.object(forKey: "Longitude") as! Double
 
+                self.publicToiletList.append(publicToilet)
+            }
+           self.annotationList.append(contentsOf: self.publicToiletList)
+            
+            self.publicToiltToiletAnnotationList.append(contentsOf: self.publicToiletList)
+        })
+        
+    }
+    
+    // get waterfountain data from firebase
+    func getWaterFountainData(){
+        let waterRef =  databaseRef?.child(functionList[1])
+        waterRef?.observeSingleEvent(of: .value, with: {(snapshot) in
+            guard let value = snapshot.value as? NSDictionary else{
+                return
+            }
+            
+            for item in value.allKeys{
+                let waterInfo = value.object(forKey: item) as! NSDictionary
+                var waterFountain = AccessibleFacilities()
+                waterFountain.id = item as! String
+                waterFountain.type = AccessibleFacilityType.waterFountain
+                waterFountain.desc = waterInfo.object(forKey: "Description") as! String
+                waterFountain.detail = waterInfo.object(forKey: "Details") as! String
+                waterFountain.category = waterInfo.object(forKey: "Category") as! String
+                waterFountain.disableFlag = waterInfo.object(forKey: "DisableFlag") as! String
+                waterFountain.latitude = waterInfo.object(forKey: "Latitude") as! Double
+                waterFountain.longitude = waterInfo.object(forKey: "Longitude") as! Double
+                self.waterFountainList.append(waterFountain)
+            }
+            self.annotationList.append(contentsOf: self.waterFountainList)
+            self.publicToiltToiletAnnotationList.append(contentsOf: self.waterFountainList)
+        })
+    }
+    
+    //get accessible buildings from firebase
+    func getAccessibleBuildings(){
+        let accessibleBuildingsRef = databaseRef?.child(functionList[2]).queryOrdered(byChild: "DisableFlag").queryEqual(toValue: "Yes")
+        accessibleBuildingsRef?.observeSingleEvent(of: .value, with: {(snapshot) in
+            guard let value = snapshot.value as? NSDictionary else{
+                return
+            }
+            for item in value.allKeys{
+                let buildingInfo = value.object(forKey: item) as! NSDictionary
+                var building = AccessibleFacilities()
+                building.type = AccessibleFacilityType.accessibleBuilding
+                building.id = item as! String
+                building.category = buildingInfo.object(forKey: "Category") as! String
+                building.detail = buildingInfo.object(forKey: "Details") as! String
+                building.desc = buildingInfo.object(forKey: "Description") as! String
+                building.disableFlag = buildingInfo.object(forKey: "DisableFlag") as! String
+                building.latitude = buildingInfo.object(forKey: "Latitude") as! Double
+                building.longitude = buildingInfo.object(forKey: "Longitude") as! Double
+                self.accessibleBuildingList.append(building)
+                
+            }
+            self.annotationList.append(contentsOf: self.accessibleBuildingList)
+            
+        })
+    }
+    
+    //get steepness data from database
+    func getSteepnessData(){
+        let steepnessRef = databaseRef?.child("SteepNess")
+        steepnessRef?.observeSingleEvent(of: .value, with: {(snapshot) in
+            guard let value = snapshot.value as? NSDictionary else{
+                return
+            }
+            for item in value.allKeys{
+                let steepInfo = value.object(forKey: item) as! NSDictionary
+                var steepness = Steepness()
+                steepness.steepnessFlag = steepInfo.object(forKey: "SteepFlag") as! Int
+                steepness.coordinates = steepInfo.object(forKey: "coordinates") as! [[[[Double]]]]
+                self.steepnessList.append(steepness)
+            }
+            for item in self.steepnessList{
+                self.MapView.add(self.drawShap(coornidatesArray: self.changeArrayToCoornidates(points: item.coordinates), steepnessLevel: item.steepnessFlag))
+                
+            }
+            self.activityIndicator.stopAnimating()
+            UIApplication.shared.endIgnoringInteractionEvents()
+            if firstLaunch{
+                firstLaunch = false
+                self.nearbyButtonClicked(self)
+            }
+        })
+        
+    }
+    
+        func changeArrayToCoornidates(points:[[[[Double]]]]) -> [CLLocationCoordinate2D] {
+            var coordinateArray : [CLLocationCoordinate2D] = []
+            for layer1 in points{
+                for layer2 in layer1{
+                    for layer3 in layer2{
+                        let coordinate = CLLocationCoordinate2DMake(layer3.last!, layer3.first!)
+                        coordinateArray.append(coordinate)
+                    }
+                }
+            }
+            return coordinateArray
+        }
+    
+    
+        //https://stackoverflow.com/questions/45038869/swift-mapkit-create-a-polygon
+    func drawShap(coornidatesArray:[CLLocationCoordinate2D],steepnessLevel: Int) -> custommkPolygon{
+    
+        let polygon = custommkPolygon(coordinates: coornidatesArray, count: coornidatesArray.count)
+        polygon.colorLevel = steepnessLevel
+        return polygon
+    
+    }
+    
+    func registerAnnotationViewClasses() {
+        MapView.register(UsableToiletAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKMapViewDefaultAnnotationViewReuseIdentifier)
+        MapView.register(UnusableToiletAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKMapViewDefaultAnnotationViewReuseIdentifier)
+        MapView.register(WaterFountainAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKMapViewDefaultAnnotationViewReuseIdentifier)
+        MapView.register(AccessibleBuildingAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKMapViewDefaultAnnotationViewReuseIdentifier)
+        MapView.register(ParkingSpotAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKMapViewDefaultAnnotationViewReuseIdentifier)
+    }
+    
+    
+ 
     
     // show user's location
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -183,7 +351,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             }
         }
         userLocation = location
-
+        
         let myLocation:CLLocationCoordinate2D = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
 
         if zoomTag == 0  && self.destinationItem == nil{
@@ -201,6 +369,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         removeNotification()
         
+        self.buttonControl.isHidden = false
         self.transportControl.setEnabled(false, forSegmentAt: 0)
         self.transportControl.setEnabled(false, forSegmentAt: 1)
         self.transportControl.isHidden = true
@@ -230,68 +399,81 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     }
     
     
-//    func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
-////        self.transportControl.setEnabled(false, forSegmentAt: 0)
-////        self.transportControl.setEnabled(false, forSegmentAt: 1)
-////        self.transportControl.isHidden = true
-////        self.startButton.isHidden = true
-////        self.startButton.setImage(UIImage(named: "start-76"), for: .normal)
-////        self.drawRouteButton.isHidden = false
-////        mapView.camera.pitch = 0
-////        MapView.setCamera(mapView.camera, animated: false)
-//
-//    }
 
     // add anotation in the map
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        let btn = UIButton(type: .infoDark) as UIButton
-        
-        if !(annotation is MKPointAnnotation){
-            return nil
-        }
-        var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "facility")
-        if annotationView == nil{
-            annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: "facility")
-            annotationView!.canShowCallout = true
-        }
-        else {
-            annotationView!.annotation = annotation
-        }
-        
-        let image = annotation as! CustomPointAnnotation
-        annotationView?.rightCalloutAccessoryView = btn
 
+        guard let facilityannotation = annotation as?  AccessibleFacilities else {
+            let customAnnotation = annotation as? CustomPointAnnotation
+            let btn = UIButton(type: .infoDark) as UIButton
+
+            if !(customAnnotation is MKPointAnnotation){
+                return nil
+            }
+            var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "facility")
+            if annotationView == nil{
+                annotationView = MKAnnotationView(annotation: customAnnotation, reuseIdentifier: "facility")
+                annotationView!.canShowCallout = true
+            }
+            else {
+                annotationView!.annotation = customAnnotation
+            }
+
+            let image = customAnnotation as! CustomPointAnnotation
+            annotationView?.rightCalloutAccessoryView = btn
+
+
+            annotationView!.image = UIImage(named: image.imageName)
+            return annotationView
+        }
         
-        annotationView!.image = UIImage(named: image.imageName)
-        return annotationView
+        switch facilityannotation.type! {
+        case .accessiblePublicToilet:
+            return UsableToiletAnnotationView(annotation: annotation, reuseIdentifier: UsableToiletAnnotationView.ReuseID)
+        case .inaccessiblePublicToilet:
+            return UnusableToiletAnnotationView(annotation: annotation, reuseIdentifier: UnusableToiletAnnotationView.ReuseID)
+        case .waterFountain:
+            return WaterFountainAnnotationView(annotation: annotation, reuseIdentifier: WaterFountainAnnotationView.ReuseID)
+        case .accessibleBuilding:
+            return AccessibleBuildingAnnotationView(annotation: annotation, reuseIdentifier: AccessibleBuildingAnnotationView.ReuseID)
+
+        case .parkingSpot:
+            return ParkingSpotAnnotationView(annotation: annotation, reuseIdentifier: ParkingSpotAnnotationView.ReuseID)
+        }
+
     }
     
 
     @IBAction func navigationButtonClicked(_ sender: Any) {
-
-        if self.destination == nil{
-            displayErrorMessage(title: "No destination", message: "Sorry please select a destination first")
-        }else{
-            let destinationPlacemark = MKPlacemark(coordinate: (self.destination?.coordinate)!)
-            let destItem = MKMapItem(placemark: destinationPlacemark)
-            if startItem == nil{
-                if userLocation != nil{
-                    var sourcePlacemark = MKPlacemark(coordinate: (self.userLocation?.coordinate)!)
-                    var sourceItem = MKMapItem(placemark: sourcePlacemark)
-                    let destItem = MKMapItem(placemark: destinationPlacemark)
-                    self.drawRoute(startItem: sourceItem, destinationItem: destItem)
-                }else{
-                    locationServiceIsNotGivenErrorMessage()
-                }
-
+        if ((self.reachability!.connection) == .cellular || (self.reachability!.connection == .wifi)){
+            if self.destination == nil{
+                displayErrorMessage(title: "No destination", message: "Sorry please select a destination first")
             }else{
-                
-                self.drawRoute(startItem: self.startItem!, destinationItem: destItem)
+                let destinationPlacemark = MKPlacemark(coordinate: (self.destination?.coordinate)!)
+                destinationItem = MKMapItem(placemark: destinationPlacemark)
+                if self.destinationAnnotation != nil{
+                self.MapView.removeAnnotation(self.destinationAnnotation!)
+                }
+                self.destinationAnnotation = self.addSearchItem(mapItem: destinationItem!, imageName: "pin-end 3-40")
+                if startItem == nil{
+                    if userLocation != nil{
+                        var sourcePlacemark = MKPlacemark(coordinate: (self.userLocation?.coordinate)!)
+                        var sourceItem = MKMapItem(placemark: sourcePlacemark)
+                        self.drawRoute(startItem: sourceItem, destinationItem: destinationItem!)
+                    }else{
+                        locationServiceIsNotGivenErrorMessage()
+                    }
+
+                }else{
+                    self.drawRoute(startItem: self.startItem!, destinationItem: destinationItem!)
+                }
             }
-    }
+        }else{
+              displayErrorMessage(title: "Error", message: "No internet Connection")
+        }
     }
     
-    let activityIndicator = UIActivityIndicatorView()
+
     
     func drawRoute(startItem: MKMapItem, destinationItem:MKMapItem){
 
@@ -303,7 +485,10 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         
         // remove notification
         removeNotification()
-        
+        self.buttonControl.isHidden = true
+        if self.buttonControlSelected{
+            self.functionListButtonClicked(self)
+        }
         self.transportControl.isHidden = false
         self.transportControl.setEnabled(true, forSegmentAt: 0)
         self.transportControl.setEnabled(true, forSegmentAt: 1)
@@ -330,6 +515,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         directions.calculate(completionHandler: { (response, error) in
             guard let response = response else{
                 if let error = error{
+                    self.buttonControl.isHidden = false
                     self.transportControl.isHidden = true
                     self.transportControl.setEnabled(false, forSegmentAt: 0)
                     self.transportControl.setEnabled(false, forSegmentAt: 1)
@@ -361,32 +547,32 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                 for i in 0..<item.polyline.pointCount {
                     self.coords.append(coordsPointer[i])
                 }
-
-            
-
-//            for annotation in self.MapView.annotations{
-//                for item in self.alongWithTheRoute{
-//                    if annotation.coordinate.latitude == item.coordinate.latitude && annotation.coordinate.longitude == item.coordinate.longitude{
-//                        self.MapView.removeAnnotation(annotation)
-//                    }
-//                }
-//            }
+                
                 self.MapView.removeAnnotations(self.alongWithTheRoute)
-                var annotationList : [CustomPointAnnotation] = []
+                var annotationList : [AccessibleFacilities] = []
+
                 for item in self.coords{
-                    let temp = CustomPointAnnotation()
-                    temp.coordinate.latitude = item.latitude
-                    temp.coordinate.longitude = item.longitude
-                    for facility in self.getTargetNearbyFacilities(annotation: temp, range: 0.1){
-                        if self.annotationList.contains(facility) || self.alongWithTheRoute.contains(facility){
+                    let temp = AccessibleFacilities()
+                    temp.latitude = item.latitude
+                    temp.longitude = item.longitude
+                    let nearbyFacilities = self.getTargetNearbyFacilities(annotation: temp, range: 0.1)
+                    let mapAnnotations = self.MapView.annotations
+                    
+                    
+                    for facility in nearbyFacilities{
+                        if mapAnnotations.contains(where: {$0.coordinate.latitude == facility.coordinate.latitude && $0.coordinate.longitude == facility.coordinate.longitude}) || self.alongWithTheRoute.contains(facility){
                             
                         }else{
                             annotationList.append(facility)
                         }
                     }
                 }
+            
+//                print(annotationList.count)
+//                print(self.annotationList.count)
                 self.alongWithTheRoute.removeAll()
                 self.alongWithTheRoute.append(contentsOf: annotationList)
+                print(self.alongWithTheRoute.count)
                 self.MapView.addAnnotations(self.alongWithTheRoute)
                 self.MapView.add(item.polyline, level:.aboveRoads )
                 let rekt = item.polyline.boundingMapRect
@@ -394,14 +580,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             let  newSize = MKMapSize(width: (rekt.size.width * 1.1), height: (rekt.size.height ))
             let newReke = MKMapRect(origin: rekt.origin , size: newSize)
                 self.MapView.setRegion(MKCoordinateRegionForMapRect(newReke), animated: false)
-            
-            
-            // if the distance recommend user not to walk
-            if directionRequest.transportType == .walking{
 
-                self.getSteepNess(item: self.forsegmentControlStartItem!)
-               
-            }
             if  routes[0].distance > 2500 && directionRequest.transportType == .walking{
                 self.alert(title: "Distance Too Long", message: "It might be too far for you, please try other ways to commute")
             }
@@ -427,14 +606,15 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             let polygon = overlay as! custommkPolygon
             let polygonView = MKPolygonRenderer(overlay: overlay)
             switch polygon.colorLevel{
-            case 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 :
-                polygonView.fillColor = #colorLiteral(red: 0.3748460412, green: 0.6896326542, blue: 0.1897849143, alpha: 0.5)
-            case  11, 12,13,14, 15, 16, 17:
-                polygonView.fillColor = #colorLiteral(red: 0.9372549057, green: 0.3490196168, blue: 0.1921568662, alpha: 0.5)
-            case 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,28:
+            case 1:
                 polygonView.fillColor = #colorLiteral(red: 0.5326765776, green: 0, blue: 0.6681495309, alpha: 0.5)
+            case 2:
+                polygonView.fillColor = #colorLiteral(red: 1, green: 0, blue: 0, alpha: 0.5042540668)
+            case 3:
+                polygonView.fillColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0.5)
             default:
-                polygonView.fillColor = #colorLiteral(red: 0.5326765776, green: 0, blue: 0.6681495309, alpha: 0.5)
+                polygonView.fillColor = #colorLiteral(red: 0.3748460412, green: 0.6896326542, blue: 0.1897849143, alpha: 0.5)
+                
             }
             return polygonView
         }
@@ -456,12 +636,19 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     }
     
     @IBAction func locateMe(_ sender: Any) {
+        if startItem != nil{
+            self.startItem = nil
+        }
+        if userLocation == nil{
+            locationServiceIsNotGivenErrorMessage()
+        }else{
         locateLocation(location: userLocation!)
+        }
     }
     
     
-    func getNearbyFacilities()->[CustomPointAnnotation]{
-        var nearbyAnnotation : [CustomPointAnnotation] = []
+    func getNearbyFacilities()->[AccessibleFacilities]{
+        var nearbyAnnotation : [AccessibleFacilities] = []
         if userLocation != nil{
         for annotation in self.annotationList {
             let  target = CLLocation(latitude: annotation.coordinate.latitude, longitude: annotation.coordinate.longitude)
@@ -475,16 +662,17 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         return nearbyAnnotation
     }
     
-    func getTargetNearbyFacilities(annotation: CustomPointAnnotation, range: Double)->[CustomPointAnnotation]{
-        var nearbyAnnotation : [CustomPointAnnotation] = []
+    func getTargetNearbyFacilities(annotation: AccessibleFacilities, range: Double)->[AccessibleFacilities]{
+        var nearbyAnnotation : [AccessibleFacilities] = []
         let destinationLocation:CLLocation = CLLocation(latitude: (annotation.coordinate.latitude), longitude: (annotation.coordinate.longitude))
-        for annotation in toiletsAndWaterFountainList {
+        for annotation in self.publicToiltToiletAnnotationList {
             let  target = CLLocation(latitude: annotation.coordinate.latitude, longitude: annotation.coordinate.longitude)
             let distance = (destinationLocation.distance(from: target)/1000)
             if distance < range {
                 nearbyAnnotation.append(annotation)
             }
         }
+//        print(nearbyAnnotation.count)
         return nearbyAnnotation
     }
     
@@ -502,15 +690,15 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             locationServiceIsNotGivenErrorMessage()
         }
     }
-    
+//
     func addSearchItem(mapItem: MKMapItem,imageName: String) -> CustomPointAnnotation{
-        let annotation = CustomPointAnnotation()
-        annotation.title = mapItem.placemark.name
-        annotation.subtitle = mapItem.placemark.title
-        annotation.imageName = imageName
-        annotation.coordinate = mapItem.placemark.coordinate
-        self.MapView.addAnnotation(annotation)
-        return annotation
+        let newFacility = CustomPointAnnotation()
+        newFacility.title = mapItem.placemark.name
+        newFacility.subtitle = mapItem.placemark.title
+        newFacility.imageName = imageName
+        newFacility.coordinate = mapItem.placemark.coordinate
+        self.MapView.addAnnotation(newFacility)
+        return newFacility
     }
     
     
@@ -582,10 +770,13 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                 controller.userLocation = CLLocation(latitude: (self.startItem?.placemark.coordinate.latitude)!, longitude: (self.startItem?.placemark.coordinate.longitude)!)
             }
             controller.destination = self.destination
-            controller.hiddenMessage = (self.MapView.selectedAnnotations[0] as! CustomPointAnnotation).title!
-            if (self.MapView.selectedAnnotations[0] as! CustomPointAnnotation).hiddenMessage != nil{
-                controller.hiddenMessage?.append("\n" + (self.MapView.selectedAnnotations[0] as! CustomPointAnnotation).hiddenMessage)
+            controller.hiddenMessage = (self.MapView.selectedAnnotations[0] as! AccessibleFacilities).title!
+            if (self.MapView.selectedAnnotations[0] as! AccessibleFacilities).detail != nil{
+                controller.hiddenMessage?.append("\n" + (self.MapView.selectedAnnotations[0] as! AccessibleFacilities).detail!)
             }
+        }else if segue.identifier == "searchDestination"{
+            let controller = segue.destination as! searchPageController
+            controller.searchProtocol = self
         }
     }
     
@@ -617,106 +808,9 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         
     }
     
-    
-    let APIaddress = "https://data.melbourne.vic.gov.au/resource/qdfd-3qcq.json?"
-    let APIToken = "&$$app_token=L91hFMhjcf0tTl6cVMT0jOoqD"
-    
-    func APIQuery(coordinate: CLLocationCoordinate2D)->String{
-        return "$where=within_circle(the_geom,\(coordinate.latitude),\(coordinate.longitude),100)"
-    }
 
     
-    struct Steepnessmultipolgon : Decodable {
-        let address:String?
-        let asset_type:String?
-        let deltaz: String?
-        let distance: String?
-        let grade1in: String?
-        let gradepc: String?
-        let mcc_id: String?
-        let mccid_int: String?
-        let rlmax: String?
-        let rlmin: String?
-        let segside: String?
-        let statusid: String?
-        let streetid: String?
-        let the_geom: Multipologon?
-        
-    }
-    
-    struct Multipologon : Decodable {
-        let type : String?
-        let coordinates: [[[[Double]]]]
-        
-        enum multipologon: String, CodingKey {
-            case type = "type"
-            case coordinates = "coordinates"
-        }
-        init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: multipologon.self)
-            self.type = try container.decode(String.self, forKey: .type)
-            self.coordinates = try container.decode([[[[Double]]]].self, forKey:.coordinates)
-        }
-    }
-    
-    
-    
-    func getSteepNess(item: MKMapItem){
-
-        self.view.addSubview(activityIndicator)
-//        let testlocation = CLLocationCoordinate2DMake(-37.815398, 144.957177)
-        let testquery = self.APIQuery(coordinate: (item.placemark.coordinate))
-        let url = URL(string: self.APIaddress + testquery + self.APIToken)
-        let task = URLSession.shared.dataTask(with: url!){
-            (data,response,error) in
-            if error != nil{
-                print("Error \(String(describing: error))")
-                return
-            }else{
-                guard let data = data else{return}
-                do{
-                    var nearbysteepStreet: [Steepnessmultipolgon] = []
-                    
-                    nearbysteepStreet = try JSONDecoder().decode([Steepnessmultipolgon].self, from: data)
-                    if nearbysteepStreet.count != 0{
-                        let pologon = self.drawShap(coornidatesArray: self.changeArrayToCoornidates(points:  (nearbysteepStreet.first?.the_geom?.coordinates.first?.first)!), steepnessLevel: nearbysteepStreet.first?.deltaz)
-                            self.MapView.add(pologon)
-                  
-
-                    }
-                        
-
-                }catch let jsonErr{
-                    print("Error serializing json",jsonErr)
-                }
-            }
-        }
-        task.resume()
-    }
-    
-    func changeArrayToCoornidates(points:[[Double]]) -> [CLLocationCoordinate2D] {
-        var coordinateArray : [CLLocationCoordinate2D] = []
-        for point in points{
-            let coordinate = CLLocationCoordinate2DMake(point.last!, point.first!)
-            coordinateArray.append(coordinate)
-        }
-        return coordinateArray
-    }
-    
-    //https://stackoverflow.com/questions/45038869/swift-mapkit-create-a-polygon
-    func drawShap(coornidatesArray:[CLLocationCoordinate2D],steepnessLevel: String?) -> custommkPolygon{
-        
-        let polygon = custommkPolygon(coordinates: coornidatesArray, count: coornidatesArray.count)
-        
-        if steepnessLevel != nil{
-            if steepnessLevel != ""{
-                polygon.colorLevel = Int(Double(steepnessLevel!)!)
-            }
-        }
-       return polygon
-
-    }
-    
+    // for each step, a notification should be added at the beginning. For the last step, the notification should be added at the destination
     func addnotificationToStep(step: MKRouteStep){
         var coordsPointer = UnsafeMutablePointer<CLLocationCoordinate2D>.allocate(capacity: step.polyline.pointCount)
         step.polyline.getCoordinates(coordsPointer, range: NSMakeRange(0, step.polyline.pointCount))
@@ -725,42 +819,38 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             stepCount.append(coordsPointer[i])
         }
         print(stepCount.count)
-        let circle = MKCircle(center: stepCount.first!, radius: 50)
-        self.MapView.add(circle)
         if stepCount.count == 1 {
             print(stepCount.first)
-                let notificationRegion = CLCircularRegion(center: stepCount.first!, radius: 50, identifier: "First Step")
-                notificationRegion.notifyOnEntry = true
-                notificationRegion.notifyOnExit = true
-                self.manager.startMonitoring(for: notificationRegion)
-                let content = UNMutableNotificationContent()
-                content.title = "First Step1"
-                content.subtitle = "\(step.distance)"
-                content.body = "First Step2"
-                content.badge = 1
-                let trigger = UNLocationNotificationTrigger(region: notificationRegion, repeats: true)
-                let request = UNNotificationRequest(identifier: "First Step", content: content, trigger: trigger)
-                UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
-            
-        }
-            else{
-                let notificationRegionFIrst = CLCircularRegion(center: stepCount.first!, radius: 50, identifier: step.instructions)
-            
-                notificationRegionFIrst.notifyOnEntry = true
-                notificationRegionFIrst.notifyOnExit = true
-                self.manager.startMonitoring(for: notificationRegionFIrst)
-                let content = UNMutableNotificationContent()
-                content.title = step.instructions
-                content.subtitle = "\(step.distance)"
-                content.body = step.instructions
-                content.badge = 1
-                let trigger = UNLocationNotificationTrigger(region: notificationRegionFIrst, repeats: true)
-                let request = UNNotificationRequest(identifier: step.instructions, content: content, trigger: trigger)
-                UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
+            addNotificationToAPoint(center: stepCount.first!, radius: 10, contentTitle: "First Step", contentSubTitle: "\(step.distance)", contentBody: "First Step", identifier: " First Step")
+        }else{
+            addNotificationToAPoint(center: stepCount.first!, radius: 30, contentTitle: step.instructions, contentSubTitle: "\(step.distance)", contentBody: step.instructions, identifier: step.instructions)
             }
+        
+        // add the notification to the last spot
+        if step == self.routeSteps.last{
+            addNotificationToAPoint(center: stepCount.last!, radius: 30, contentTitle: "Destination", contentSubTitle: "You  arrived at the destination", contentBody: "You  arrived at the destination", identifier: "Destination")
+        }
+    }
+    
+    // add notification to a specific point
+    func addNotificationToAPoint(center: CLLocationCoordinate2D, radius: Int, contentTitle: String, contentSubTitle: String, contentBody:String, identifier: String) {
+        let circle = MKCircle(center: center, radius: CLLocationDistance(radius))
+        self.MapView.add(circle)
+        let notificationRegion = CLCircularRegion(center: center, radius: CLLocationDistance(radius), identifier: identifier)
+        notificationRegion.notifyOnEntry = true
+        notificationRegion.notifyOnExit = false
+        self.manager.startMonitoring(for: notificationRegion)
+        let content = UNMutableNotificationContent()
+        content.title = contentTitle
+        content.subtitle = contentSubTitle
+        content.body = contentBody
+        content.badge = 1
+        let trigger = UNLocationNotificationTrigger(region: notificationRegion, repeats: true)
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+        UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
     }
 
-
+     // when user entered the region. the Distance lable and Instruction Label will be changed with it.
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
         var distance = Int(findstepByRegion(identifier: region.identifier).distance)
         if distance > 1000 {
@@ -771,6 +861,8 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         self.InstructionLabel.text = region.identifier
     }
     
+    
+    // find step by region, with a specific region a specific region will be given
     func findstepByRegion(identifier:String) -> MKRouteStep {
         var step = self.routeSteps.first
         for item in self.routeSteps{
@@ -781,6 +873,154 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         }
         return step!
     }
+    
+    
+    @IBAction func functionListButtonClicked(_ sender: Any) {
+        if startItem != nil{
+            self.startItem = nil
+        }
+        
+        if buttonControlSelected == false{
+            self.functionView.isHidden = false
+            self.buttonControl.setImage(#imageLiteral(resourceName: "close-76"), for: .normal)
+            buttonControlSelected = true
+        }else{
+            self.functionView.isHidden = true
+            self.buttonControl.setImage(#imageLiteral(resourceName: "open-76"), for: .normal)
+            buttonControlSelected = false
+        }
+    }
+    
+    
+    @IBAction func nearbyButtonClicked(_ sender: Any) {
+        self.MapView.removeAnnotations(self.MapView.annotations)
+        self.MapView.addAnnotations(self.getNearbyFacilities())
+        if self.userLocation != nil{
+        locateLocation(location: userLocation!)
+        }else{
+            locationServiceIsNotGivenErrorMessage()
+        }
+        
+    }
+    
+    @IBAction func buildingButtonIsClicked(_ sender: Any) {
+        self.MapView.removeAnnotations(self.MapView.annotations)
+        self.MapView.addAnnotations(self.accessibleBuildingList)
+    }
+    
+    @IBAction func toiletButtonIsClicked(_ sender: Any) {
+        self.MapView.removeAnnotations(self.MapView.annotations)
+            self.MapView.addAnnotations(self.publicToiletList)
+        
+    }
+    
+    @IBAction func waterButtonIsClicked(_ sender: Any) {
+        self.MapView.removeAnnotations(self.MapView.annotations)
+        self.MapView.addAnnotations(self.waterFountainList)
+    }
+    
+    
+    @IBAction func parkButtonClicked(_ sender: Any) {
+        self.MapView.removeAnnotations(self.MapView.annotations)
+        getAvailableParkingSpot(coordinate: (userLocation?.coordinate)!)
+    }
+    
+    func searchforDestination(destination: MKMapItem, startPoint: MKMapItem?) {
+        self.nearbyButtonClicked(self)
+        if self.startAnnotation != nil{
+        self.MapView.removeAnnotation(self.destinationAnnotation!)
+        }
+        if self.startAnnotation != nil{
+            self.MapView.removeAnnotation(self.startAnnotation!)
+        }
+        if startPoint != nil{
+            self.startItem = startPoint
+            self.destinationItem = destination
+            destinationAnnotation = addSearchItem(mapItem: self.destinationItem!, imageName: "pin-end 3-40")
+            startAnnotation = addSearchItem(mapItem: self.startItem!,imageName: "pin-start 3-40")
+            self.destination = CLLocation(latitude: (destinationItem?.placemark.coordinate.latitude)!, longitude: (destinationItem?.placemark.coordinate.longitude)!)
+            drawRoute(startItem: self.startItem!, destinationItem: self.destinationItem!)
+        }else{
+            self.destinationItem = destination
+            self.startItem = nil
+            destinationAnnotation = self.addSearchItem(mapItem: self.destinationItem!, imageName: "pin-end 3-40")
+            self.MapView.selectAnnotation(destinationAnnotation!, animated: true)
+            self.destination = CLLocation(latitude: (destinationItem?.placemark.coordinate.latitude)!, longitude: (destinationItem?.placemark.coordinate.longitude)!)
+
+            MapView.addAnnotations(getNearbyFacilities())
+            if self.userLocation != nil{
+
+            drawRoute(startItem: self.changeLocationToMapItem(location: self.userLocation!), destinationItem: self.destinationItem!)
+            }
+        }
+        
+    }
+    
+
+    let APIaddress = "https://data.melbourne.vic.gov.au/resource/dtpv-d4pf.json?status=Unoccupied&"
+    let APIToken = "&$$app_token=L91hFMhjcf0tTl6cVMT0jOoqD"
+    
+    func APIQuery(coordinate: CLLocationCoordinate2D)->String{
+        return "$where=within_circle(location,\(coordinate.latitude),\(coordinate.longitude),500)"
+    }
+    
+    struct Parking:Decodable {
+        let bay_id:String?
+        let lat:String?
+        let coordinates: [Double]?
+        let lon:String?
+        let st_marker_id:String?
+        let status:String?
+    }
+    
+    
+    func getAvailableParkingSpot(coordinate:CLLocationCoordinate2D){
+        activityIndicator.startAnimating()
+        self.view.addSubview(activityIndicator)
+        UIApplication.shared.beginIgnoringInteractionEvents()
+        
+        let testquery = self.APIQuery(coordinate: coordinate)
+        let url = URL(string: self.APIaddress + testquery + self.APIToken)
+        print(url)
+        let task = URLSession.shared.dataTask(with: url!){
+            (data,response,error) in
+            if error != nil{
+                print("Error \(String(describing: error))")
+                return
+            }else{
+                guard let data = data else{return}
+                do{
+                    print(data)
+                    var parkingSpot: [Parking] = []
+                    
+                    parkingSpot = try JSONDecoder().decode([Parking].self, from: data)
+                    var parkingspotList : [AccessibleFacilities] = []
+                    for spot in parkingSpot{
+                        var park = AccessibleFacilities()
+                        park.type = AccessibleFacilityType.parkingSpot
+                        park.category = "Parking Spot"
+                        park.latitude = Double(spot.lat!)
+                        park.longitude = Double(spot.lon!)
+                        parkingspotList.append(park)
+                    }
+                    self.parkingspots = parkingspotList
+                    print(self.parkingspots.count)
+
+                    DispatchQueue.main.async { // Correct
+                        self.activityIndicator.stopAnimating()
+                        UIApplication.shared.endIgnoringInteractionEvents()
+                        self.MapView.addAnnotations(self.parkingspots)
+                    }
+                    
+
+                }catch let jsonErr{
+                    print("Error serializing json",jsonErr)
+                }
+            }
+        }
+        task.resume()
+    }
+
 }
 
 

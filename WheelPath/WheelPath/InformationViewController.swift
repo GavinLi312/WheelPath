@@ -27,7 +27,6 @@ class InformationViewController: UIViewController,UITableViewDelegate,UITableVie
     
     @IBOutlet weak var destinationName: UILabel!
     
-
     
     @IBOutlet weak var directionList: UITableView!
     

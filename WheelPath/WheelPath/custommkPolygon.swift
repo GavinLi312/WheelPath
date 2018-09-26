@@ -12,3 +12,8 @@ import MapKit
 class custommkPolygon: MKPolygon{
     var colorLevel = 0
 }
+
+struct Steepness {
+    var steepnessFlag = 0
+    var coordinates : [[[[Double]]]] = [[[[0]]]]
+}
