@@ -28,12 +28,16 @@ class searchPageController: UIViewController, UISearchBarDelegate, UITableViewDe
     
     @IBOutlet weak var startPointTableView: UITableView!
     
+    //to check internet connection
+    var reachability : Reachability?
+    
     var startList : [MKMapItem] = []
     
     var destinationList : [MKMapItem] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
+         self.reachability = Reachability.init()
         startPointSearchBar.delegate = self
         destinationSearchBar.delegate = self
         self.startPointTableView.isHidden = true
@@ -42,7 +46,6 @@ class searchPageController: UIViewController, UISearchBarDelegate, UITableViewDe
         self.destinationTableView.dataSource = self
         self.destinationTableView.isHidden = true
         self.destinationTableView.delegate = self
-        // Do any additional setup after loading the view.
     }
     
     func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
@@ -206,6 +209,8 @@ class searchPageController: UIViewController, UISearchBarDelegate, UITableViewDe
     }
     
     @IBAction func searchRoute(_ sender: Any) {
+       print( CLLocationManager.locationServicesEnabled())
+        if ((self.reachability!.connection) == .cellular || (self.reachability!.connection == .wifi)){
         // if the destinationIte is nil
         if self.destinationItem == nil{
             let text = self.destinationSearchBar.text?.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -249,7 +254,9 @@ class searchPageController: UIViewController, UISearchBarDelegate, UITableViewDe
             }
             
         }
-        
+        }else{
+            displayErrorMessage(title: "Error", message: "No Internet Connection")
+        }
     }
     
 
