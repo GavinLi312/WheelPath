@@ -121,7 +121,7 @@ class searchPageController: UIViewController, UISearchBarDelegate, UITableViewDe
         if tableView == self.startPointTableView{
             return 2
         }else{
-            return 1
+            return 3
         }
     }
     
@@ -133,7 +133,11 @@ class searchPageController: UIViewController, UISearchBarDelegate, UITableViewDe
                 return self.startList.count
             }
         }else{
-            return destinationList.count
+            if section == 0{
+                return destinationList.count
+            }else{
+                return 1
+            }
         }
     }
     
@@ -156,16 +160,26 @@ class searchPageController: UIViewController, UISearchBarDelegate, UITableViewDe
 
             return cell 
         }else{
-            cell = self.destinationTableView.dequeueReusableCell(withIdentifier: "destinationCell")!
-            cell.textLabel?.font = cell.textLabel?.font.withSize(14)
-            cell.textLabel?.text = destinationList[indexPath.row].name
-            cell.detailTextLabel?.text = destinationList[indexPath.row].placemark.title
+            if indexPath.section == 0{
+                cell = self.destinationTableView.dequeueReusableCell(withIdentifier: "destinationCell")!
+                cell.textLabel?.font = cell.textLabel?.font.withSize(14)
+                cell.textLabel?.text = destinationList[indexPath.row].name
+                cell.detailTextLabel?.text = destinationList[indexPath.row].placemark.title
+            }else if indexPath.section == 1{
+                cell = self.destinationTableView.dequeueReusableCell(withIdentifier: "toiletCell")!
+                cell.textLabel?.text = "Nearest Public Toilet"
+                cell.textLabel?.textColor = #colorLiteral(red: 0.01680417731, green: 0.1983509958, blue: 1, alpha: 1)
+            }else{
+                cell = self.destinationTableView.dequeueReusableCell(withIdentifier: "fountainCell")!
+                cell.textLabel?.text = "Nearest Water Fountain"
+                cell.textLabel?.textColor = #colorLiteral(red: 0.01680417731, green: 0.1983509958, blue: 1, alpha: 1)
+            }
         }
         return cell
     }
     
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("i am touched")
         if tableView == self.startPointTableView{
             if indexPath.section == 1{
             self.startPointSearchBar.text = tableView.cellForRow(at: indexPath)?.textLabel?.text
@@ -179,45 +193,66 @@ class searchPageController: UIViewController, UISearchBarDelegate, UITableViewDe
                 tableView.isHidden = true
             }
         }else{
-            self.destinationSearchBar.text = tableView.cellForRow(at: indexPath)?.textLabel?.text
-            self.destinationItem = self.destinationList[indexPath.row]
-            self.destinationSearchBar.resignFirstResponder()
-            
+            if indexPath.section == 0{
+                self.destinationSearchBar.text = tableView.cellForRow(at: indexPath)?.textLabel?.text
+                self.destinationItem = self.destinationList[indexPath.row]
+                self.destinationSearchBar.resignFirstResponder()
+            }else{
+                self.destinationSearchBar.text = tableView.cellForRow(at: indexPath)?.textLabel?.text
+                self.destinationSearchBar.resignFirstResponder()
+            }
             tableView.isHidden = true
         }
     }
     
     @IBAction func searchRoute(_ sender: Any) {
+        // if the destinationIte is nil
         if self.destinationItem == nil{
-            displayErrorMessage(title: "Error", message: "No Destination Detected")
-            
-        } else if self.startItem == nil{
-            if self.startPointSearchBar.text?.trimmingCharacters(in: .whitespacesAndNewlines) == "Current Location"{
-                self.searchProtocol?.searchforDestination(destination: self.destinationItem!, startPoint: nil)
-                self.navigationController?.popViewController(animated: true)
+            let text = self.destinationSearchBar.text?.trimmingCharacters(in: .whitespacesAndNewlines)
+            // if the text is  "Nearest Public Toilet" or "Nearest Water Fountain"
+            if text == "Nearest Public Toilet" || text == "Nearest Water Fountain"{
+                //if startItem is nil
+                if self.startItem == nil{
+                    // if the text is "Current Location"
+                    if self.startPointSearchBar.text?.trimmingCharacters(in: .whitespacesAndNewlines) == "Current Location"{
+                        self.searchProtocol?.searchforDestination(destination: nil, startPoint: nil, nearestDestination: text)
+                        self.navigationController?.popViewController(animated: true)
+                    }else{
+                        // no start Point
+                        displayErrorMessage(title: "Error", message: "No start point Detected")
+                    }
+                }else{
+                    //with ok
+                    self.searchProtocol?.searchforDestination(destination: nil, startPoint: self.startItem, nearestDestination: text)
+                    self.navigationController?.popViewController(animated: true)
+                }
             }else{
-                displayErrorMessage(title: "Error", message: "No start point Detected")
+                // error
+                displayErrorMessage(title: "Error", message: "No destination Detected")
             }
-        }
-        else{
             
-            self.searchProtocol?.searchforDestination(destination: self.destinationItem!, startPoint: self.startItem)
-            self.navigationController?.popViewController(animated: true)
+        }else{
+           // the destination item is not nil
+            if self.startItem == nil{
+                if self.startPointSearchBar.text?.trimmingCharacters(in: .whitespacesAndNewlines) == "Current Location"{
+                    // if the text is "Current Location"
+                    self.searchProtocol?.searchforDestination(destination: self.destinationItem!, startPoint: nil, nearestDestination: nil)
+                    self.navigationController?.popViewController(animated: true)
+                }else{
+                    // no start Point not current location should fail
+                    displayErrorMessage(title: "Error", message: "No start point Detected")
+                }
+            }else{
+                // with start and destination
+                self.searchProtocol?.searchforDestination(destination: self.destinationItem!, startPoint: self.startItem, nearestDestination: nil)
+                self.navigationController?.popViewController(animated: true)
+            }
+            
         }
+        
     }
     
-//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        if segue.identifier == "searchRoute"{
-//            let controller = segue.destination as! MapViewController
-//            controller.destinationItem = self.destinationItem
-//            if startItem == nil{
-//                controller.nearby = true
-//            }else{
-//                controller.nearby = false
-//                controller.startItem = self.startItem
-//            }
-//        }
-//    }
+
     
     override func viewDidDisappear(_ animated: Bool) {
         self.startPointSearchBar.text = ""

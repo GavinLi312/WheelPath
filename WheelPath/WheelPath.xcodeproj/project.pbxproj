@@ -19,7 +19,6 @@
 		A3A3FE322133C19B004E684C /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3A3FE312133C19B004E684C /* Reachability.swift */; };
 		A3AB0E93212D82B600E2F366 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AB0E92212D82B600E2F366 /* MapViewController.swift */; };
 		A3B0F5F7213CCFCB00268178 /* Assets 12-10-32-200.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A3B0F5F6213CCFCA00268178 /* Assets 12-10-32-200.xcassets */; };
-		A3B0F5F9213CE63F00268178 /* MenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3B0F5F8213CE63F00268178 /* MenuController.swift */; };
 		A3ED1CE6212E6C8400C4A89F /* CustomPointAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3ED1CE5212E6C8400C4A89F /* CustomPointAnnotation.swift */; };
 		A3ED1CE8212E908300C4A89F /* AccessibleFacilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3ED1CE7212E908300C4A89F /* AccessibleFacilities.swift */; };
 		A3F09B66212A875D00224A7E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3F09B65212A875D00224A7E /* AppDelegate.swift */; };
@@ -65,7 +64,6 @@
 		A3A3FE312133C19B004E684C /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		A3AB0E92212D82B600E2F366 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		A3B0F5F6213CCFCA00268178 /* Assets 12-10-32-200.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Assets 12-10-32-200.xcassets"; sourceTree = "<group>"; };
-		A3B0F5F8213CE63F00268178 /* MenuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuController.swift; sourceTree = "<group>"; };
 		A3ED1CE5212E6C8400C4A89F /* CustomPointAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPointAnnotation.swift; sourceTree = "<group>"; };
 		A3ED1CE7212E908300C4A89F /* AccessibleFacilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibleFacilities.swift; sourceTree = "<group>"; };
 		A3F09B62212A875D00224A7E /* WheelPath.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WheelPath.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -181,7 +179,6 @@
 				A3F09B6C212A875D00224A7E /* WheelPath.xcdatamodeld */,
 				A3ED1CE5212E6C8400C4A89F /* CustomPointAnnotation.swift */,
 				A3ED1CE7212E908300C4A89F /* AccessibleFacilities.swift */,
-				A3B0F5F8213CE63F00268178 /* MenuController.swift */,
 				A367DEC9214013A400A0F459 /* InformationViewController.swift */,
 				A3844E9421480F6D0016CBA8 /* startPointCell.swift */,
 			);
@@ -442,7 +439,6 @@
 				A38A14232142759F00F776F4 /* searchPageController.swift in Sources */,
 				A3F09B6E212A875D00224A7E /* WheelPath.xcdatamodeld in Sources */,
 				A3F09B66212A875D00224A7E /* AppDelegate.swift in Sources */,
-				A3B0F5F9213CE63F00268178 /* MenuController.swift in Sources */,
 				A3AB0E93212D82B600E2F366 /* MapViewController.swift in Sources */,
 				A3844E9721480F880016CBA8 /* DestinationCell.swift in Sources */,
 				A3A3FE322133C19B004E684C /* Reachability.swift in Sources */,
@@ -623,7 +619,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = D4E88Q87ES;
+				DEVELOPMENT_TEAM = NRL9LH8W6N;
 				INFOPLIST_FILE = WheelPath/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -644,7 +640,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = D4E88Q87ES;
+				DEVELOPMENT_TEAM = NRL9LH8W6N;
 				INFOPLIST_FILE = WheelPath/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

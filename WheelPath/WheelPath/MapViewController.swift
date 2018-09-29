@@ -11,18 +11,20 @@ import MapKit
 import CoreLocation
 import Firebase
 import UserNotifications
+import AVFoundation
 
 
 var zoomTag = 0
 var firstLaunch = true
 
 protocol searchForDestination {
-    func searchforDestination(destination:MKMapItem, startPoint:MKMapItem?)
+    func searchforDestination(destination:MKMapItem?, startPoint:MKMapItem?, nearestDestination:String?)
 }
 
 class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDelegate, searchForDestination {
 
-
+    var functionList = ["Public Toilets", "Water Fountains","Accessible Building","Nearby"]
+    
     @IBOutlet weak var MapView: MKMapView!
 
     
@@ -35,9 +37,6 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     
     let defaultdistance = 0.5
     
-    var destination : CLLocation?
-    // if search and nearby are true, the route will be showen
-    // startItem and destinationItem both are not empty
     var searchLocation : String?
     
     var forsegmentControlStartItem: MKMapItem?
@@ -51,7 +50,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     var coords: [CLLocationCoordinate2D] = []
     
     //list just to store toilets and water fountains
-//    var toiletsAndWaterFountainList : [CustomPointAnnotation] = []
+
     
     @IBOutlet weak var transportControl: UISegmentedControl!
     
@@ -73,6 +72,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     
     var destinationAnnotation: CustomPointAnnotation?
     
+    var route:MKRoute?
     
     var calculateRoute = true
     
@@ -114,6 +114,15 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     
     @IBOutlet weak var functionView: UIView!
     
+    var synthesizer: AVSpeechSynthesizer?
+    
+    @IBOutlet weak var durationLabel: UILabel!
+    
+    @IBOutlet weak var totalDistanceLabel: UILabel!
+    
+    @IBOutlet weak var arrivalTimeLabel: UILabel!
+    
+    
     override func viewDidLoad() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert,.sound,.badge], completionHandler: {
             didAllow,error in
@@ -135,6 +144,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         self.transportControl.isHidden = true
         self.transportControl.layer.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
         self.startButton.isHidden = true
+        synthesizer = AVSpeechSynthesizer()
         manager.delegate = self
         manager.desiredAccuracy = kCLLocationAccuracyBest
         if CLLocationManager.locationServicesEnabled(){
@@ -181,7 +191,6 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         if self.start == false{
             self.startIsClicked(self)
         }
-
     }
     
     //https://www.hackingwithswift.com/example-code/system/how-to-run-code-after-a-delay-using-asyncafter-and-perform
@@ -192,8 +201,6 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         mapCamera.altitude = 500
         mapCamera.heading = newHeading.magneticHeading
         MapView.setCamera(mapCamera, animated: true)
-        let userPlaceMark = MKPlacemark(coordinate: (self.userLocation?.coordinate)!)
-        let userItem = MKMapItem(placemark: userPlaceMark)
     }
     
     //get public Toilets Data from firebase
@@ -205,23 +212,23 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             }
             for item in value.allKeys{
                 let toiletInfo = value.object(forKey: item) as! NSDictionary
-                var publicToilet = AccessibleFacilities()
+                let publicToilet = AccessibleFacilities()
                 publicToilet.id = (item as! String)
-                publicToilet.category = toiletInfo.object(forKey: "Category") as! String
-                publicToilet.detail = toiletInfo.object(forKey: "Details") as! String
-                publicToilet.desc = toiletInfo.object(forKey: "Description") as! String
-                publicToilet.disableFlag = toiletInfo.object(forKey: "DisableFlag") as! String
+                publicToilet.category = toiletInfo.object(forKey: "Category") as? String
+                publicToilet.detail = toiletInfo.object(forKey: "Details") as? String
+                publicToilet.desc = toiletInfo.object(forKey: "Description") as? String
+                publicToilet.disableFlag = toiletInfo.object(forKey: "DisableFlag") as? String
                 if publicToilet.disableFlag == "Yes"{
                     publicToilet.type = AccessibleFacilityType.accessiblePublicToilet
                 }else{
                     publicToilet.type = AccessibleFacilityType.inaccessiblePublicToilet
                 }
-                publicToilet.latitude = toiletInfo.object(forKey: "Latitude") as! Double
-                publicToilet.longitude = toiletInfo.object(forKey: "Longitude") as! Double
+                publicToilet.latitude = toiletInfo.object(forKey: "Latitude") as? Double
+                publicToilet.longitude = toiletInfo.object(forKey: "Longitude") as? Double
 
                 self.publicToiletList.append(publicToilet)
             }
-           self.annotationList.append(contentsOf: self.publicToiletList)
+            self.annotationList.append(contentsOf: self.publicToiletList)
             
             self.publicToiltToiletAnnotationList.append(contentsOf: self.publicToiletList)
         })
@@ -238,15 +245,15 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             
             for item in value.allKeys{
                 let waterInfo = value.object(forKey: item) as! NSDictionary
-                var waterFountain = AccessibleFacilities()
-                waterFountain.id = item as! String
+                let waterFountain = AccessibleFacilities()
+                waterFountain.id = item as? String
                 waterFountain.type = AccessibleFacilityType.waterFountain
-                waterFountain.desc = waterInfo.object(forKey: "Description") as! String
-                waterFountain.detail = waterInfo.object(forKey: "Details") as! String
-                waterFountain.category = waterInfo.object(forKey: "Category") as! String
-                waterFountain.disableFlag = waterInfo.object(forKey: "DisableFlag") as! String
-                waterFountain.latitude = waterInfo.object(forKey: "Latitude") as! Double
-                waterFountain.longitude = waterInfo.object(forKey: "Longitude") as! Double
+                waterFountain.desc = waterInfo.object(forKey: "Description") as? String
+                waterFountain.detail = waterInfo.object(forKey: "Details") as? String
+                waterFountain.category = waterInfo.object(forKey: "Category") as? String
+                waterFountain.disableFlag = waterInfo.object(forKey: "DisableFlag") as? String
+                waterFountain.latitude = waterInfo.object(forKey: "Latitude") as? Double
+                waterFountain.longitude = waterInfo.object(forKey: "Longitude") as? Double
                 self.waterFountainList.append(waterFountain)
             }
             self.annotationList.append(contentsOf: self.waterFountainList)
@@ -263,15 +270,15 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             }
             for item in value.allKeys{
                 let buildingInfo = value.object(forKey: item) as! NSDictionary
-                var building = AccessibleFacilities()
+                let building = AccessibleFacilities()
                 building.type = AccessibleFacilityType.accessibleBuilding
-                building.id = item as! String
-                building.category = buildingInfo.object(forKey: "Category") as! String
-                building.detail = buildingInfo.object(forKey: "Details") as! String
-                building.desc = buildingInfo.object(forKey: "Description") as! String
-                building.disableFlag = buildingInfo.object(forKey: "DisableFlag") as! String
-                building.latitude = buildingInfo.object(forKey: "Latitude") as! Double
-                building.longitude = buildingInfo.object(forKey: "Longitude") as! Double
+                building.id = item as? String
+                building.category = buildingInfo.object(forKey: "Category") as? String
+                building.detail = buildingInfo.object(forKey: "Details") as? String
+                building.desc = buildingInfo.object(forKey: "Description") as? String
+                building.disableFlag = buildingInfo.object(forKey: "DisableFlag") as? String
+                building.latitude = buildingInfo.object(forKey: "Latitude") as? Double
+                building.longitude = buildingInfo.object(forKey: "Longitude") as? Double
                 self.accessibleBuildingList.append(building)
                 
             }
@@ -287,15 +294,17 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             guard let value = snapshot.value as? NSDictionary else{
                 return
             }
+            
             for item in value.allKeys{
                 let steepInfo = value.object(forKey: item) as! NSDictionary
                 var steepness = Steepness()
+                steepness.key = item as! String
                 steepness.steepnessFlag = steepInfo.object(forKey: "SteepFlag") as! Int
                 steepness.coordinates = steepInfo.object(forKey: "coordinates") as! [[[[Double]]]]
                 self.steepnessList.append(steepness)
             }
             for item in self.steepnessList{
-                self.MapView.add(self.drawShap(coornidatesArray: self.changeArrayToCoornidates(points: item.coordinates), steepnessLevel: item.steepnessFlag))
+                self.MapView.add(self.drawShap(coornidatesArray: self.changeArrayToCoornidates(points: item.coordinates), steepnessLevel: item.steepnessFlag, identifier: item.key))
                 
             }
             self.activityIndicator.stopAnimating()
@@ -323,7 +332,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     
     
         //https://stackoverflow.com/questions/45038869/swift-mapkit-create-a-polygon
-    func drawShap(coornidatesArray:[CLLocationCoordinate2D],steepnessLevel: Int) -> custommkPolygon{
+    func drawShap(coornidatesArray:[CLLocationCoordinate2D],steepnessLevel: Int, identifier: String) -> custommkPolygon{
     
         let polygon = custommkPolygon(coordinates: coornidatesArray, count: coornidatesArray.count)
         polygon.colorLevel = steepnessLevel
@@ -352,7 +361,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         }
         userLocation = location
         
-        let myLocation:CLLocationCoordinate2D = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
+//        let myLocation:CLLocationCoordinate2D = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
 
         if zoomTag == 0  && self.destinationItem == nil{
             locateLocation(location: userLocation!)
@@ -392,9 +401,19 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         if self.drawRouteButton.isHidden == true{
             self.drawRouteButton.isHidden = false
         }
-        self.destination = CLLocation(latitude: (view.annotation?.coordinate.latitude)!, longitude: (view.annotation?.coordinate.longitude)!)
-        let span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
-        let region = MKCoordinateRegion(center: (self.destination?.coordinate)!, span: span)
+
+        
+        let dictionary = ["title": view.annotation?.title, "subtitle":view.annotation?.subtitle]
+        let destinationPlacemarker = MKPlacemark(coordinate: (view.annotation?.coordinate)!, addressDictionary: dictionary)
+        
+        self.destinationItem = MKMapItem(placemark: destinationPlacemarker)
+        let span:MKCoordinateSpan?
+        if view.annotation?.title == "Parking Spot"{
+            span = MKCoordinateSpan(latitudeDelta: 0.0005, longitudeDelta: 0.0005)
+        }else{
+        span = MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
+        }
+        let region = MKCoordinateRegion(center: (self.destinationItem?.placemark.coordinate)!, span: span!)
         mapView.setRegion(region, animated: false)
     }
     
@@ -446,19 +465,25 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
 
     @IBAction func navigationButtonClicked(_ sender: Any) {
         if ((self.reachability!.connection) == .cellular || (self.reachability!.connection == .wifi)){
-            if self.destination == nil{
+            if self.destinationItem == nil{
                 displayErrorMessage(title: "No destination", message: "Sorry please select a destination first")
             }else{
-                let destinationPlacemark = MKPlacemark(coordinate: (self.destination?.coordinate)!)
-                destinationItem = MKMapItem(placemark: destinationPlacemark)
+
                 if self.destinationAnnotation != nil{
                 self.MapView.removeAnnotation(self.destinationAnnotation!)
                 }
                 self.destinationAnnotation = self.addSearchItem(mapItem: destinationItem!, imageName: "pin-end 3-40")
+                if self.MapView.selectedAnnotations.first?.title != nil{
+                self.destinationAnnotation?.title = (self.MapView.selectedAnnotations.first?.title)!
+                }
+                if self.MapView.selectedAnnotations.first?.subtitle != nil{
+                self.destinationAnnotation?.subtitle = (self.MapView.selectedAnnotations.first?.subtitle)!
+                }
+                self.MapView.selectAnnotation(self.destinationAnnotation!, animated: true)
                 if startItem == nil{
                     if userLocation != nil{
-                        var sourcePlacemark = MKPlacemark(coordinate: (self.userLocation?.coordinate)!)
-                        var sourceItem = MKMapItem(placemark: sourcePlacemark)
+                        let sourcePlacemark = MKPlacemark(coordinate: (self.userLocation?.coordinate)!)
+                        let sourceItem = MKMapItem(placemark: sourcePlacemark)
                         self.drawRoute(startItem: sourceItem, destinationItem: destinationItem!)
                     }else{
                         locationServiceIsNotGivenErrorMessage()
@@ -533,16 +558,17 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             if self.userLocation != nil{
                 self.drawRouteButton.isHidden = true
                 if self.startItem == nil{
-                self.startButton.isHidden = false
+                    self.startButton.isHidden = false
                 }
             }
             let routes = response.routes
             
             let item = routes.first!
+            self.route = item
             self.routeSteps = item.steps
                 item.polyline.title = startItem.name! + " to " + destinationItem.name!
                 item.polyline.subtitle = "\(item.distance)"
-                var coordsPointer = UnsafeMutablePointer<CLLocationCoordinate2D>.allocate(capacity: item.polyline.pointCount)
+            let coordsPointer = UnsafeMutablePointer<CLLocationCoordinate2D>.allocate(capacity: item.polyline.pointCount)
                 item.polyline.getCoordinates(coordsPointer, range: NSMakeRange(0, item.polyline.pointCount))
                 for i in 0..<item.polyline.pointCount {
                     self.coords.append(coordsPointer[i])
@@ -568,8 +594,6 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                     }
                 }
             
-//                print(annotationList.count)
-//                print(self.annotationList.count)
                 self.alongWithTheRoute.removeAll()
                 self.alongWithTheRoute.append(contentsOf: annotationList)
                 print(self.alongWithTheRoute.count)
@@ -638,6 +662,10 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     @IBAction func locateMe(_ sender: Any) {
         if startItem != nil{
             self.startItem = nil
+            self.locateMe.setImage(#imageLiteral(resourceName: "target-1-76"), for: .normal)
+            if self.startAnnotation != nil{
+            self.MapView.removeAnnotation(self.startAnnotation!)
+            }
         }
         if userLocation == nil{
             locationServiceIsNotGivenErrorMessage()
@@ -712,21 +740,32 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     
     @IBAction func startIsClicked(_ sender: Any) {
         if start == true{
+            hideNavigationBar(show: true)
             self.manager.startUpdatingHeading()
             self.navigationView.isHidden = false
-            self.DistanceLabel.text = "\((self.routeSteps.first?.distance)!) m "
+            self.DistanceLabel.text = "\((self.routeSteps[1].distance)) m "
             
             if self.routeSteps.first?.instructions == ""{
-                self.InstructionLabel.text = "Move Forward"
+                self.InstructionLabel.text = self.routeSteps[1].instructions
             }else{
                 self.InstructionLabel.text = "\(Int((self.routeSteps.first?.instructions)!)!)"
             }
+            durationLabel.text = self.secondsToHoursMinutes(seconds: Int((self.route?.expectedTravelTime)!))
+            let distance = Int((self.route?.distance)!)
+            if distance > 1000{
+                self.totalDistanceLabel.text = "\(distance/1000) km"
+            }else{
+                self.totalDistanceLabel.text = "\(distance) m"
+            }
+            arrivalTimeLabel.text = "\(self.convertDateToString(duration: (self.route?.expectedTravelTime)!)) arrival"
+            self.voiceGuide(message: startMessage(distance: (self.route?.distance)!, arrivingTime: self.convertDateToString(duration: (self.route?.expectedTravelTime)!), duration: self.secondsToHoursMinutes(seconds: Int((self.route?.expectedTravelTime)!))))
             start = false
             self.startButton.setImage(UIImage(named: "stop copy-76"), for: .normal)
             for step in self.routeSteps{
             self.addnotificationToStep(step: step)
             }
         }else{
+            hideNavigationBar(show: false)
             self.navigationView.isHidden = true
             start = true
             self.startButton.setImage(UIImage(named: "start-76"), for: .normal)
@@ -737,17 +776,9 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     }
     
     func removeNotification() {
-        UNUserNotificationCenter.current().getPendingNotificationRequests{(notificationRequests) in
-            var identifiers : [String] = []
-            for notification in notificationRequests{
-                identifiers.append(notification.identifier)
-            }
-            print(identifiers.count)
-            if identifiers.count > 0{
-                UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiers)
-            }
-        }
+
         for item in self.manager.monitoredRegions{
+
             self.manager.stopMonitoring(for: item)
         }
         
@@ -769,9 +800,12 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             }else{
                 controller.userLocation = CLLocation(latitude: (self.startItem?.placemark.coordinate.latitude)!, longitude: (self.startItem?.placemark.coordinate.longitude)!)
             }
-            controller.destination = self.destination
-            controller.hiddenMessage = (self.MapView.selectedAnnotations[0] as! AccessibleFacilities).title!
-            if (self.MapView.selectedAnnotations[0] as! AccessibleFacilities).detail != nil{
+            controller.destination = CLLocation(latitude: (self.destinationItem?.placemark.coordinate.latitude)!, longitude: (self.destinationItem?.placemark.coordinate.longitude)!)
+            controller.hiddenMessage = self.MapView.selectedAnnotations[0].title!
+            guard let annotation = self.MapView.selectedAnnotations[0] as? AccessibleFacilities else{
+                return
+            }
+            if annotation.detail != nil{
                 controller.hiddenMessage?.append("\n" + (self.MapView.selectedAnnotations[0] as! AccessibleFacilities).detail!)
             }
         }else if segue.identifier == "searchDestination"{
@@ -812,53 +846,53 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     
     // for each step, a notification should be added at the beginning. For the last step, the notification should be added at the destination
     func addnotificationToStep(step: MKRouteStep){
-        var coordsPointer = UnsafeMutablePointer<CLLocationCoordinate2D>.allocate(capacity: step.polyline.pointCount)
+        let coordsPointer = UnsafeMutablePointer<CLLocationCoordinate2D>.allocate(capacity: step.polyline.pointCount)
         step.polyline.getCoordinates(coordsPointer, range: NSMakeRange(0, step.polyline.pointCount))
         var stepCount : [CLLocationCoordinate2D] = []
         for i in 0 ..< step.polyline.pointCount{
             stepCount.append(coordsPointer[i])
         }
-        print(stepCount.count)
         if stepCount.count == 1 {
-            print(stepCount.first)
-            addNotificationToAPoint(center: stepCount.first!, radius: 10, contentTitle: "First Step", contentSubTitle: "\(step.distance)", contentBody: "First Step", identifier: " First Step")
         }else{
-            addNotificationToAPoint(center: stepCount.first!, radius: 30, contentTitle: step.instructions, contentSubTitle: "\(step.distance)", contentBody: step.instructions, identifier: step.instructions)
+            addNotificationToAPoint(center: stepCount.first!, radius: 20,  identifier: step.instructions)
             }
         
         // add the notification to the last spot
         if step == self.routeSteps.last{
-            addNotificationToAPoint(center: stepCount.last!, radius: 30, contentTitle: "Destination", contentSubTitle: "You  arrived at the destination", contentBody: "You  arrived at the destination", identifier: "Destination")
+            addNotificationToAPoint(center: stepCount.last!, radius: 20,identifier: "Destination")
         }
     }
     
     // add notification to a specific point
-    func addNotificationToAPoint(center: CLLocationCoordinate2D, radius: Int, contentTitle: String, contentSubTitle: String, contentBody:String, identifier: String) {
+    func addNotificationToAPoint(center: CLLocationCoordinate2D, radius: Int, identifier: String) {
         let circle = MKCircle(center: center, radius: CLLocationDistance(radius))
         self.MapView.add(circle)
         let notificationRegion = CLCircularRegion(center: center, radius: CLLocationDistance(radius), identifier: identifier)
         notificationRegion.notifyOnEntry = true
-        notificationRegion.notifyOnExit = false
+        notificationRegion.notifyOnExit = true
         self.manager.startMonitoring(for: notificationRegion)
-        let content = UNMutableNotificationContent()
-        content.title = contentTitle
-        content.subtitle = contentSubTitle
-        content.body = contentBody
-        content.badge = 1
-        let trigger = UNLocationNotificationTrigger(region: notificationRegion, repeats: true)
-        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
-        UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
+//        print(self.MapView.)
     }
 
      // when user entered the region. the Distance lable and Instruction Label will be changed with it.
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
-        var distance = Int(findstepByRegion(identifier: region.identifier).distance)
+        print(region.identifier)
+        let step = findstepByRegion(identifier: region.identifier)
+        print(step.distance)
+        let distance = Int(step.distance)
         if distance > 1000 {
             self.DistanceLabel.text = "\(distance/1000) km"
         }else{
             self.DistanceLabel.text = "\(distance) m"
         }
         self.InstructionLabel.text = region.identifier
+        if step == self.routeSteps.last{
+            
+            self.voiceGuide(message: self.destinationMessage())
+        }else{
+            self.voiceGuide(message: self.stepMessage(step:step ))
+        }
+        pushNotification(step: step)
     }
     
     
@@ -896,7 +930,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         self.MapView.removeAnnotations(self.MapView.annotations)
         self.MapView.addAnnotations(self.getNearbyFacilities())
         if self.userLocation != nil{
-        locateLocation(location: userLocation!)
+            locateLocation(location: userLocation!)
         }else{
             locationServiceIsNotGivenErrorMessage()
         }
@@ -925,31 +959,77 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         getAvailableParkingSpot(coordinate: (userLocation?.coordinate)!)
     }
     
-    func searchforDestination(destination: MKMapItem, startPoint: MKMapItem?) {
+    func searchforDestination(destination: MKMapItem?, startPoint: MKMapItem?, nearestDestination:String?) {
         self.nearbyButtonClicked(self)
-        if self.startAnnotation != nil{
+        
+        if self.destinationAnnotation != nil{
         self.MapView.removeAnnotation(self.destinationAnnotation!)
         }
         if self.startAnnotation != nil{
             self.MapView.removeAnnotation(self.startAnnotation!)
+            self.locateMe.setImage(#imageLiteral(resourceName: "target-1-76"), for: .normal)
         }
+        
         if startPoint != nil{
             self.startItem = startPoint
-            self.destinationItem = destination
-            destinationAnnotation = addSearchItem(mapItem: self.destinationItem!, imageName: "pin-end 3-40")
-            startAnnotation = addSearchItem(mapItem: self.startItem!,imageName: "pin-start 3-40")
-            self.destination = CLLocation(latitude: (destinationItem?.placemark.coordinate.latitude)!, longitude: (destinationItem?.placemark.coordinate.longitude)!)
-            drawRoute(startItem: self.startItem!, destinationItem: self.destinationItem!)
+            if destination != nil{
+                self.destinationItem = destination
+            }else{
+                if nearestDestination! == "Nearest Public Toilet"{
+                    
+                    let targetAnnotation = self.getNearestToilet(coordinate: (self.startItem?.placemark.coordinate)!)
+                    let destinationPlaceMark = MKPlacemark(coordinate: (targetAnnotation!.coordinate))
+                    self.destinationItem = MKMapItem(placemark: destinationPlaceMark)
+                    destinationAnnotation = addSearchItem(mapItem: self.destinationItem!, imageName: "pin-end 3-40")
+                    destinationAnnotation?.title = targetAnnotation?.title
+                    destinationAnnotation?.subtitle = targetAnnotation?.subtitle
+                    
+                }else if nearestDestination! ==  "Nearest Water Fountain"{
+                    let targetAnnotation = self.getNearestWaterFountain(coordinate: (self.startItem?.placemark.coordinate)!)
+                    let destinationPlaceMark = MKPlacemark(coordinate: (targetAnnotation!.coordinate))
+                    self.destinationItem = MKMapItem(placemark: destinationPlaceMark)
+                    destinationAnnotation = addSearchItem(mapItem: self.destinationItem!, imageName: "pin-end 3-40")
+                    destinationAnnotation?.title = targetAnnotation?.title
+                    destinationAnnotation?.subtitle = targetAnnotation?.subtitle
+                }
+            }
+
+                startAnnotation = addSearchItem(mapItem: self.startItem!,imageName: "pin-start 3-40")
+                drawRoute(startItem: self.startItem!, destinationItem: self.destinationItem!)
+            
+            if self.startButton.isHidden == false{
+                self.startButton.isHidden = true
+            }
+            self.locateMe.setImage(#imageLiteral(resourceName: "cross-76"), for: .normal)
         }else{
-            self.destinationItem = destination
             self.startItem = nil
-            destinationAnnotation = self.addSearchItem(mapItem: self.destinationItem!, imageName: "pin-end 3-40")
+            if destination != nil{
+                self.destinationItem = destination
+            }else{
+
+                if nearestDestination! == "Nearest Public Toilet"{
+                    let targetAnnotation = self.getNearestToilet(coordinate: (userLocation!.coordinate))
+                    let destinationPlaceMark = MKPlacemark(coordinate: (targetAnnotation!.coordinate))
+                    self.destinationItem = MKMapItem(placemark: destinationPlaceMark)
+                    destinationAnnotation = addSearchItem(mapItem: self.destinationItem!, imageName: "pin-end 3-40")
+                    destinationAnnotation?.title = targetAnnotation?.title
+                    destinationAnnotation?.subtitle = targetAnnotation?.subtitle
+                    
+                }else if nearestDestination! ==  "Nearest Water Fountain"{
+                    let targetAnnotation = self.getNearestWaterFountain(coordinate: (userLocation!.coordinate))
+                    let destinationPlaceMark = MKPlacemark(coordinate: (targetAnnotation!.coordinate))
+                    self.destinationItem = MKMapItem(placemark: destinationPlaceMark)
+                    destinationAnnotation = addSearchItem(mapItem: self.destinationItem!, imageName: "pin-end 3-40")
+                    destinationAnnotation?.title = targetAnnotation?.title
+                    destinationAnnotation?.subtitle = targetAnnotation?.subtitle
+                }
+            }
+            
+
             self.MapView.selectAnnotation(destinationAnnotation!, animated: true)
-            self.destination = CLLocation(latitude: (destinationItem?.placemark.coordinate.latitude)!, longitude: (destinationItem?.placemark.coordinate.longitude)!)
 
             MapView.addAnnotations(getNearbyFacilities())
             if self.userLocation != nil{
-
             drawRoute(startItem: self.changeLocationToMapItem(location: self.userLocation!), destinationItem: self.destinationItem!)
             }
         }
@@ -981,7 +1061,6 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         
         let testquery = self.APIQuery(coordinate: coordinate)
         let url = URL(string: self.APIaddress + testquery + self.APIToken)
-        print(url)
         let task = URLSession.shared.dataTask(with: url!){
             (data,response,error) in
             if error != nil{
@@ -996,7 +1075,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                     parkingSpot = try JSONDecoder().decode([Parking].self, from: data)
                     var parkingspotList : [AccessibleFacilities] = []
                     for spot in parkingSpot{
-                        var park = AccessibleFacilities()
+                        let park = AccessibleFacilities()
                         park.type = AccessibleFacilityType.parkingSpot
                         park.category = "Parking Spot"
                         park.latitude = Double(spot.lat!)
@@ -1021,6 +1100,127 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         task.resume()
     }
 
+    //convert date to String
+    func convertDateToString(duration: Double) -> String{
+        let date = NSDate(timeIntervalSinceNow: duration)
+        let dateFormatter = DateFormatter()
+        if duration > 86400{
+            dateFormatter.dateFormat = " dd MMM yyyy HH:mm"
+        }else{
+        dateFormatter.dateFormat = "HH:mm"
+        }
+        let string = dateFormatter.string(from: date as Date)
+        return string
+    }
+    
+    func secondsToHoursMinutes (seconds : Int) -> String {
+        if seconds > 86400{
+            let days = seconds / 86400
+            let hours = (seconds % 86400) / 3600
+            return "\(days) days and \(hours) hours"
+        }
+        if seconds > 3600{
+            let hours = seconds / 3600
+            let minutes = (seconds % 3600) / 60
+            return "\(hours) hours and \(minutes) minutes"
+        }else{
+            let mins = seconds / 60
+            return "\(mins) minutes"
+        }
+    }
+    
+    func voiceGuide(message: String){
+        let utterace = AVSpeechUtterance(string: message)
+        utterace.voice = AVSpeechSynthesisVoice(language: "en-US")
+        utterace.rate = 0.5
+        if synthesizer?.isSpeaking == true{
+            synthesizer?.stopSpeaking(at: .immediate)
+        }
+        synthesizer?.speak(utterace)
+    }
+    
+    func startMessage(distance:Double, arrivingTime: String, duration:String) -> String{
+        let message = "Start from current Location to \((destinationAnnotation?.title)!), the journey will take you \(duration), and you would arrive there at \(arrivingTime)"
+        return message
+    }
+    
+    func stepMessage(step:MKRouteStep) -> String{
+        let message = "Continue \(step.distance) and \(step.instructions)"
+        return message
+    }
+    
+    func destinationMessage()->String{
+        let message = "You arrived at the destination."
+        return message
+    }
+    
+    //store the annotations on the map
+    var tempAnnotationList:[AccessibleFacilities] = []
+    func hideNavigationBar(show:Bool){
+        self.navigationController?.navigationBar.isHidden = show
+        self.transportControl.isHidden = show
+        self.locateMe.isHidden = show
+        if show == true{
+            tempAnnotationList.removeAll()
+            for annotation in MapView.annotations{
+                guard let item = annotation as? AccessibleFacilities else{
+                    print("this is not the right item")
+                    continue
+                }
+                tempAnnotationList.append(item)
+            }
+            tempAnnotationList = MapView.annotations as! [AccessibleFacilities]
+            do {
+                try MapView.removeAnnotations(self.annotationList)
+            }catch{
+                print("Unexpected error: \(error).")
+            }
+        }else{
+            MapView.addAnnotations(self.tempAnnotationList)
+        }
+    }
+    
+    func pushNotification(step:MKRouteStep){
+        
+        let content = UNMutableNotificationContent()
+        content.title = step.instructions
+        if step.notice != nil{
+            content.subtitle = step.notice!
+        }
+        content.body = self.stepMessage(step: step)
+        content.badge = 1
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
+        let request = UNNotificationRequest(identifier: step.instructions, content: content, trigger: trigger)
+        UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
+    }
+    
+    func getNearestToilet(coordinate: CLLocationCoordinate2D) -> AccessibleFacilities? {
+        var distanceDictionary : [String:CLLocationDistance] = [:]
+        let sourceLocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        for toilet in self.publicToiletList{
+            let target = CLLocation(latitude: toilet.coordinate.latitude, longitude: toilet.coordinate.longitude)
+            let distance = sourceLocation.distance(from: target)
+            distanceDictionary[toilet.id!] = distance
+        }
+        let nearest = distanceDictionary.min{a,b in a.value < b.value}
+        let nearestToilet = self.publicToiletList.filter{$0.id == nearest?.key}
+        return nearestToilet.first
+    }
+    
+    func getNearestWaterFountain(coordinate: CLLocationCoordinate2D) -> AccessibleFacilities? {
+        var distanceDictionary : [String:CLLocationDistance] = [:]
+        let sourceLocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        for toilet in self.waterFountainList{
+            let target = CLLocation(latitude: toilet.coordinate.latitude, longitude: toilet.coordinate.longitude)
+            let distance = sourceLocation.distance(from: target)
+            distanceDictionary[toilet.id!] = distance
+        }
+        let nearest = distanceDictionary.min{a,b in a.value < b.value}
+        let nearestWaterFountain = self.waterFountainList.filter{$0.id == nearest?.key}
+        return nearestWaterFountain.first
+    }
+    
 }
 
 

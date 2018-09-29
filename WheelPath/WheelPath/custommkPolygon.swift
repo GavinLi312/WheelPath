@@ -14,6 +14,7 @@ class custommkPolygon: MKPolygon{
 }
 
 struct Steepness {
+    var key : String = ""
     var steepnessFlag = 0
     var coordinates : [[[[Double]]]] = [[[[0]]]]
 }
