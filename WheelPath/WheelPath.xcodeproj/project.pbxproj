@@ -19,6 +19,8 @@
 		A3A3FE322133C19B004E684C /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3A3FE312133C19B004E684C /* Reachability.swift */; };
 		A3AB0E93212D82B600E2F366 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AB0E92212D82B600E2F366 /* MapViewController.swift */; };
 		A3B0F5F7213CCFCB00268178 /* Assets 12-10-32-200.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A3B0F5F6213CCFCA00268178 /* Assets 12-10-32-200.xcassets */; };
+		A3CAB0EE216114C100C08C70 /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3CAB0ED216114C100C08C70 /* PageViewController.swift */; };
+		A3CAB0F02161177A00C08C70 /* SimpleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3CAB0EF2161177A00C08C70 /* SimpleViewController.swift */; };
 		A3ED1CE6212E6C8400C4A89F /* CustomPointAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3ED1CE5212E6C8400C4A89F /* CustomPointAnnotation.swift */; };
 		A3ED1CE8212E908300C4A89F /* AccessibleFacilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3ED1CE7212E908300C4A89F /* AccessibleFacilities.swift */; };
 		A3F09B66212A875D00224A7E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3F09B65212A875D00224A7E /* AppDelegate.swift */; };
@@ -64,6 +66,8 @@
 		A3A3FE312133C19B004E684C /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		A3AB0E92212D82B600E2F366 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		A3B0F5F6213CCFCA00268178 /* Assets 12-10-32-200.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Assets 12-10-32-200.xcassets"; sourceTree = "<group>"; };
+		A3CAB0ED216114C100C08C70 /* PageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageViewController.swift; sourceTree = "<group>"; };
+		A3CAB0EF2161177A00C08C70 /* SimpleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleViewController.swift; sourceTree = "<group>"; };
 		A3ED1CE5212E6C8400C4A89F /* CustomPointAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPointAnnotation.swift; sourceTree = "<group>"; };
 		A3ED1CE7212E908300C4A89F /* AccessibleFacilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibleFacilities.swift; sourceTree = "<group>"; };
 		A3F09B62212A875D00224A7E /* WheelPath.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WheelPath.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -167,6 +171,7 @@
 				A3F09B65212A875D00224A7E /* AppDelegate.swift */,
 				A3A3FE312133C19B004E684C /* Reachability.swift */,
 				A3F09B69212A875D00224A7E /* Main.storyboard */,
+				A3CAB0EF2161177A00C08C70 /* SimpleViewController.swift */,
 				A3844E9621480F880016CBA8 /* DestinationCell.swift */,
 				A38A14222142759F00F776F4 /* searchPageController.swift */,
 				A35118AC2136C62200906D99 /* AboutViewController.swift */,
@@ -181,6 +186,7 @@
 				A3ED1CE7212E908300C4A89F /* AccessibleFacilities.swift */,
 				A367DEC9214013A400A0F459 /* InformationViewController.swift */,
 				A3844E9421480F6D0016CBA8 /* startPointCell.swift */,
+				A3CAB0ED216114C100C08C70 /* PageViewController.swift */,
 			);
 			path = WheelPath;
 			sourceTree = "<group>";
@@ -432,9 +438,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				A3844E9521480F6D0016CBA8 /* startPointCell.swift in Sources */,
+				A3CAB0EE216114C100C08C70 /* PageViewController.swift in Sources */,
 				A39C49B32148AFA400ED9E1C /* custommkPolygon.swift in Sources */,
 				A367DECA214013A400A0F459 /* InformationViewController.swift in Sources */,
 				A3996FCE214A199F00DB5FF8 /* CustomCircleRegion.swift in Sources */,
+				A3CAB0F02161177A00C08C70 /* SimpleViewController.swift in Sources */,
 				A3ED1CE6212E6C8400C4A89F /* CustomPointAnnotation.swift in Sources */,
 				A38A14232142759F00F776F4 /* searchPageController.swift in Sources */,
 				A3F09B6E212A875D00224A7E /* WheelPath.xcdatamodeld in Sources */,

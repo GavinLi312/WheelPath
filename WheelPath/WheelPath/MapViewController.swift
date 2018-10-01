@@ -136,6 +136,17 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     
     @IBOutlet weak var arrivalTimeLabel: UILabel!
     
+    var navigationButtonClicked = false{
+        didSet{
+            if navigationButtonClicked == true {
+                self.drawRouteButton.setImage(#imageLiteral(resourceName: "cross-76"), for: .normal)
+                self.buttonControl.isHidden = true
+            }else{
+                self.drawRouteButton.setImage(#imageLiteral(resourceName: "navigation-76"), for: .normal)
+                self.buttonControl.isHidden = false
+            }
+        }
+    }
     
     override func viewDidLoad() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert,.sound,.badge], completionHandler: {
@@ -375,8 +386,9 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     }
     
     
- 
     
+    
+    var oldCustomPolygon = custommkPolygon()
     // show user's location
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
@@ -388,7 +400,25 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             }
         }
         userLocation = location
-        
+        let polygon = self.self.coordinateInsidePolygon(coordinate: (userLocation?.coordinate)!)
+        if polygon != nil{
+            if polygon != oldCustomPolygon{
+                var steepnessLevel = ""
+                switch polygon?.colorLevel{
+                    case 1:
+                        steepnessLevel = "Low"
+                    case 2:
+                        steepnessLevel = "Medium"
+                    case 3:
+                        steepnessLevel = "High"
+                    default:
+                        steepnessLevel = "None"
+                }
+                displayErrorMessage(title: "Watch Out", message: "You are in the steep region and steepness level is \(steepnessLevel)")
+                voiceGuide(message: "You are in the steep region and steepness level is \(steepnessLevel)")
+                oldCustomPolygon = polygon!
+            }
+        }
         // add a circle to the user's current location
         let rad = CLLocationDistance(500)
         let newCircle = MKCircle(center: CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude), radius: rad)
@@ -426,7 +456,9 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         if self.drawRouteButton.isHidden == true{
             self.drawRouteButton.isHidden = false
         }
-
+        if self.navigationButtonClicked == true{
+            self.navigationButtonClicked = false
+        }
         
         let dictionary = ["title": view.annotation?.title, "subtitle":view.annotation?.subtitle]
         let destinationPlacemarker = MKPlacemark(coordinate: (view.annotation?.coordinate)!, addressDictionary: dictionary)
@@ -497,34 +529,41 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             if self.destinationItem == nil{
                 displayErrorMessage(title: "No destination", message: "Sorry please select a destination first")
             }else{
-                
-                if self.destinationAnnotation != nil{
-                self.MapView.removeAnnotation(self.destinationAnnotation!)
-                }
-                self.destinationAnnotation = self.addSearchItem(mapItem: destinationItem!, imageName: "pin-end 3-40")
-                if self.MapView.selectedAnnotations.first?.title != nil{
-                self.destinationAnnotation?.title = (self.MapView.selectedAnnotations.first?.title)!
-                }
-                if self.MapView.selectedAnnotations.first?.subtitle != nil{
-                self.destinationAnnotation?.subtitle = (self.MapView.selectedAnnotations.first?.subtitle)!
-                }
-                //select destination annotation
-                self.MapView.selectAnnotation(self.destinationAnnotation!, animated: true)
-                //setup start item
-                if startItem == nil{
-                    if userLocation != nil{
-                        let sourcePlacemark = MKPlacemark(coordinate: (self.userLocation?.coordinate)!)
-                        let sourceItem = MKMapItem(placemark: sourcePlacemark)
-                        self.drawRoute(startItem: sourceItem, destinationItem: destinationItem!)
-                    }else{
-                        locationServiceIsNotGivenErrorMessage()
+                if self.navigationButtonClicked == false{
+                    if self.destinationAnnotation != nil{
+                    self.MapView.removeAnnotation(self.destinationAnnotation!)
                     }
+                    self.destinationAnnotation = self.addSearchItem(mapItem: destinationItem!, imageName: "pin-end 3-40")
+                    if self.MapView.selectedAnnotations.first?.title != nil{
+                    self.destinationAnnotation?.title = (self.MapView.selectedAnnotations.first?.title)!
+                    }
+                    if self.MapView.selectedAnnotations.first?.subtitle != nil{
+                    self.destinationAnnotation?.subtitle = (self.MapView.selectedAnnotations.first?.subtitle)!
+                    }
+                    //select destination annotation
+                    self.MapView.selectAnnotation(self.destinationAnnotation!, animated: true)
+                    //setup start item
+                    if startItem == nil{
+                        if userLocation != nil{
+                            let sourcePlacemark = MKPlacemark(coordinate: (self.userLocation?.coordinate)!)
+                            let sourceItem = MKMapItem(placemark: sourcePlacemark)
+                            self.drawRoute(startItem: sourceItem, destinationItem: destinationItem!)
+                        }else{
+                            locationServiceIsNotGivenErrorMessage()
+                        }
 
+                    }else{
+                        self.drawRoute(startItem: self.startItem!, destinationItem: destinationItem!)
+                    }
                 }else{
-                    self.drawRoute(startItem: self.startItem!, destinationItem: destinationItem!)
+                    let polyline = self.MapView.overlays.filter{$0 is MKPolyline}
+                    self.MapView.removeOverlays(polyline)
+                    self.navigationButtonClicked = false
+                    self.startButton.isHidden = true
                 }
             }
         }else{
+
               displayErrorMessage(title: "Error", message: "No internet Connection")
         }
     }
@@ -532,16 +571,19 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
 
     //draw route on the map
     func drawRoute(startItem: MKMapItem, destinationItem:MKMapItem){
+        
         for overlay in self.MapView.overlays{
             if overlay is MKPolyline{
                 self.MapView.remove(overlay)
             }
         }
-        
+        activityIndicator.startAnimating()
+        self.view.addSubview(activityIndicator)
+        UIApplication.shared.beginIgnoringInteractionEvents()
         // remove notification
         removeNotification()
         //set the buttoncontrol and transport control
-        self.buttonControl.isHidden = true
+        
         if self.buttonControlSelected{
             self.functionListButtonClicked(self)
         }
@@ -572,6 +614,8 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         directions.calculate(completionHandler: { (response, error) in
             guard let response = response else{
                 if let error = error{
+                    self.activityIndicator.stopAnimating()
+                    UIApplication.shared.endIgnoringInteractionEvents()
                     self.buttonControl.isHidden = false
                     self.transportControl.isHidden = true
                     self.transportControl.setEnabled(false, forSegmentAt: 0)
@@ -587,8 +631,9 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                 }
                 return
             }
+            self.navigationButtonClicked = true
             if self.userLocation != nil{
-                self.drawRouteButton.isHidden = true
+                
                 if self.startItem == nil{
                     self.startButton.isHidden = false
                 }
@@ -637,12 +682,27 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             //put the along with route annotations on the map
             self.MapView.addAnnotations(self.alongWithTheRoute)
             self.MapView.add(item.polyline, level:.aboveRoads )
+            
+            
             let rekt = item.polyline.boundingMapRect
             let  newSize = MKMapSize(width: (rekt.size.width) , height: (rekt.size.height ))
             let newReke = MKMapRect(origin: rekt.origin , size: newSize)
                 self.MapView.setRegion(MKCoordinateRegionForMapRect(newReke), animated: false)
-            if  routes[0].distance > 2500 && directionRequest.transportType == .walking{
-                self.displayErrorMessage(title: "Distance Too Long", message: "It might be too far for you, please try other ways to commute")
+            self.activityIndicator.stopAnimating()
+            UIApplication.shared.endIgnoringInteractionEvents()
+            if directionRequest.transportType == .walking{
+                let evaluationArray = self.evaluteTheAverageSteepnessOfTheRoad(coordinatesArray: self.coords)
+                var errorMessage = ""
+                let totalSteepnessLevel = evaluationArray.reduce(0,+)
+                let highest = evaluationArray.max()
+                let average = Double(totalSteepnessLevel)/Double(evaluationArray.count)
+                errorMessage.append("The highest steepness Level : \(highest!)")
+                errorMessage.append("\n The Total steepness level : \(totalSteepnessLevel)")
+                errorMessage.append("\n The average Steepness level : \(Double(Int(average*100))/Double(100))")
+                if routes[0].distance > 2500 {
+                    errorMessage.append("\n It might be too far for you, please try other ways to commute")
+                }
+                self.displayErrorMessage(title: "Trip Evaluation", message: errorMessage)
             }
         })
     }
@@ -720,6 +780,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             }}else{
            locationServiceIsNotGivenErrorMessage()
         }
+
         return nearbyAnnotation
     }
     
@@ -779,8 +840,10 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             hideNavigationBar(show: true)
             self.manager.startUpdatingHeading()
             self.navigationView.isHidden = false
+            self.drawRouteButton.isHidden = true
             //set text notification
-            self.DistanceLabel.text = "\((self.routeSteps[1].distance)) m "
+            do {
+            try self.DistanceLabel.text = "\((self.routeSteps[1].distance)) m "
             
             if self.routeSteps.first?.instructions == ""{
                 self.InstructionLabel.text = self.routeSteps[1].instructions
@@ -796,11 +859,14 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             }
             arrivalTimeLabel.text = "\(self.convertDateToString(duration: (self.route?.expectedTravelTime)!)) arrival"
             //set voice navigation
-            self.voiceGuide(message: startMessage(distance: (self.route?.distance)!, arrivingTime: self.convertDateToString(duration: (self.route?.expectedTravelTime)!), duration: self.secondsToHoursMinutes(seconds: Int((self.route?.expectedTravelTime)!))))
+            try self.voiceGuide(message: startMessage(distance: (self.route?.distance)!, arrivingTime: self.convertDateToString(duration: (self.route?.expectedTravelTime)!), duration: self.secondsToHoursMinutes(seconds: Int((self.route?.expectedTravelTime)!))))
             start = false
-            self.startButton.setImage(UIImage(named: "stop copy-76"), for: .normal)
+            try self.startButton.setImage(UIImage(named: "stop copy-76"), for: .normal)
             for step in self.routeSteps{
-            self.addnotificationToStep(step: step)
+            try self.addnotificationToStep(step: step)
+            }
+            }catch {
+                print(error)
             }
         }else{
             //stop voice navigation
@@ -808,6 +874,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                 self.synthesizer?.stopSpeaking(at: .immediate)
             }
             // show navigation bar
+            self.drawRouteButton.isHidden = false
             hideNavigationBar(show: false)
             self.navigationView.isHidden = true
             start = true
@@ -970,24 +1037,29 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     //nearbyButton
     @IBAction func nearbyButtonClicked(_ sender: Any) {
         self.MapView.removeAnnotations(self.MapView.annotations)
+        self.destinationItem = nil
+        self.destinationAnnotation = nil
         self.MapView.addAnnotations(self.getNearbyFacilities())
         if self.userLocation != nil{
             locateLocation(location: userLocation!)
         }else{
             locationServiceIsNotGivenErrorMessage()
         }
-        
     }
     
     //Building button
     @IBAction func buildingButtonIsClicked(_ sender: Any) {
         self.MapView.removeAnnotations(self.MapView.annotations)
+        self.destinationItem = nil
+        self.destinationAnnotation = nil
         self.MapView.addAnnotations(self.accessibleBuildingList)
     }
     
     //toilet button
     @IBAction func toiletButtonIsClicked(_ sender: Any) {
         self.MapView.removeAnnotations(self.MapView.annotations)
+        self.destinationItem = nil
+        self.destinationAnnotation = nil
             self.MapView.addAnnotations(self.publicToiletList)
         
     }
@@ -995,12 +1067,16 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     //water Button
     @IBAction func waterButtonIsClicked(_ sender: Any) {
         self.MapView.removeAnnotations(self.MapView.annotations)
+        self.destinationItem = nil
+        self.destinationAnnotation = nil
         self.MapView.addAnnotations(self.waterFountainList)
     }
     
     //park Button
     @IBAction func parkButtonClicked(_ sender: Any) {
         self.MapView.removeAnnotations(self.MapView.annotations)
+        self.destinationItem = nil
+        self.destinationAnnotation = nil
         if userLocation != nil{
         getAvailableParkingSpot(coordinate: (userLocation?.coordinate)!)
         }else{
@@ -1201,7 +1277,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     
     //startMessage
     func startMessage(distance:Double, arrivingTime: String, duration:String) -> String{
-        let message = "Start from current Location to \((destinationAnnotation?.title)!), the journey will take you \(duration), and you would arrive there at \(arrivingTime)"
+        let message = "Start from current Location to \((destinationAnnotation?.title) ?? "destination"), the journey will take you \(duration ), and you would arrive there at \(arrivingTime )"
         return message
     }
     
@@ -1243,7 +1319,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         }
     }
     
-    // push  back ground notification
+    // push background notification
     func pushNotification(step:MKRouteStep){
         
         let content = UNMutableNotificationContent()
@@ -1287,6 +1363,50 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         return nearestWaterFountain.first
     }
     
+    
+    //https://stackoverflow.com/questions/36016764/check-if-user-location-is-inside-a-shape
+    //check wheather a coordinate is in the polygon
+    func coordinateInsidePolygon(coordinate:CLLocationCoordinate2D) -> custommkPolygon? {
+        
+        var containsPoint: Bool = false
+        let polygon = self.MapView.overlays.filter{$0 is MKPolygon} as! [custommkPolygon]
+        for item in polygon{
+            let polygonPath:CGMutablePath = CGMutablePath()
+            let arrPoints = item.points()
+            
+            for i in 0..<item.pointCount{
+                let point : MKMapPoint = arrPoints[i]
+                let pointCoordinate = MKCoordinateForMapPoint(point)
+                let polygonPoint = self.MapView.convert(pointCoordinate, toPointTo: self.MapView)
+                if (i == 0){
+                    polygonPath.move(to: CGPoint(x: polygonPoint.x, y: polygonPoint.y))
+                }else{
+                    polygonPath.addLine(to: CGPoint(x: polygonPoint.x, y: polygonPoint.y))
+                }
+            }
+            let mapPointAsCGP:CGPoint = self.MapView.convert(coordinate, toPointTo: self.MapView)
+            containsPoint =  polygonPath.contains(mapPointAsCGP)
+            if containsPoint{
+                return item
+            }
+        }
+        return nil
+    }
+    
+    //evaluate whether a set of coordinates are in the steep region
+    func evaluteTheAverageSteepnessOfTheRoad(coordinatesArray:[CLLocationCoordinate2D]) -> [Int]{
+        var polygonArray : [Int] = []
+        for coordinate in coordinatesArray{
+            let polygon = coordinateInsidePolygon(coordinate: coordinate)
+            if polygon != nil{
+                polygonArray.append((polygon?.colorLevel)!)
+            }else{
+                polygonArray.append(0)
+            }
+        }
+        return polygonArray
+    }
+
 }
 
 

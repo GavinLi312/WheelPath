@@ -76,7 +76,6 @@ class WheelPathTests: XCTestCase {
         let location = CLLocationCoordinate2DMake(-37.815398, 144.957177)
         let query = controller.APIQuery(coordinate: location)
         let url = URL(string: controller.APIaddress + query + controller.APIToken)
-        print(url)
         let dataTask = URLSession.shared.dataTask(with: url!){ (data, _, _) in
             print(data)
             XCTAssertNotNil(data, "No data was downloaded.")
