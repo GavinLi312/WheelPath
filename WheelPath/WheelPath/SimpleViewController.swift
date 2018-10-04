@@ -38,7 +38,7 @@ class SimpleViewController: UIViewController, CLLocationManagerDelegate{
     
     func setButtonLayout() {
         startButton.backgroundColor = UIColor.white
-        startButton.setTitle("      Get Start!      ",for:.normal)
+        startButton.setTitle("     Get Started!      ",for:.normal)
         startButton.setTitleColor(UIColor(red: 59/255, green: 178/255, blue: 208/255, alpha: 1),for:.normal)
         startButton.titleLabel?.font = UIFont(name: "AvenirNext-DemiBold", size: 18)
         startButton.layer.cornerRadius = 25

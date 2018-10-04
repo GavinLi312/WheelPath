@@ -1015,7 +1015,7 @@
                                 <rect key="frame" x="0.0" y="20" width="320" height="548"/>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ytl-aO-j48">
-                                <rect key="frame" x="137" y="498" width="46" height="30"/>
+                                <rect key="frame" x="137" y="488" width="46" height="30"/>
                                 <state key="normal" title="Button"/>
                                 <connections>
                                     <segue destination="hEK-hL-a3S" kind="showDetail" id="I48-tq-dpQ"/>
@@ -1024,7 +1024,7 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="uXp-0E-sq2" firstAttribute="bottom" secondItem="ytl-aO-j48" secondAttribute="bottom" constant="40" id="MKd-QQ-Cor"/>
+                            <constraint firstItem="uXp-0E-sq2" firstAttribute="bottom" secondItem="ytl-aO-j48" secondAttribute="bottom" constant="50" id="MKd-QQ-Cor"/>
                             <constraint firstItem="uXp-0E-sq2" firstAttribute="bottom" secondItem="PTV-oo-mUv" secondAttribute="bottom" id="TJU-C8-3NL"/>
                             <constraint firstItem="ytl-aO-j48" firstAttribute="centerX" secondItem="CxT-fJ-deK" secondAttribute="centerX" id="X24-MD-vN6"/>
                             <constraint firstAttribute="trailing" secondItem="PTV-oo-mUv" secondAttribute="trailing" id="Yxh-aS-i5s"/>

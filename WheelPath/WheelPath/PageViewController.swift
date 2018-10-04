@@ -63,8 +63,8 @@ class PageViewController: UIPageViewController,UIPageViewControllerDelegate,UIPa
         let previousIndex = viewControllerIndex - 1
         
         guard previousIndex >= 0 else{
-            return orderedViewControllers.last
-            //return nil
+//            return orderedViewControllers.last
+            return nil
         }
         
         guard orderedViewControllers.count > previousIndex else {
@@ -80,8 +80,8 @@ class PageViewController: UIPageViewController,UIPageViewControllerDelegate,UIPa
         let nextIndex = viewControllerIndex + 1
         
         guard orderedViewControllers.count != nextIndex else{
-            return orderedViewControllers.first
-            //return nil
+//            return orderedViewControllers.first
+            return nil
         }
         
         guard orderedViewControllers.count > nextIndex else {
