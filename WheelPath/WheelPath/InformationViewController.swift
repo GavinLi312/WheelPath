@@ -88,7 +88,6 @@ class InformationViewController: UIViewController,UITableViewDelegate,UITableVie
             }
             
             directioncell?.detailTextLabel?.text = "\(directionSteps[indexPath.row].instructions)"
-//            print("\(directionSteps[indexPath.row].notice)")
             cell = directioncell!
         }else{
             var destCell = directionList.dequeueReusableCell(withIdentifier: "DestinationCell") as! DestinationCell

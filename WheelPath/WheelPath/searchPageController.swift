@@ -99,12 +99,11 @@ class searchPageController: UIViewController, UISearchBarDelegate, UITableViewDe
             }else{
                 //Remove annotations
                 if option == self.optionList[1]{
-                    var tempList = (response?.mapItems)!
-                    tempList.filter{ (item : MKMapItem) -> Bool in
+                    let tempList = (response?.mapItems)!
+                     self.destinationList = tempList.filter{ (item : MKMapItem) -> Bool in
                         return item.placemark.countryCode == "AU"
-
                     }
-                    self.destinationList = tempList
+                   
                     self.destinationTableView.reloadData()
                     
                 }else{
@@ -167,6 +166,7 @@ class searchPageController: UIViewController, UISearchBarDelegate, UITableViewDe
                 cell = self.destinationTableView.dequeueReusableCell(withIdentifier: "destinationCell")!
                 cell.textLabel?.font = cell.textLabel?.font.withSize(14)
                 cell.textLabel?.text = destinationList[indexPath.row].name
+                print(destinationList[indexPath.row].placemark.name)
                 cell.detailTextLabel?.text = destinationList[indexPath.row].placemark.title
             }else if indexPath.section == 1{
                 cell = self.destinationTableView.dequeueReusableCell(withIdentifier: "toiletCell")!

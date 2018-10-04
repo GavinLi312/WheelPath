@@ -17,7 +17,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var restrictRotation:UIInterfaceOrientationMask = .portrait
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        
+        //https://stackoverflow.com/questions/27769074/swift-remove-push-notification-badge-number
+        //clear the icon Badge number
+        UIApplication.shared.applicationIconBadgeNumber = 0
         FirebaseApp.configure()
         if UserDefaults.standard.string(forKey: "First Launch") == nil{
             UserDefaults.standard.set("any", forKey: "First Launch")

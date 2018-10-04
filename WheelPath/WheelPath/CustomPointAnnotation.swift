@@ -107,7 +107,7 @@ class AccessibleBuildingAnnotationView: MKMarkerAnnotationView {
     }
     override func prepareForDisplay() {
         super.prepareForDisplay()
-        displayPriority = .defaultLow
+        displayPriority = .defaultHigh
         markerTintColor = UIColor.blue
         glyphImage = #imageLiteral(resourceName: "access building-blue-20")
     }
