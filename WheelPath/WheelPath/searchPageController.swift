@@ -8,12 +8,16 @@
 
 import UIKit
 import MapKit
+import CoreData
 
 
 class searchPageController: UIViewController, UISearchBarDelegate, UITableViewDelegate,UITableViewDataSource {
 
+  
     var optionList = ["start", "destination"]
     
+    var startUserDefaultList : [String] = []
+    var destinationUserDefaultList : [String] = []
     
     var searchProtocol: searchForDestination?
     var startItem : MKMapItem?
@@ -46,6 +50,11 @@ class searchPageController: UIViewController, UISearchBarDelegate, UITableViewDe
         self.destinationTableView.dataSource = self
         self.destinationTableView.isHidden = true
         self.destinationTableView.delegate = self
+        
+        self.startUserDefaultList = self.getArrayFromUserDefault(option: optionList.first!)
+        self.destinationUserDefaultList = self.getArrayFromUserDefault(option: optionList.last!)
+        print(startUserDefaultList.count)
+        print(destinationUserDefaultList.count)
     }
     
     func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
@@ -228,7 +237,12 @@ class searchPageController: UIViewController, UISearchBarDelegate, UITableViewDe
                     }
                 }else{
                     //with ok
+                    
                     self.searchProtocol?.searchforDestination(destination: nil, startPoint: self.startItem, nearestDestination: text)
+                    if !self.startUserDefaultList.contains((self.startItem?.name)!){
+                        self.startUserDefaultList.append((self.startItem?.name)!)
+                    }
+                    self.addMapItemInToUserDefault(option: optionList.first!)
                     self.navigationController?.popViewController(animated: true)
                 }
             }else{
@@ -242,6 +256,11 @@ class searchPageController: UIViewController, UISearchBarDelegate, UITableViewDe
                 if self.startPointSearchBar.text?.trimmingCharacters(in: .whitespacesAndNewlines) == "Current Location"{
                     // if the text is "Current Location"
                     self.searchProtocol?.searchforDestination(destination: self.destinationItem!, startPoint: nil, nearestDestination: nil)
+                    if !self.destinationUserDefaultList.contains((self.destinationItem?.name)!){
+                        self.destinationUserDefaultList.append((self.destinationItem?.name)!)
+                    }
+                    self.destinationUserDefaultList.append((self.destinationItem?.name)!)
+                    self.addMapItemInToUserDefault(option: optionList.last!)
                     self.navigationController?.popViewController(animated: true)
                 }else{
                     // no start Point not current location should fail
@@ -250,6 +269,14 @@ class searchPageController: UIViewController, UISearchBarDelegate, UITableViewDe
             }else{
                 // with start and destination
                 self.searchProtocol?.searchforDestination(destination: self.destinationItem!, startPoint: self.startItem, nearestDestination: nil)
+                if !self.destinationUserDefaultList.contains((self.destinationItem?.name)!){
+                    self.destinationUserDefaultList.append((self.destinationItem?.name)!)
+                }
+                if !self.startUserDefaultList.contains((self.startItem?.name)!){
+                    self.startUserDefaultList.append((self.startItem?.name)!)
+                }
+                self.addMapItemInToUserDefault(option: optionList.first!)
+                self.addMapItemInToUserDefault(option: optionList.last!)
                 self.navigationController?.popViewController(animated: true)
             }
             
@@ -272,6 +299,23 @@ class searchPageController: UIViewController, UISearchBarDelegate, UITableViewDe
         let alertview = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alertview.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler:nil))
         self.present(alertview, animated: true, completion: nil)
+        
     }
     
+    
+    func addMapItemInToUserDefault(option: String){
+        if option == self.optionList.first{
+             UserDefaults.standard.set(startUserDefaultList, forKey: option)
+        }else{
+            UserDefaults.standard.set(destinationUserDefaultList, forKey: option)
+        }
+    }
+    
+    func getArrayFromUserDefault(option: String) -> [String]{
+        if UserDefaults.standard.array(forKey:option) != nil{
+            return UserDefaults.standard.array(forKey: option) as! [String]
+        }else{
+            return []
+        }
+    }
 }

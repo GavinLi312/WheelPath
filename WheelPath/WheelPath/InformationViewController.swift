@@ -47,6 +47,8 @@ class InformationViewController: UIViewController,UITableViewDelegate,UITableVie
         changeCoordinatoToAddress(animalLocation: userLocation!, option: optionList[0])
         changeCoordinatoToAddress(animalLocation: destination!, option: optionList[1])
         findNavigateSteps(startPoint: self.userLocation, destination: self.destination)
+        directionList.layer.borderColor = #colorLiteral(red: 0.5783415437, green: 0.5783415437, blue: 0.5783415437, alpha: 0.3349208048)
+        directionList.layer.borderWidth = 2.0
         // Do any additional setup after loading the view.
     }
 

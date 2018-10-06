@@ -140,6 +140,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                 self.drawRouteButton.setImage(#imageLiteral(resourceName: "stop-76"), for: .normal)
                 self.buttonControl.isHidden = true
             }else{
+                
                 self.drawRouteButton.setImage(#imageLiteral(resourceName: "navigation-76"), for: .normal)
                 self.buttonControl.isHidden = false
             }
@@ -391,11 +392,11 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         self.transportControl.isHidden = true
         manager.stopUpdatingHeading()
         
-        for overlay in self.MapView.overlays{
-            if overlay is MKPolyline{
-                self.MapView.remove(overlay)
-            }
-        }
+//        for overlay in self.MapView.overlays{
+//            if overlay is MKPolyline{
+//                self.MapView.remove(overlay)
+//            }
+//        }
         
         if  self.start == false{
             self.startIsClicked(self)
@@ -423,11 +424,13 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         //parking spot different span
         if view.annotation?.title == "Parking Spot"{
             span = MKCoordinateSpan(latitudeDelta: 0.0005, longitudeDelta: 0.0005)
+            let region = MKCoordinateRegion(center: (self.destinationItem?.placemark.coordinate)!, span: span!)
+            mapView.setRegion(region, animated: false)
         }else{
         span = MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
         }
-        let region = MKCoordinateRegion(center: (self.destinationItem?.placemark.coordinate)!, span: span!)
-        mapView.setRegion(region, animated: false)
+//        let region = MKCoordinateRegion(center: (self.destinationItem?.placemark.coordinate)!, span: span!)
+//        mapView.setRegion(region, animated: false)
     }
     
     
@@ -481,7 +484,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         //check internet connection
         if ((self.reachability!.connection) == .cellular || (self.reachability!.connection == .wifi)){
             if self.destinationItem == nil{
-                displayErrorMessage(title: "No destination", message: "Sorry please select a destination first")
+                displayErrorMessage(title: "No destination", message: "Sorry please select a destination first.")
             }else{
                 if self.navigationButtonClicked == false{
                     if self.destinationAnnotation != nil{
@@ -506,7 +509,6 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                         }else{
                             locationServiceIsNotGivenErrorMessage()
                         }
-
                     }else{
                         self.drawRoute(startItem: self.startItem!, destinationItem: destinationItem!)
                     }
@@ -518,6 +520,12 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                     }
                     if self.destinationItem != nil{
                         self.destinationItem = nil
+                    }
+                    if self.startAnnotation != nil{
+                        self.MapView.removeAnnotation(self.startAnnotation!)
+                    }
+                    if self.startItem != nil{
+                        self.startItem = nil
                     }
                     self.transportControl.isHidden = true
                     self.transportControl.setEnabled(false, forSegmentAt: 0)
@@ -586,7 +594,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                     self.transportControl.setEnabled(false, forSegmentAt: 1)
                     print(error)
                     //https://stackoverflow.com/questions/28152526/how-do-i-open-phone-settings-when-a-button-is-clicked
-                    let alertView = UIAlertController(title: "Error ", message: "No routes are found", preferredStyle: .alert)
+                    let alertView = UIAlertController(title: "Error ", message: "No route found", preferredStyle: .alert)
                     alertView.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: { action in
                         print(" no is clicked")
                         
@@ -663,7 +671,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                 if highest! > 2 {
                     errorMessage.append("The route might be a little bit steep for you.")
                 }else{
-                    errorMessage.append("The route is not steep at all.")
+                    errorMessage.append("The route is not steep.")
                 }
 
                 if routes[0].distance > 2500 {
@@ -720,13 +728,13 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     
     // locate current user location, cancel the start item
     @IBAction func locateMe(_ sender: Any) {
-        if startItem != nil{
-            self.startItem = nil
-            self.locateMe.setImage(#imageLiteral(resourceName: "target-1-76"), for: .normal)
-            if self.startAnnotation != nil{
-            self.MapView.removeAnnotation(self.startAnnotation!)
-            }
-        }
+//        if startItem != nil{
+//            self.startItem = nil
+//            self.locateMe.setImage(#imageLiteral(resourceName: "target-1-76"), for: .normal)
+//            if self.startAnnotation != nil{
+//            self.MapView.removeAnnotation(self.startAnnotation!)
+//            }
+//        }
         if userLocation == nil{
             locationServiceIsNotGivenErrorMessage()
         }else{
@@ -847,8 +855,8 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                 print(steepnessTimer.isValid)
             }
             
-            self.startButton.isEnabled = false
-            Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(self.setStartButtonEnable), userInfo: nil, repeats: false)
+//            self.startButton.isEnabled = false
+//            Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(self.setStartButtonEnable), userInfo: nil, repeats: false)
         }else{
             if self.transportControl.selectedSegmentIndex == 0{
             if steepnessTimer != nil{
@@ -1077,7 +1085,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         }
         if self.startAnnotation != nil{
             self.MapView.removeAnnotation(self.startAnnotation!)
-            self.locateMe.setImage(#imageLiteral(resourceName: "target-1-76"), for: .normal)
+//            self.locateMe.setImage(#imageLiteral(resourceName: "target-1-76"), for: .normal)
         }
         
         if startPoint != nil{
@@ -1115,7 +1123,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             if self.startButton.isHidden == false{
                 self.startButton.isHidden = true
             }
-            self.locateMe.setImage(#imageLiteral(resourceName: "cross-76"), for: .normal)
+//            self.locateMe.setImage(#imageLiteral(resourceName: "cross-76"), for: .normal)
         }else{
             if userLocation != nil{
                 self.startItem = nil
