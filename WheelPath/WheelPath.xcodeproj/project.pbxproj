@@ -16,6 +16,12 @@
 		A38A14232142759F00F776F4 /* searchPageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38A14222142759F00F776F4 /* searchPageController.swift */; };
 		A3996FCE214A199F00DB5FF8 /* CustomCircleRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3996FCD214A199F00DB5FF8 /* CustomCircleRegion.swift */; };
 		A39C49B32148AFA400ED9E1C /* custommkPolygon.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39C49B22148AFA400ED9E1C /* custommkPolygon.swift */; };
+		A3A239E42169B4C700D35EE4 /* CustomPolygon.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3A239E32169B4C700D35EE4 /* CustomPolygon.swift */; };
+		A3A239E7216A1F1B00D35EE4 /* MKPolygon_GPC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3A239E6216A1F1B00D35EE4 /* MKPolygon_GPC.framework */; };
+		A3A239F2216A27B100D35EE4 /* gpc.c in Sources */ = {isa = PBXBuildFile; fileRef = A3A239EC216A27B000D35EE4 /* gpc.c */; };
+		A3A239F3216A27B100D35EE4 /* VERSIONS.TXT in Resources */ = {isa = PBXBuildFile; fileRef = A3A239ED216A27B000D35EE4 /* VERSIONS.TXT */; };
+		A3A239F4216A27B100D35EE4 /* GPC-README.pdf in Resources */ = {isa = PBXBuildFile; fileRef = A3A239EF216A27B000D35EE4 /* GPC-README.pdf */; };
+		A3A239F5216A27B100D35EE4 /* MKPolygon+GPC.m in Sources */ = {isa = PBXBuildFile; fileRef = A3A239F1216A27B000D35EE4 /* MKPolygon+GPC.m */; };
 		A3A3FE322133C19B004E684C /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3A3FE312133C19B004E684C /* Reachability.swift */; };
 		A3AB0E93212D82B600E2F366 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AB0E92212D82B600E2F366 /* MapViewController.swift */; };
 		A3B0F5F7213CCFCB00268178 /* Assets 12-10-32-200.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A3B0F5F6213CCFCA00268178 /* Assets 12-10-32-200.xcassets */; };
@@ -63,6 +69,15 @@
 		A38A14222142759F00F776F4 /* searchPageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = searchPageController.swift; sourceTree = "<group>"; };
 		A3996FCD214A199F00DB5FF8 /* CustomCircleRegion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCircleRegion.swift; sourceTree = "<group>"; };
 		A39C49B22148AFA400ED9E1C /* custommkPolygon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = custommkPolygon.swift; sourceTree = "<group>"; };
+		A3A239E32169B4C700D35EE4 /* CustomPolygon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPolygon.swift; sourceTree = "<group>"; };
+		A3A239E6216A1F1B00D35EE4 /* MKPolygon_GPC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MKPolygon_GPC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A3A239EA216A25E500D35EE4 /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
+		A3A239EC216A27B000D35EE4 /* gpc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gpc.c; sourceTree = "<group>"; };
+		A3A239ED216A27B000D35EE4 /* VERSIONS.TXT */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = VERSIONS.TXT; sourceTree = "<group>"; };
+		A3A239EE216A27B000D35EE4 /* gpc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gpc.h; sourceTree = "<group>"; };
+		A3A239EF216A27B000D35EE4 /* GPC-README.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "GPC-README.pdf"; sourceTree = "<group>"; };
+		A3A239F0216A27B000D35EE4 /* MKPolygon+GPC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MKPolygon+GPC.h"; sourceTree = "<group>"; };
+		A3A239F1216A27B000D35EE4 /* MKPolygon+GPC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MKPolygon+GPC.m"; sourceTree = "<group>"; };
 		A3A3FE312133C19B004E684C /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		A3AB0E92212D82B600E2F366 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		A3B0F5F6213CCFCA00268178 /* Assets 12-10-32-200.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Assets 12-10-32-200.xcassets"; sourceTree = "<group>"; };
@@ -95,6 +110,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A3A239E7216A1F1B00D35EE4 /* MKPolygon_GPC.framework in Frameworks */,
 				619B5BE1772D5361EDF551AF /* Pods_WheelPath.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -121,6 +137,7 @@
 		0F7AB495644260D32C30EB48 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A3A239E6216A1F1B00D35EE4 /* MKPolygon_GPC.framework */,
 				F5098A45F72028C5E53FC825 /* Pods_WheelPath.framework */,
 				265D61330A1351A917166D27 /* Pods_WheelPathTests.framework */,
 				85FB052A6ABA677E73F48871 /* Pods_WheelPathUITests.framework */,
@@ -141,9 +158,21 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		A3A239EB216A27B000D35EE4 /* gpc232 */ = {
+			isa = PBXGroup;
+			children = (
+				A3A239EC216A27B000D35EE4 /* gpc.c */,
+				A3A239ED216A27B000D35EE4 /* VERSIONS.TXT */,
+				A3A239EE216A27B000D35EE4 /* gpc.h */,
+				A3A239EF216A27B000D35EE4 /* GPC-README.pdf */,
+			);
+			path = gpc232;
+			sourceTree = "<group>";
+		};
 		A3F09B59212A875D00224A7E = {
 			isa = PBXGroup;
 			children = (
+				A3A239EA216A25E500D35EE4 /* BridgingHeader.h */,
 				A3F09B64212A875D00224A7E /* WheelPath */,
 				A3F09B7C212A875E00224A7E /* WheelPathTests */,
 				A3F09B87212A875E00224A7E /* WheelPathUITests */,
@@ -170,6 +199,9 @@
 				A35118A721365E2A00906D99 /* WheelPath.entitlements */,
 				A3F09B65212A875D00224A7E /* AppDelegate.swift */,
 				A3A3FE312133C19B004E684C /* Reachability.swift */,
+				A3A239EB216A27B000D35EE4 /* gpc232 */,
+				A3A239F0216A27B000D35EE4 /* MKPolygon+GPC.h */,
+				A3A239F1216A27B000D35EE4 /* MKPolygon+GPC.m */,
 				A3F09B69212A875D00224A7E /* Main.storyboard */,
 				A3CAB0EF2161177A00C08C70 /* SimpleViewController.swift */,
 				A3844E9621480F880016CBA8 /* DestinationCell.swift */,
@@ -187,6 +219,7 @@
 				A367DEC9214013A400A0F459 /* InformationViewController.swift */,
 				A3844E9421480F6D0016CBA8 /* startPointCell.swift */,
 				A3CAB0ED216114C100C08C70 /* PageViewController.swift */,
+				A3A239E32169B4C700D35EE4 /* CustomPolygon.swift */,
 			);
 			path = WheelPath;
 			sourceTree = "<group>";
@@ -330,6 +363,8 @@
 			files = (
 				A3F09B73212A875E00224A7E /* LaunchScreen.storyboard in Resources */,
 				A3B0F5F7213CCFCB00268178 /* Assets 12-10-32-200.xcassets in Resources */,
+				A3A239F3216A27B100D35EE4 /* VERSIONS.TXT in Resources */,
+				A3A239F4216A27B100D35EE4 /* GPC-README.pdf in Resources */,
 				A3F09B97212A887900224A7E /* GoogleService-Info.plist in Resources */,
 				A3F09B6B212A875D00224A7E /* Main.storyboard in Resources */,
 			);
@@ -379,6 +414,7 @@
 				"${SRCROOT}/Pods/Target Support Files/Pods-WheelPath/Pods-WheelPath-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
+				"${BUILT_PRODUCTS_DIR}/MKPolygon-GPC/MKPolygon_GPC.framework",
 				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
 				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
@@ -386,6 +422,7 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MKPolygon_GPC.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
@@ -437,7 +474,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A3A239F2216A27B100D35EE4 /* gpc.c in Sources */,
+				A3A239F5216A27B100D35EE4 /* MKPolygon+GPC.m in Sources */,
 				A3844E9521480F6D0016CBA8 /* startPointCell.swift in Sources */,
+				A3A239E42169B4C700D35EE4 /* CustomPolygon.swift in Sources */,
 				A3CAB0EE216114C100C08C70 /* PageViewController.swift in Sources */,
 				A39C49B32148AFA400ED9E1C /* custommkPolygon.swift in Sources */,
 				A367DECA214013A400A0F459 /* InformationViewController.swift in Sources */,
@@ -627,6 +667,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = NRL9LH8W6N;
 				INFOPLIST_FILE = WheelPath/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -636,6 +677,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = monash.WheelPath;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = /Users/salamenderli/Desktop/IEProject/WheelPath/WheelPath/BridgingHeader.h;
+				"SWIFT_OBJC_BRIDGING_HEADER[arch=*]" = /Users/salamenderli/Desktop/IEProject/WheelPath/WheelPath/BridgingHeader.h;
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -648,6 +691,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = NRL9LH8W6N;
 				INFOPLIST_FILE = WheelPath/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -658,6 +702,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = monash.WheelPath;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = /Users/salamenderli/Desktop/IEProject/WheelPath/WheelPath/BridgingHeader.h;
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

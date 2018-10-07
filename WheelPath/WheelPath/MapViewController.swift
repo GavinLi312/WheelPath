@@ -16,6 +16,8 @@ import AVFoundation
 
 
 
+
+
 protocol searchForDestination {
     func searchforDestination(destination:MKMapItem?, startPoint:MKMapItem?, nearestDestination:String?)
 }
@@ -123,6 +125,8 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     
     @IBOutlet weak var waterButton: UIButton!
     
+    @IBOutlet weak var parkButton: UIButton!
+    
     @IBOutlet weak var functionView: UIView!
     
     //
@@ -134,10 +138,18 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     
     @IBOutlet weak var arrivalTimeLabel: UILabel!
     
+    @IBOutlet weak var newlayout: NSLayoutConstraint!
+    
+    var polgons : [customPolygon] = []
+    
+    var purplePolgonsView:MKPolygonRenderer?
+    
+    var boundaryPolygon : MKPolygon?
+    
     var navigationButtonClicked = false{
         didSet{
             if navigationButtonClicked == true {
-                self.drawRouteButton.setImage(#imageLiteral(resourceName: "stop-76"), for: .normal)
+                self.drawRouteButton.setImage(#imageLiteral(resourceName: "clear-76"), for: .normal)
                 self.buttonControl.isHidden = true
             }else{
                 
@@ -147,12 +159,135 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         }
     }
     
+    var nearbyClicked = false {
+        didSet{
+            if nearbyClicked == true{
+            setFunctionButtonImage()
+            nearbyButton.setImage(#imageLiteral(resourceName: "nearbyblue-76"), for: .normal)
+            }
+        }
+    }
+    
+    var toiletClicked = false{
+        didSet{
+            if toiletClicked == true{
+                setFunctionButtonImage()
+                toiletButton.setImage(#imageLiteral(resourceName: "toilet-76"), for: .normal)
+            }
+        }
+    }
+    
+    var parkClicked = false{
+        didSet{
+
+            if parkClicked == true{
+                setFunctionButtonImage()
+                parkButton.setImage(#imageLiteral(resourceName: "parking-76"), for: .normal)
+            }
+
+        }
+    }
+    
+    var waterClicked = false{
+        didSet{
+            if waterClicked == true {
+                setFunctionButtonImage()
+                waterButton.setImage(#imageLiteral(resourceName: "water-76"), for: .normal)
+            }
+        }
+    }
+    
+    func setupButtons()  {
+        self.MapView.subviews[1].removeFromSuperview()
+        
+        drawRouteButton.setImage(#imageLiteral(resourceName: "navigation-76"), for: .normal)
+        drawRouteButton.frame = CGRect(x: 246, y: 494, width: 70, height: 70)
+        drawRouteButton.layer.cornerRadius = 0.5 * drawRouteButton.bounds.size.width
+        drawRouteButton.clipsToBounds = true
+        drawRouteButton.layer.shadowOffset = CGSize(width: 0, height: 10)
+        drawRouteButton.layer.shadowRadius = 5
+        drawRouteButton.layer.shadowOpacity = 0.3
+//        drawRouteButton.backgroundColor = UIColor.black
+        
+        locateMe.setImage(#imageLiteral(resourceName: "target-1-76"), for: .normal)
+        locateMe.frame = CGRect(x: 246, y: 420, width: 70, height: 70)
+        locateMe.layer.cornerRadius = 0.5 * locateMe.bounds.size.width
+        locateMe.clipsToBounds = true
+        locateMe.layer.shadowOffset = CGSize(width: 0, height: 10)
+        locateMe.layer.shadowRadius = 5
+        locateMe.layer.shadowOpacity = 0.3
+//        locateMe.backgroundColor = UIColor.black
+        
+        startButton.setImage(#imageLiteral(resourceName: "start-76"), for: .normal)
+        startButton.frame = CGRect(x: 246, y: 346, width: 70, height: 70)
+        startButton.layer.cornerRadius = 0.5 * startButton.bounds.size.width
+        startButton.clipsToBounds = true
+        startButton.layer.shadowOffset = CGSize(width: 0, height: 10)
+        startButton.layer.shadowRadius = 5
+        startButton.layer.shadowOpacity = 0.3
+//        startButton.backgroundColor = UIColor.black
+        
+        buttonControl.setImage(#imageLiteral(resourceName: "open-76"), for: .normal)
+        buttonControl.frame = CGRect(x: 8, y: 494, width: 70, height: 70)
+        buttonControl.layer.cornerRadius = 0.5 * buttonControl.bounds.size.width
+        buttonControl.clipsToBounds = true
+        buttonControl.layer.shadowOffset = CGSize(width: 0, height: 10)
+        buttonControl.layer.shadowRadius = 5
+        buttonControl.layer.shadowOpacity = 0.3
+//        buttonControl.backgroundColor = UIColor.black
+        
+
+        self.setFunctionButtonImage()
+        nearbyButton.frame = CGRect(x: 0, y: 140, width: 70, height: 70)
+        nearbyButton.layer.cornerRadius = 0.5 * nearbyButton.bounds.size.width
+        nearbyButton.clipsToBounds = true
+        nearbyButton.layer.shadowOffset = CGSize(width: 0, height: 10)
+        nearbyButton.layer.shadowRadius = 5
+        nearbyButton.layer.shadowOpacity = 0.3
+        
+        
+        toiletButton.frame = CGRect(x: 0, y: 70, width: 70, height: 70)
+        toiletButton.layer.cornerRadius = 0.5 * toiletButton.bounds.size.width
+        toiletButton.clipsToBounds = true
+        toiletButton.layer.shadowOffset = CGSize(width: 0, height: 10)
+        toiletButton.layer.shadowRadius = 5
+        toiletButton.layer.shadowOpacity = 0.3
+        
+        
+        
+       
+        waterButton.frame = CGRect(x: 0, y: 70, width: 70, height: 70)
+        waterButton.layer.cornerRadius = 0.5 * waterButton.bounds.size.width
+        waterButton.clipsToBounds = true
+        waterButton.layer.shadowOffset = CGSize(width: 0, height: 10)
+        waterButton.layer.shadowRadius = 5
+        waterButton.layer.shadowOpacity = 0.3
+        
+        
+        
+        parkButton.frame = CGRect(x: 0, y: 210, width: 70, height: 70)
+        parkButton.layer.cornerRadius = 0.5 * parkButton.bounds.size.width
+        parkButton.clipsToBounds = true
+        parkButton.layer.shadowOffset = CGSize(width: 0, height: 10)
+        parkButton.layer.shadowRadius = 5
+        parkButton.layer.shadowOpacity = 0.3
+        
+    }
+    
+    func setFunctionButtonImage(){
+        nearbyButton.setImage(#imageLiteral(resourceName: "nearby black-76"), for: .normal)
+        toiletButton.setImage(#imageLiteral(resourceName: "toilet black-76"), for: .normal)
+        waterButton.setImage(#imageLiteral(resourceName: "water black-76"), for: .normal)
+        parkButton.setImage(#imageLiteral(resourceName: "parking black-76"), for: .normal)
+    }
+    
     override func viewDidLoad() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert,.sound,.badge], completionHandler: {
             didAllow,error in
         })
         self.reachability = Reachability.init()
         
+        setupButtons()
         super.viewDidLoad()
         //set navigation view(subview)
         self.navigationView.isHidden = true
@@ -161,7 +296,9 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         
         //set up Mapview
         MapView.delegate = self
-        MapView.showsScale = true
+        
+        MapView.showsCompass = false
+        
         MapView.showsBuildings = false
         MapView.showsUserLocation = true
         MapView.showsPointsOfInterest = false
@@ -195,6 +332,8 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         manager.requestAlwaysAuthorization()
         manager.startUpdatingLocation()
         registerAnnotationViewClasses()
+        
+
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -214,6 +353,8 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             getPublicToiletsData()
             getWaterFountainData()
             getSteepnessData()
+//
+//            getBoundry()
         }else{
             displayErrorMessage(title: "Error", message: "Not internet Connection")
             }
@@ -235,6 +376,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         mapCamera.altitude = 500
         mapCamera.heading = newHeading.trueHeading
         MapView.setCamera(mapCamera, animated: true)
+
     }
     
     //get public Toilets Data from firebase
@@ -265,6 +407,8 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             self.annotationList.append(contentsOf: self.publicToiletList)
             
             self.publicToiltToiletAnnotationList.append(contentsOf: self.publicToiletList)
+            
+            self.nearbyButtonClicked(self)
         })
         
     }
@@ -311,20 +455,88 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                 steepness.coordinates = steepInfo.object(forKey: "coordinates") as! [[[[Double]]]]
                 self.steepnessList.append(steepness)
             }
-            var polygonarray : [custommkPolygon] = []
+            var polygonarray : [customPolygon] = []
             for item in self.steepnessList{
                 polygonarray.append(self.drawShap(coornidatesArray: self.changeArrayToCoornidates(points: item.coordinates), steepnessLevel: item.steepnessFlag, identifier: item.key))
                 
             }
-            DispatchQueue.main.async(){
-                self.MapView.addOverlays(polygonarray)
-            }
+            self.polgons = polygonarray
+            self.MapView.addOverlays(self.polgons)
+//            self.MapView.addOverlays(self.combinePolygonArray())
             self.activityIndicator.stopAnimating()
             UIApplication.shared.endIgnoringInteractionEvents()
-                self.nearbyButtonClicked(self)
 
         })
     }
+    
+//    func getBoundry() {
+//        let boundryRef = databaseRef?.child("Boundary")
+//        boundryRef?.observeSingleEvent(of: .value, with: {
+//            (snapshot) in
+//            guard let value = snapshot.value as? NSDictionary else{
+//                return
+//            }
+//            let coordinates = value.value(forKey: "coordinates") as! [[[[Double]]]]
+//            let polygonCoordinates = self.changeArrayToCoornidates(points: coordinates)
+//            self.boundaryPolygon = customPolygon(coordinates: polygonCoordinates, count: polygonCoordinates.count)
+//            self.getSteepnessData()
+////            self.MapView.add(self.boundaryPolygon!)
+//        })
+//    }
+    
+//
+//    func combinePolygonArray() -> [customPolygon] {
+//
+//        var purplePolygons : [MKPolygon] = []
+//        var redPolygons : [MKPolygon] = []
+//        var darkPolygons : [MKPolygon] = []
+//
+//        for item in self.polgons{
+//            switch item.colorLevel{
+//            case 1:
+//                purplePolygons.append(item)
+//
+//
+//            case 2:
+//
+//                redPolygons.append(item)
+//            case 3:
+//                darkPolygons.append(item)
+//
+//            default:
+//                print("error")
+//            }
+//        }
+//
+//        var purplePolygon  = MKPolygon(points: (self.boundaryPolygon?.points())!, count: (self.boundaryPolygon?.pointCount)!, interiorPolygons: purplePolygons)
+//        var tempPurple = boundaryPolygon?.fromIntersection(with: purplePolygon)
+//        var reversedPolygon = customPolygon(points: (tempPurple?.points())!, count: (tempPurple?.pointCount)!)
+//        reversedPolygon.colorLevel = 1
+//
+////            self.boundaryPolygon
+//        var redPolygon = customPolygon(points: (self.boundaryPolygon?.points())!, count: (self.boundaryPolygon?.pointCount)!, interiorPolygons: redPolygons)
+//        var darkPolygon = customPolygon(points: (self.boundaryPolygon?.points())!, count: (self.boundaryPolygon?.pointCount)!, interiorPolygons: darkPolygons)
+//
+////        let customPurple = boundaryPolygon?.fromExclusiveOr(with: purplePolygon)
+////        let reversedpurple = customPolygon(points: (customPurple?.points())!, count: (customPurple?.pointCount)!)
+////        reversedpurple.colorLevel = 1
+////
+////        let customRed = boundaryPolygon?.fromExclusiveOr(with: redPolygon)
+////        let reversedRed = customPolygon(points: (customRed?.points())!, count: (customRed?.pointCount)!)
+////        reversedRed.colorLevel = 2
+////
+////        let customdark = boundaryPolygon?.fromExclusiveOr(with: darkPolygon)
+////        let reverseddark = customPolygon(points: (customdark?.points())!, count: (customdark?.pointCount)!)
+////        reverseddark.colorLevel = 2
+//
+//
+//
+//
+//        return [reversedPolygon]
+//
+//    }
+    
+    
     
     //change Double arrary to coordinates to draw the polygon
     func changeArrayToCoornidates(points:[[[[Double]]]]) -> [CLLocationCoordinate2D] {
@@ -343,8 +555,8 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     
     //https://stackoverflow.com/questions/45038869/swift-mapkit-create-a-polygon
     //put a shap on the map
-    func drawShap(coornidatesArray:[CLLocationCoordinate2D],steepnessLevel: Int, identifier: String) -> custommkPolygon{
-        let polygon = custommkPolygon(coordinates: coornidatesArray, count: coornidatesArray.count)
+    func drawShap(coornidatesArray:[CLLocationCoordinate2D],steepnessLevel: Int, identifier: String) -> customPolygon{
+        let polygon = customPolygon(coordinates: coornidatesArray, count: coornidatesArray.count)
         polygon.colorLevel = steepnessLevel
         return polygon
     }
@@ -390,13 +602,11 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         self.transportControl.setEnabled(false, forSegmentAt: 0)
         self.transportControl.setEnabled(false, forSegmentAt: 1)
         self.transportControl.isHidden = true
+        if buttonControlSelected == true{
+            functionListButtonClicked(self)
+        }
         manager.stopUpdatingHeading()
         
-//        for overlay in self.MapView.overlays{
-//            if overlay is MKPolyline{
-//                self.MapView.remove(overlay)
-//            }
-//        }
         
         if  self.start == false{
             self.startIsClicked(self)
@@ -419,6 +629,12 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         let destinationPlacemarker = MKPlacemark(coordinate: (view.annotation?.coordinate)!, addressDictionary: dictionary)
         
         self.destinationItem = MKMapItem(placemark: destinationPlacemarker)
+        
+        if self.destinationAnnotation != nil{
+            if !(view.annotation is CustomPointAnnotation){
+            self.MapView.removeAnnotation(self.destinationAnnotation!)
+            }
+        }
         let span:MKCoordinateSpan?
         
         //parking spot different span
@@ -487,17 +703,23 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                 displayErrorMessage(title: "No destination", message: "Sorry please select a destination first.")
             }else{
                 if self.navigationButtonClicked == false{
-                    if self.destinationAnnotation != nil{
-                    self.MapView.removeAnnotation(self.destinationAnnotation!)
-                    }
-                    self.destinationAnnotation = self.addSearchItem(mapItem: destinationItem!, imageName: "pin-end 3-40")
-                    self.MapView.addAnnotation(self.destinationAnnotation!)
+                    var newDestination = CustomPointAnnotation()
+                    
+
+                    newDestination = self.addSearchItem(mapItem: destinationItem!, imageName: "pin-end 3-40")
+                    
+                    
                     if self.MapView.selectedAnnotations.first?.title != nil{
-                    self.destinationAnnotation?.title = (self.MapView.selectedAnnotations.first?.title)!
+                        newDestination.title = (self.MapView.selectedAnnotations.first?.title)!
                     }
                     if self.MapView.selectedAnnotations.first?.subtitle != nil{
-                    self.destinationAnnotation?.subtitle = (self.MapView.selectedAnnotations.first?.subtitle)!
+                        newDestination.subtitle = (self.MapView.selectedAnnotations.first?.subtitle)!
                     }
+                    if self.destinationAnnotation != nil{
+                        self.MapView.removeAnnotation(self.destinationAnnotation!)
+                    }
+                    self.destinationAnnotation = newDestination
+                    self.MapView.addAnnotation(self.destinationAnnotation!)
                     //select destination annotation
                     self.MapView.selectAnnotation(self.destinationAnnotation!, animated: true)
                     //setup start item
@@ -619,7 +841,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             item.polyline.subtitle = "\(item.distance)"
             //get all the coords from the polyline
             let coordsPointer = UnsafeMutablePointer<CLLocationCoordinate2D>.allocate(capacity: item.polyline.pointCount)
-                item.polyline.getCoordinates(coordsPointer, range: NSMakeRange(0, item.polyline.pointCount))
+            item.polyline.getCoordinates(coordsPointer, range: NSMakeRange(0, item.polyline.pointCount))
             
             //remove the coords if it is not empty
             if self.coords.count != 0 {
@@ -668,7 +890,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                 let totalSteepnessLevel = evaluationArray.reduce(0,+)
                 let highest = evaluationArray.max()
                 let average = Double(totalSteepnessLevel)/Double(evaluationArray.count)
-                if highest! > 2 {
+                if highest! >= 1  {
                     errorMessage.append("The route might be a little bit steep for you.")
                 }else{
                     errorMessage.append("The route is not steep.")
@@ -699,10 +921,13 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                 circleView.fillColor = #colorLiteral(red: 0.9764705896, green: 0.850980401, blue: 0.5490196347, alpha: 0.2958315497)
             }
             return circleView
-        }else if overlay is MKPolygon{
+       }
+            else if overlay is MKPolygon{
             //set color for polygon
-            let polygon = overlay as! custommkPolygon
+            let polygon = overlay as! customPolygon
+
             let polygonView = MKPolygonRenderer(overlay: overlay)
+
             switch polygon.colorLevel{
             case 1:
                 polygonView.fillColor = #colorLiteral(red: 0.5326765776, green: 0, blue: 0.6681495309, alpha: 0.5)
@@ -712,7 +937,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
                 polygonView.fillColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0.5)
             default:
                 polygonView.fillColor = #colorLiteral(red: 0.3748460412, green: 0.6896326542, blue: 0.1897849143, alpha: 0.5)
-                
+
             }
             return polygonView
         }
@@ -838,7 +1063,10 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             //set voice navigation
            self.voiceGuide(message: startMessage(distance: (self.route?.distance)!, arrivingTime: self.convertDateToString(duration: (self.route?.expectedTravelTime)!), duration: self.secondsToHoursMinutes(seconds: Int((self.route?.expectedTravelTime)!))))
             start = false
-            self.startButton.setImage(UIImage(named: "stop copy-76"), for: .normal)
+            self.startButton.setImage(#imageLiteral(resourceName: "stop-76"), for: .normal)
+
+            newlayout.constant = newlayout.constant - 150
+
             for step in self.routeSteps{
                 self.addnotificationToStep(step: step)
             }
@@ -875,9 +1103,10 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             self.navigationView.isHidden = true
             start = true
             //change the image
-            self.startButton.setImage(UIImage(named: "start-76"), for: .normal)
+            self.startButton.setImage(#imageLiteral(resourceName: "start-76"), for: .normal)
             self.manager.stopUpdatingHeading()
             self.locateLocation(location: self.userLocation!)
+            newlayout.constant = newlayout.constant + 150
             //remove the notification
             removeNotification()
         }
@@ -1024,7 +1253,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
         
         if buttonControlSelected == false{
             self.functionView.isHidden = false
-            self.buttonControl.setImage(#imageLiteral(resourceName: "close-76"), for: .normal)
+            self.buttonControl.setImage(#imageLiteral(resourceName: "close 2-76"), for: .normal)
             buttonControlSelected = true
         }else{
             self.functionView.isHidden = true
@@ -1035,9 +1264,17 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     
     //nearbyButton
     @IBAction func nearbyButtonClicked(_ sender: Any) {
-        self.MapView.removeAnnotations(self.MapView.annotations)
-        self.destinationItem = nil
-        self.destinationAnnotation = nil
+        let removedAnnotations = self.MapView.annotations.filter{$0 is AccessibleFacilities}
+        self.MapView.removeAnnotations(removedAnnotations)
+//        self.destinationItem = nil
+//        self.destinationAnnotation = nil
+        self.nearbyClicked = true
+        self.toiletClicked = false
+        self.waterClicked = false
+        self.parkClicked = false
+        if buttonControlSelected == true{
+            functionListButtonClicked(self)
+        }
         self.MapView.addAnnotations(self.getNearbyFacilities())
         if self.userLocation != nil{
             locateLocation(location: userLocation!)
@@ -1049,26 +1286,50 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     
     //toilet button
     @IBAction func toiletButtonIsClicked(_ sender: Any) {
-        self.MapView.removeAnnotations(self.MapView.annotations)
-        self.destinationItem = nil
-        self.destinationAnnotation = nil
-            self.MapView.addAnnotations(self.publicToiletList)
+        let removedAnnotations = self.MapView.annotations.filter{$0 is AccessibleFacilities}
+        self.MapView.removeAnnotations(removedAnnotations)
+        self.nearbyClicked = false
+        self.toiletClicked = true
+        self.waterClicked = false
+        self.parkClicked = false
+        if buttonControlSelected == true{
+            functionListButtonClicked(self)
+        }
+//        self.destinationItem = nil
+//        self.destinationAnnotation = nil
+        self.MapView.addAnnotations(self.publicToiletList)
         
     }
     
     //water Button
     @IBAction func waterButtonIsClicked(_ sender: Any) {
-        self.MapView.removeAnnotations(self.MapView.annotations)
-        self.destinationItem = nil
-        self.destinationAnnotation = nil
+        let removedAnnotations = self.MapView.annotations.filter{$0 is AccessibleFacilities}
+        self.MapView.removeAnnotations(removedAnnotations)
+        self.nearbyClicked = false
+        self.toiletClicked = false
+        self.waterClicked = true
+        self.parkClicked = false
+        if buttonControlSelected == true{
+            functionListButtonClicked(self)
+        }
+//        self.destinationItem = nil
+//        self.destinationAnnotation = nil
         self.MapView.addAnnotations(self.waterFountainList)
     }
     
     //park Button
     @IBAction func parkButtonClicked(_ sender: Any) {
-        self.MapView.removeAnnotations(self.MapView.annotations)
-        self.destinationItem = nil
-        self.destinationAnnotation = nil
+        let removedAnnotations = self.MapView.annotations.filter{$0 is AccessibleFacilities}
+        self.MapView.removeAnnotations(removedAnnotations)
+        if buttonControlSelected == true{
+            functionListButtonClicked(self)
+        }
+//        self.destinationItem = nil
+//        self.destinationAnnotation = nil
+        self.nearbyClicked = false
+        self.toiletClicked = false
+        self.waterClicked = false
+        self.parkClicked = true
         if userLocation != nil{
         getAvailableParkingSpot(coordinate: (userLocation?.coordinate)!)
         }else{
@@ -1123,7 +1384,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             if self.startButton.isHidden == false{
                 self.startButton.isHidden = true
             }
-//            self.locateMe.setImage(#imageLiteral(resourceName: "cross-76"), for: .normal)
+
         }else{
             if userLocation != nil{
                 self.startItem = nil
@@ -1377,10 +1638,10 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     
     //https://stackoverflow.com/questions/36016764/check-if-user-location-is-inside-a-shape
     //check wheather a coordinate is in the polygon
-    func coordinateInsidePolygon(coordinate:CLLocationCoordinate2D) -> custommkPolygon? {
+    func coordinateInsidePolygon(coordinate:CLLocationCoordinate2D) -> customPolygon? {
         
         var containsPoint: Bool = false
-        let polygon = self.MapView.overlays.filter{$0 is MKPolygon} as! [custommkPolygon]
+        let polygon = self.MapView.overlays.filter{$0 is MKPolygon} as! [customPolygon]
         for item in polygon{
             let polygonPath:CGMutablePath = CGMutablePath()
             let arrPoints = item.points()
@@ -1422,7 +1683,6 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
     
     func checkCoordinateInTheAccessibleBuilding(MapItem:MKMapItem){
         let index = MapItem.placemark.title?.index(of: ",")
-        print(String((MapItem.placemark.title?.prefix(upTo: index!))!))
         let accessibleBuildingsRef = databaseRef?.child(functionList[2]).queryOrdered(byChild: "Description").queryEqual(toValue: String((MapItem.placemark.title?.prefix(upTo: index!))!))
         var accessiblebuildings : [AccessibleFacilities] = []
         var targetBuilding : AccessibleFacilities?
@@ -1507,14 +1767,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
         }
     }
-    func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-        let polygon = self.MapView.overlays.filter{$0 is MKPolygon} as! [custommkPolygon]
-        print(polygon.count)
-    }
-    func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
-        let polygon = self.MapView.overlays.filter{$0 is MKPolygon} as! [custommkPolygon]
-        print(polygon.count)
-    }
+
 }
 
 

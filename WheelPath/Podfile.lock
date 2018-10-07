@@ -44,6 +44,7 @@ PODS:
   - "GoogleToolboxForMac/NSString+URLArguments (2.1.4)"
   - GTMSessionFetcher/Core (1.1.15)
   - leveldb-library (1.20)
+  - MKPolygon-GPC (0.0.1)
   - nanopb (0.3.8):
     - nanopb/decode (= 0.3.8)
     - nanopb/encode (= 0.3.8)
@@ -55,6 +56,7 @@ DEPENDENCIES:
   - Firebase/Core
   - Firebase/Database
   - Firebase/Storage
+  - MKPolygon-GPC (~> 0.0.1)
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
@@ -68,6 +70,7 @@ SPEC REPOS:
     - GoogleToolboxForMac
     - GTMSessionFetcher
     - leveldb-library
+    - MKPolygon-GPC
     - nanopb
 
 SPEC CHECKSUMS:
@@ -81,8 +84,9 @@ SPEC CHECKSUMS:
   GoogleToolboxForMac: 91c824d21e85b31c2aae9bb011c5027c9b4e738f
   GTMSessionFetcher: 5fa5b80fd20e439ef5f545fb2cb3ca6c6714caa2
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
+  MKPolygon-GPC: 998ab3e682212e2aeb6ecced9b4361d156f8873a
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
 
-PODFILE CHECKSUM: 8a8d7a4743fdf8e55d660e00c99e7ba9d3642ec2
+PODFILE CHECKSUM: 44cdb24d6bff34f675c17505193637bfb977212d
 
 COCOAPODS: 1.5.0

@@ -13,13 +13,15 @@ class PageViewController: UIPageViewController,UIPageViewControllerDelegate,UIPa
     override var prefersStatusBarHidden: Bool{
         return true
     }
-    let viewControllerNames: [String] = ["startPage1","startPage2","startPage3","startPage4","startPage5"]
+    let viewControllerNames: [String] = ["startPage1","startPage2","startPage3","startPage4","startPage5","startPage6"]
     lazy var orderedViewControllers: [UIViewController] = {
         return [self.newVc(viewController: viewControllerNames[0]),
                 self.newVc(viewController: viewControllerNames[1]),
                 self.newVc(viewController: viewControllerNames[2]),
                 self.newVc(viewController: viewControllerNames[3]),
-                self.newVc(viewController: viewControllerNames[4])]
+                self.newVc(viewController: viewControllerNames[4]),
+                self.newVc(viewController: viewControllerNames[5])
+        ]
     }()
 
     var pageControl = UIPageControl()

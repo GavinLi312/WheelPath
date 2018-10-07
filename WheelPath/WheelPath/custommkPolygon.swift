@@ -9,8 +9,10 @@
 import UIKit
 import MapKit
 
-class custommkPolygon: MKPolygon{
+class customPolygon: MKPolygon{
     var colorLevel = 0
+    
+    
 }
 
 struct Steepness {

@@ -49,6 +49,7 @@ class InformationViewController: UIViewController,UITableViewDelegate,UITableVie
         findNavigateSteps(startPoint: self.userLocation, destination: self.destination)
         directionList.layer.borderColor = #colorLiteral(red: 0.5783415437, green: 0.5783415437, blue: 0.5783415437, alpha: 0.3349208048)
         directionList.layer.borderWidth = 2.0
+        directionList.backgroundColor = #colorLiteral(red: 0.5783415437, green: 0.5783415437, blue: 0.5783415437, alpha: 0.1917273116)
         // Do any additional setup after loading the view.
     }
 
@@ -79,6 +80,7 @@ class InformationViewController: UIViewController,UITableViewDelegate,UITableVie
             startcell.startLocation.text = "Start Point"
             startcell.startLocationAddress.text = self.startAddress
             cell = startcell
+            cell.backgroundColor = UIColor.clear
         }else if indexPath.section == 1{
             let directioncell = directionList.dequeueReusableCell(withIdentifier: "directionCell")
             var distance = Int(directionSteps[indexPath.row].distance)
@@ -90,12 +92,15 @@ class InformationViewController: UIViewController,UITableViewDelegate,UITableVie
             }
             
             directioncell?.detailTextLabel?.text = "\(directionSteps[indexPath.row].instructions)"
+            
             cell = directioncell!
+            
         }else{
             var destCell = directionList.dequeueReusableCell(withIdentifier: "DestinationCell") as! DestinationCell
             destCell.destName.text = "Destination"
             destCell.destAddress.text = self.destAdress
             cell = destCell
+            cell.backgroundColor = UIColor.clear
         }
 
         return cell

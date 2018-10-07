@@ -15,14 +15,14 @@ class AboutViewController: UIViewController {
     
     @IBOutlet weak var Content: UILabel!
     
+    @IBOutlet weak var appImage: UIImageView!
     
     
     override func viewDidLoad() {
 
 
         Content.numberOfLines = 0
-        
-        
+        appImage.layer.cornerRadius = 0.5
         // Do any additional setup after loading the view.
     }
 
