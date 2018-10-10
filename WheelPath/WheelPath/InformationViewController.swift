@@ -44,6 +44,7 @@ class InformationViewController: UIViewController,UITableViewDelegate,UITableVie
         directionList.dataSource = self
         destinationName.layer.borderColor = #colorLiteral(red: 0.6666666865, green: 0.6666666865, blue: 0.6666666865, alpha: 1)
         destinationName.layer.cornerRadius = 5
+        directionList.allowsSelection = false
         changeCoordinatoToAddress(animalLocation: userLocation!, option: optionList[0])
         changeCoordinatoToAddress(animalLocation: destination!, option: optionList[1])
         findNavigateSteps(startPoint: self.userLocation, destination: self.destination)

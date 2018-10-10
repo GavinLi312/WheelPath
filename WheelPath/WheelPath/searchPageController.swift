@@ -289,7 +289,6 @@ class searchPageController: UIViewController, UISearchBarDelegate, UITableViewDe
                         if !self.destinationUserDefaultList.contains((self.destinationItem?.name)!){
                             self.destinationUserDefaultList.append((self.destinationItem?.name)!)
                         }
-                        self.destinationUserDefaultList.append((self.destinationItem?.name)!)
                         self.addMapItemInToUserDefault(option: optionList.last!)
                         self.navigationController?.popViewController(animated: true)
                     }else{
