@@ -1039,7 +1039,7 @@ class MapViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDe
             if self.transportControl.selectedSegmentIndex == 0{
 
             steepnessTimer = Timer.scheduledTimer(
-                timeInterval: 30.0,
+                timeInterval: 10.0,
                 target: self,
                 selector: #selector(self.checkUserInSteepNessRegion),
                 userInfo: nil,
